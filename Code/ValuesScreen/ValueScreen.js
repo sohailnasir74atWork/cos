@@ -160,40 +160,43 @@ const ValueScreen = React.memo(({ selectedTheme, fromChat, selectedFruits, setSe
 
         <View style={styles.divider} />
 
-        <View style={styles.tagsContainer}>
-          {/* Primary Tags (Rarity) */}
-          <View style={styles.tagRow}>
-            {item.rarity && (() => {
-              const colors = config.getTagColor('rarity', isDarkMode);
-              return (
-                <View style={[styles.tagBadge, { backgroundColor: colors.bg, borderColor: colors.border }]}>
-                  <Text style={[styles.tagText, { color: colors.text }]}>RARITY: {item.rarity.toUpperCase()}</Text>
-                </View>
-              );
-            })()}
-          </View>
-
-          {/* Grouped Dynamic Tags */}
-          <View style={{ gap: 8 }}>
-            {Object.entries(groupedTags).map(([category, tags], idx) => {
-              const colors = config.getTagColor(category, isDarkMode);
-              return (
-                <View key={`${category}-${idx}`} style={{ flexDirection: 'row', alignItems: 'flex-start', flexWrap: 'wrap', gap: 4 }}>
-                  <Text style={[styles.tagText, { color: colors.text, fontWeight: '800', marginRight: 4 }]}>
-                    {category}:
-                  </Text>
-                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4, flex: 1 }}>
-                    {tags.map((tag, tIdx) => (
-                      <View key={`${tag}-${tIdx}`} style={[styles.tagBadge, { backgroundColor: colors.bg, borderColor: colors.border, paddingVertical: 2, paddingHorizontal: 6 }]}>
-                        <Text style={[styles.tagText, { color: colors.text, fontSize: 10 }]}>{tag}</Text>
-                      </View>
-                    ))}
+        {/* ✅ Hide details in selection mode */}
+        {!fromChat && !fromSetting && (
+          <View style={styles.tagsContainer}>
+            {/* Primary Tags (Rarity) */}
+            <View style={styles.tagRow}>
+              {item.rarity && (() => {
+                const colors = config.getTagColor('rarity', isDarkMode);
+                return (
+                  <View style={[styles.tagBadge, { backgroundColor: colors.bg, borderColor: colors.border }]}>
+                    <Text style={[styles.tagText, { color: colors.text }]}>RARITY: {item.rarity.toUpperCase()}</Text>
                   </View>
-                </View>
-              );
-            })}
+                );
+              })()}
+            </View>
+
+            {/* Grouped Dynamic Tags */}
+            <View style={{ gap: 8 }}>
+              {Object.entries(groupedTags).map(([category, tags], idx) => {
+                const colors = config.getTagColor(category, isDarkMode);
+                return (
+                  <View key={`${category}-${idx}`} style={{ flexDirection: 'row', alignItems: 'flex-start', flexWrap: 'wrap', gap: 4 }}>
+                    <Text style={[styles.tagText, { color: colors.text, fontWeight: '800', marginRight: 4 }]}>
+                      {category}:
+                    </Text>
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4, flex: 1 }}>
+                      {tags.map((tag, tIdx) => (
+                        <View key={`${tag}-${tIdx}`} style={[styles.tagBadge, { backgroundColor: colors.bg, borderColor: colors.border, paddingVertical: 2, paddingHorizontal: 6 }]}>
+                          <Text style={[styles.tagText, { color: colors.text, fontSize: 10 }]}>{tag}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                );
+              })}
+            </View>
           </View>
-        </View>
+        )}
       </TouchableOpacity>
     );
   });
