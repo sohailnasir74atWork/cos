@@ -1,0 +1,79 @@
+apply plugin: "com.android.application"
+apply plugin: "org.jetbrains.kotlin.android"
+apply plugin: "com.facebook.react"
+apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
+
+react { autolinkLibrariesWithApp() }
+
+def enableProguardInReleaseBuilds = true
+def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
+
+android {
+    ndkVersion rootProject.ext.ndkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdk rootProject.ext.compileSdkVersion
+
+    namespace "com.creature_of_sonaria"
+    defaultConfig {
+        applicationId "com.creature_of_sonaria"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 48
+        versionName "1.4.8"
+
+        // ⭐ ADD: ship only ARM. Add "armeabi-v7a" if you still support 32-bit.
+        ndk {
+            abiFilters "arm64-v8a", "armeabi-v7a"
+        }
+    }
+
+    // ⭐ ADD (AGP 8.x syntax). If your AGP is older, see the fallback just below.
+    packaging {
+        jniLibs {
+            // ensure no dependency sneaks x86/x86_64 libs back in
+            excludes += ["**/x86/**", "**/x86_64/**"]
+        }
+    }
+
+    signingConfigs {
+        release {
+            storeFile file('solanalab.keystore')
+            storePassword '798702'
+            keyAlias 'solanalabdev'
+            keyPassword '798702'
+        }
+    }
+    buildTypes {
+        debug { signingConfig signingConfigs.debug }
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled enableProguardInReleaseBuilds
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        }
+    }
+}
+
+// Fallback for older AGP (use this instead of the packaging{} block above):
+// android {
+//   packagingOptions {
+//     jniLibs {
+//       excludes += ["**/x86/**", "**/x86_64/**"]
+//     }
+//   }
+// }
+
+dependencies {
+    implementation("com.facebook.react:react-android")
+    if (hermesEnabled.toBoolean()) {
+        implementation("com.facebook.react:hermes-android")
+        implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
+        implementation("com.google.firebase:firebase-analytics")
+        implementation("com.google.firebase:firebase-messaging")
+        implementation("androidx.activity:activity:1.9.+")
+    } else {
+        implementation jscFlavor
+    }
+}
+
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'

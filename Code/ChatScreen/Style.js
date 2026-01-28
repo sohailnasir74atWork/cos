@@ -1,0 +1,555 @@
+import { StyleSheet } from "react-native";
+import config from "../Helper/Environment";
+
+export const getStyles = (isDarkMode) =>
+
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: isDarkMode ? '#121212' : '#f2f2f7',
+    },
+    loader: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    chatList: {
+      flexGrow: 1,
+      justifyContent: 'flex-end',
+      // paddingHorizontal: 10,
+      paddingVertical: 5,
+    },
+    mymessageBubble: {
+      // width: '100%',
+      paddingHorizontal: 10,
+      borderRadius: 15,
+      flexDirection: "row-reverse",
+      marginBottom: 10,
+      alignItems: 'flex-end'
+    },
+    othermessageBubble: {
+      // width: '100%',
+      // paddingHorizontal: 10,
+      borderRadius: 15,
+      flexDirection: 'row',
+      marginBottom: 5,
+      alignItems: 'flex-start',
+
+    },
+    myMessage: {
+      alignSelf: 'flex-end',
+    },
+    otherMessage: {
+      alignSelf: 'flex-start',
+
+    },
+    senderName: {
+      width: 34,
+      height: 32,
+      borderRadius: 16,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginHorizontal: 5,
+    },
+    senderNameText: {
+      fontSize: 11,
+      fontFamily: 'Lato-Bold',
+      color: 'grey',
+    },
+    messageTextBox: {
+      // flex: 1,
+      maxWidth:'75%',
+
+      // flexDirection:
+    },
+    messageTextBoxAdmin: {
+      flexDirection: 'column',
+      flex: 1,
+
+    },
+    myMessageText: {
+      fontSize: 12,
+      color: isDarkMode ? 'white' : 'black',
+      backgroundColor: isDarkMode ? '#1E88E5' : 'lightgreen',
+      paddingVertical: 5,
+      paddingHorizontal: 10,
+      borderRadius: 10,
+      fontFamily: 'Lato-Regular',
+      lineHeight:14,
+
+
+    },
+    otherMessageText: {
+      fontSize: 12,
+      color: isDarkMode ? 'white' : 'black',
+      backgroundColor: isDarkMode ? '#34495E' : 'white',
+      paddingHorizontal: 10,
+      // lineHeight: 20,
+      borderRadius: 10,
+      paddingBottom: 5,
+      fontFamily: 'Lato-Regular',
+      paddingRight:20,
+      lineHeight:14,
+   
+
+
+    },
+    myMessageTextOnly: {
+      fontSize: 12,
+      color: isDarkMode ? 'white' : 'black',
+      fontFamily: 'Lato-Regular',
+      lineHeight: 14,
+      textAlign: 'left',
+    },
+    otherMessageTextOnly: {
+      fontSize: 12,
+      color: isDarkMode ? 'white' : 'black',
+      fontFamily: 'Lato-Regular',
+      lineHeight: 14,
+      textAlign: 'left',
+    },
+    timestamp: {
+      fontSize: 5,
+      color: isDarkMode ? 'lightgrey' : 'grey',
+      textAlign: 'right',
+      paddingHorizontal: 5
+    },
+    input: {
+      flex: 1, // Ensures the input takes available space
+      borderRadius: 20,
+      padding: 5,
+      marginRight: 10,
+      fontSize: 16,
+      minHeight: 30, // ✅ Fixed typo: heighteight -> minHeight
+      maxHeight: 120, // Limit input growth to a max height
+      textAlignVertical: 'top', // Ensures text starts at the top
+      backgroundColor: isDarkMode ? '#333' : '#fff', // Optional background for better visibility
+    },
+
+    // sendButton: {
+    //   borderRadius: 20,
+    //   // paddingVertical: 10,
+    //   paddingHorizontal: 20,
+    //   // backgroundColor:config.colors.primary
+    // },
+    // sendButtonText: {
+    //   color: '#fff',
+    //   fontSize: 16,
+    //   fontFamily: 'Lato-Bold',
+    // },
+    loggedOutMessage: {
+      flex: 1,
+      fontSize: 16,
+      paddingVertical: 10,
+    },
+    loggedOutMessageText: {
+      color: '#bbb',
+      textAlign: 'center',
+    },
+    dateSeparator: {
+      fontSize: 14,
+      color: '#888',
+      textAlign: 'center',
+      marginVertical: 10,
+    },
+
+    platformText: {
+      color: 'white',
+      fontSize: 6,
+      fontFamily: 'Lato-Bold',
+    },
+   
+    admin: {
+      // alignSelf: 'flex-start',
+      color: 'white',
+      // fontSize: 10,
+      fontFamily: 'Lato-Bold',
+      // color: config.colors.primary,
+      fontSize: 9,
+    },
+    verifiedContainer: {
+      backgroundColor: '#4CAF50',
+      paddingHorizontal: 5,
+      paddingVertical: 1,
+      borderRadius: 3,
+      marginLeft: 4,
+    },
+    verified: {
+      color: 'white',
+      fontSize: 9,
+      fontFamily: 'Lato-Bold',
+      // lineHeight:10,
+
+      
+    },
+    adminText: {
+      fontSize: 12,
+      color: 'white',
+      paddingTop: 5
+    },
+    login: {
+      height: 40,
+      justifyContent: 'center',
+      color: config.colors.hasBlockGreen,
+      alignSelf: 'center',
+      width: '100%',
+      borderTopWidth: 1,
+      borderColor: isDarkMode ? '#333333' : '#cccccc',
+
+      //  borderRadius:10
+
+    },
+    loginText: {
+      color: config.colors.hasBlockGreen,
+      fontFamily: 'Lato-Bold',
+      textAlign: 'center',
+      lineHeight: 24
+
+    },
+    inputWrapper: {
+      paddingHorizontal: 10,
+      paddingVertical:3,
+      borderTopWidth: 1,
+      borderTopColor: isDarkMode ? '#333' : '#ddd',
+      backgroundColor: isDarkMode ? '#222' : '#fff',
+      // backgroundColor:'red',
+
+    },
+    cancelReplyButton: {
+      alignSelf: 'flex-end',
+
+    },
+    cancelReplyText: {
+      color: '#E74C3C',
+      fontSize: 12,
+    },
+    inputContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    // input: {
+    //   flex: 1,
+    //   backgroundColor: isDarkMode ? '#333' : '#f0f0f0',
+    //   borderRadius: 20,
+    //   paddingHorizontal: 15,
+    //   paddingVertical: 10,
+    //   fontSize: 16,
+    // },
+    sendButton: {
+      marginLeft: 5,
+      borderRadius: 20,
+      paddingHorizontal: 20,
+      paddingVertical: 5,
+    },
+    sendButtonText: {
+      color: '#fff',
+      fontSize: 16,
+    },
+    replyContainer: {
+      backgroundColor: isDarkMode ? '#333' : '#f0f0f0',
+      borderLeftWidth: 3,
+      borderLeftColor: isDarkMode ? '#1E88E5' : '#007BFF',
+      padding: 5,
+      marginBottom: 5,
+      borderRadius: 5,
+    },
+    replyText: {
+      fontSize: 10,
+      color: isDarkMode ? '#1E88E5' : '#007BFF',
+      width: '95%'
+
+    },
+    replySenderText: {
+      fontSize: 12,
+      fontFamily: 'Lato-Bold',
+      color: isDarkMode ? '#FFF' : '#000',
+    },
+    profileImage: {
+      height: 34,
+      width: 34,
+      borderRadius: 17,
+      backgroundColor:'white'
+    },
+    profileImagePvtChat: {
+      height: 30,
+      width: 30,
+      borderRadius: 15,
+      marginHorizontal: 5,
+      backgroundColor:'white'
+    },
+
+    userName: {
+      color: isDarkMode ? 'lightfrey' : 'grey',
+      fontSize: 10,
+      justifyContent:'center',
+      // backgroundColor:'red',
+      backgroundColor:'red',
+      lineHeight:14,
+      fontFamily:'Lato-Bold'
+
+    },
+    adminActions: {
+      // flexDirection: 'row',
+      justifyContent:'center',
+      // alignItems:'flex-end',
+      // overflow:'hidden',
+      // flexWrap:"wrap"
+    },
+    adminTextAction: {
+      backgroundColor: config.colors.wantBlockRed,
+      marginHorizontal: 3,
+      padding: 10,
+      borderRadius: 3,
+      color: 'white',
+      alignSelf: 'center',
+      minWidth: 150,
+      // fontSize:10
+      },
+    dot: {
+      color: '#bbb',
+      marginHorizontal: 5,
+      fontSize: 14
+    },
+    linkText: {
+      color: '#1E90FF', // Blue color for links
+      textDecorationLine: 'underline', // Underline to indicate a link
+    },
+ 
+    menu: {
+      borderRadius: 20,
+      // backgroundColor:'red'
+    },
+    menuTrig: {
+      borderRadius: 50,
+      // backgroundColor: 'red',
+      marginBottom: 100
+
+    },
+    menuoptions: {
+      // flexDirection:'row',
+      // justifyContent:'space-evenly',
+      maxWidth: 150,
+      borderRadius: 10,
+      marginLeft:50
+
+    },
+    menuOption: {
+      paddingHorizontal: 10,
+      paddingVertical: 15,
+      borderBottomWidth: 1,
+      borderColor:'lightgrey',
+      backgroundColor:'white',
+      borderRadius: 10,
+
+    },
+    menuOptionText: {
+      fontSize: 16,
+      color: '#000',
+    },
+    reportIcon:{
+      position:'absolute',
+      right:2,
+      top:2,
+      opacity:1,
+      color:config.colors.wantBlockRed,
+      fontSize:8,
+      fontStyle:'italic'
+
+    },
+    reportedMessage: {
+      opacity: .3, // Light blue color
+    },
+    emptyContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      // backgroundColor:'red'
+
+    },
+    emptyText:{
+      color: isDarkMode ? 'white' : 'black',
+    },
+tradeDetails: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  backgroundColor: 'grey',
+  paddingHorizontal:10
+
+
+},
+itemList: {
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  justifyContent: 'space-evenly',
+  width: "45%",
+  paddingVertical: 0,
+  // backgroundColor:'red'
+},
+itemImage: {
+  width: 30,
+  height: 30,
+  // marginRight: 5,
+  // borderRadius: 25,
+  marginVertical: 5,
+  borderRadius: 5
+  // padding:10
+
+},
+
+transferImage: {
+  width: 15,
+  height: 15,
+  // marginRight: 5,
+  borderRadius: 5,
+},
+tradeTotals: {
+  flexDirection: 'row',
+  justifyContent: 'center',
+  // marginTop: 10,
+  width: '100%'
+
+},
+names:{
+  fontSize: 8,
+  color:'white'
+},
+priceText: {
+  fontSize: 10,
+  fontFamily: 'Lato-Regular',
+  color: '#007BFF',
+  // width: '40%',
+  textAlign: 'center', // Centers text within its own width
+  alignSelf: 'center', // Centers within the parent container
+  color: 'white', // ✅ Removed redundant conditional
+  marginHorizontal: 'auto',
+  paddingHorizontal: 4,
+  paddingVertical: 2,
+  borderRadius: 6
+},
+priceTextProfit: {
+  fontSize: 10,
+  lineHeight:14,
+  fontFamily: 'Lato-Regular',
+  // color: '#007BFF',
+  // width: '40%',
+  textAlign: 'center', // Centers text within its own width
+  alignSelf: 'center', // Centers within the parent container
+  // color: isDarkMode ? 'white' : "grey",
+  // marginHorizontal: 'auto',
+  // paddingHorizontal: 4,
+  // paddingVertical: 2,
+  // borderRadius: 6
+},
+tagcount: {
+  position: 'absolute',
+  backgroundColor: 'purple',
+  top: 4,
+  left: 1,
+  borderRadius: 50,
+  paddingHorizontal: 3,
+  paddingBottom: 2
+
+},
+tagcounttext: {
+  color: 'white',
+  fontFamily: 'Lato-Bold',
+  fontSize: 10
+},
+
+hasBackground: {
+  backgroundColor: config.colors.hasBlockGreen,
+},
+wantBackground: {
+  backgroundColor: config.colors.wantBlockRed,
+},
+tradeActions: {
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+
+transfer: {
+  width: '10%',
+  justifyContent: 'center',
+  alignItems: 'center'
+},
+deleteButton:{
+  paddingVertical:5
+},
+chatImage: {
+  width: 200,
+  height: 200,
+  borderRadius: 8,
+  marginBottom: 4,
+},
+saveButtonTextProfile:{
+  color: isDarkMode ? 'white' : "black",
+},
+highlightedMessage: {
+  backgroundColor: '#fef3c7',      // soft yellow
+  borderColor: '#f59e0b',
+  borderWidth: 1,
+},
+nameRow: {
+  flexDirection: 'row',
+  alignItems: 'center',      // vertical alignment (text + images)
+  // justifyContent: 'center',  // center the whole row horizontally
+},
+
+userNameText: {
+  color: isDarkMode ? 'lightgrey' : 'grey',
+  fontSize: 9,
+  lineHeight: 14,
+  paddingTop:2
+},
+userNameAdmin: {
+  color: isDarkMode ? 'lightgrey' : 'grey',
+  fontSize: 9,
+  lineHeight: 11,
+  // paddingTop:2
+},
+
+icon: {
+  width: 10,
+  height: 10,
+  marginLeft: 4,
+  // paddingBottom:5
+},
+
+adminContainer: {
+  marginLeft: 4,
+  paddingHorizontal: 4,
+  paddingVertical: 1,
+  borderRadius: 4,
+  backgroundColor: config.colors.primary, // your choice
+  alignItems: 'center',
+  justifyContent: 'center',
+},
+
+platformBadge: {
+  marginLeft: 6,
+  // paddingHorizontal: 3,
+  // paddingVertical: 1,
+  borderRadius: '50%',
+  alignItems: 'center',
+  justifyContent: 'center',
+},
+scrollToBottomButton: {
+  position: 'absolute',
+  bottom: 80,
+  right: 8,
+  marginTop: -24, // Half of icon size (48/2) to center it perfectly
+  zIndex: 1000,
+  elevation: 8, // For Android shadow
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.25,
+  shadowRadius: 4,
+},
+scrollToBottomTouchable: {
+  borderRadius: 24,
+  // padding: 4,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+
+  });

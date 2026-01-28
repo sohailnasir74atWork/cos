@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "527378270196",
+    "firebase_url": "https://creature-1e5ce-default-rtdb.firebaseio.com",
+    "project_id": "creature-1e5ce",
+    "storage_bucket": "creature-1e5ce.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:527378270196:android:afda5f6a3f631e21039ba1",
+        "android_client_info": {
+          "package_name": "com.creature_of_sonaria"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "527378270196-kkusijc3102vv961n5mcnt4k60b650pd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.creature_of_sonaria",
+            "certificate_hash": "cea83f7ab4ec070d2930ec28cfb9513728cc5630"
+          }
+        },
+        {
+          "client_id": "527378270196-vlrvtr9m9qjotc382h6o6539i4luc8c4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.creature_of_sonaria",
+            "certificate_hash": "b4eddf27065977e77a5704bde542023dd27813ec"
+          }
+        },
+        {
+          "client_id": "527378270196-3kmi3vrib6l4221ms8n1aro6ieacidk0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMBilPjB2EOBi3KXqB4aIsXD-UJdMLyXE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "527378270196-3kmi3vrib6l4221ms8n1aro6ieacidk0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
