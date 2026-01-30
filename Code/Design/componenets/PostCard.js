@@ -3,7 +3,7 @@ import {
   View, Text, Image, StyleSheet, TouchableOpacity, Alert, useColorScheme,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { mixpanel } from '../../AppHelper/MixPenel';
+
 import { useNavigation } from '@react-navigation/native';
 import CommentModal from './CommentsModal';
 import config from '../../Helper/Environment';
@@ -53,7 +53,7 @@ const PostCard = ({ item, userId, onLike, localState, appdatabase, onDelete, onD
       case 'misc.':
         return '#8E8E93'; // Neutral gray
       default:
-        return config.colors.primary; // Fallback
+        return config.getPrimaryColor(isDark); // Fallback
     }
   };
   const banUserwithEmail = async (email, userId) => {
@@ -136,7 +136,7 @@ const PostCard = ({ item, userId, onLike, localState, appdatabase, onDelete, onD
 
 
 
-      mixpanel.track('Design Screen');
+
       navigation.navigate('PrivateChatDesign', {
         selectedUser: selectedUser,
         item,
@@ -323,7 +323,7 @@ const PostCard = ({ item, userId, onLike, localState, appdatabase, onDelete, onD
             <Text style={themedStyles.likeCount}>{likeCount} likes</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setShowComments(true)} style={themedStyles.commentssection}>
-            <Icon name="comment" size={18} color={config.colors.primary} />
+            <Icon name="comment" size={18} color={config.getPrimaryColor(isDark)} />
             <Text style={themedStyles.sendText}>
               {item.commentCount ? `${item.commentCount} comments` : '0 Comments'}
             </Text>
@@ -331,7 +331,7 @@ const PostCard = ({ item, userId, onLike, localState, appdatabase, onDelete, onD
         </View>
 
         <TouchableOpacity onPress={openProfileDrawer} style={themedStyles.sendBtn}>
-          <Icon name="paper-plane" size={16} color={config.colors.primary} />
+          <Icon name="paper-plane" size={16} color={config.getPrimaryColor(isDark)} />
           <Text style={themedStyles.sendText}>Chat</Text>
         </TouchableOpacity>
       </View>
@@ -430,7 +430,7 @@ const getStyles = (isDark) =>
       justifyContent: 'space-between',
     },
     actionBtn: { flexDirection: 'row', alignItems: 'center' },
-    likeCount: { marginLeft: 5, fontSize: 14, color: isDark ? '#ccc' : config.colors.primary, fontFamily: 'Lato-Bold' },
+    likeCount: { marginLeft: 5, fontSize: 14, color: isDark ? '#ccc' : config.getPrimaryColor(isDark), fontFamily: 'Lato-Bold' },
 
     sendBtn: {
       flexDirection: 'row',
@@ -451,7 +451,7 @@ const getStyles = (isDark) =>
     },
     sendText: {
       marginLeft: 6,
-      color: config.colors.primary,
+      color: config.getPrimaryColor(isDark),
       fontWeight: '600',
       fontFamily: 'Lato-Bold',
     },

@@ -18,7 +18,7 @@ import { useGlobalState } from '../../GlobelStats';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { setActiveChat, clearActiveChat, setActiveGroupChat, clearActiveGroupChat } from '../utils';
 import { get, ref, update, query as dbQuery, orderByKey, limitToLast, orderByValue, equalTo } from '@react-native-firebase/database';
-import { useTranslation } from 'react-i18next';
+
 import ConditionalKeyboardWrapper from '../../Helper/keyboardAvoidingContainer';
 import { sendGroupMessage, removeMemberFromGroup, hasGroupPermission, getPendingInviteForGroup, acceptGroupInvite, declineGroupInvite, leaveGroup, makeMemberCreator } from '../utils/groupUtils';
 import { doc, getDoc, onSnapshot, collection, query, where, getDocs } from '@react-native-firebase/firestore';
@@ -69,7 +69,7 @@ const GroupChatScreen = () => {
   const previousGroupIdRef = useRef(null);
   const hasSentMessageRef = useRef(false); // ✅ Track if user sent a message (for exit ad)
   const chatEnterTimeRef = useRef(null); // ✅ Track when user entered chat (for exit ad)
-  const { t } = useTranslation();
+
 
   const isDarkMode = theme === 'dark';
   const styles = useMemo(() => getStyles(isDarkMode), [isDarkMode]);
@@ -130,7 +130,7 @@ const GroupChatScreen = () => {
   // ✅ Function to load a batch of member statuses
   const loadMemberStatusesBatch = useCallback(async (memberIds) => {
     if (!appdatabase || memberIds.length === 0 || loadingMemberStatuses) return;
-    
+
     // ✅ Filter out already loaded members to prevent duplicate checks
     const unloadedIds = memberIds.filter(id => !loadedMemberStatuses.has(id));
     if (unloadedIds.length === 0) {
@@ -153,7 +153,7 @@ const GroupChatScreen = () => {
       });
 
       const results = await Promise.all(presencePromises);
-      
+
       // ✅ Update online members list
       setOnlineMembers((prev) => {
         const newSet = new Set(prev);
@@ -223,13 +223,13 @@ const GroupChatScreen = () => {
         where('status', '==', 'pending')
       );
       const snapshot = await getDocs(invitationsQuery);
-      
+
       const invitations = [];
       const memberIds = groupData.memberIds || [];
-      
+
       // ✅ OPTIMIZED: Use stored invited user data first, only fetch from RTDB users node if needed (lazy loading)
       let onlineUsersMap = null; // Lazy load only if needed
-      
+
       // ✅ Process invitations - Show the INVITED USER's info (not the creator who sent it)
       for (const docSnapshot of snapshot.docs) {
         const data = docSnapshot.data();
@@ -239,7 +239,7 @@ const GroupChatScreen = () => {
           const invitedUserId = data.invitedUserId;
           let displayName = 'Anonymous';
           let avatar = 'https://bloxfruitscalc.com/wp-content/uploads/2025/display-pic.png';
-          
+
           // 1. First priority: Use stored data from invitation document (NO Firestore read needed)
           if (data.invitedUserDisplayName) {
             displayName = data.invitedUserDisplayName;
@@ -247,7 +247,7 @@ const GroupChatScreen = () => {
           if (data.invitedUserAvatar) {
             avatar = data.invitedUserAvatar;
           }
-          
+
           // 2. Fallback: Lazy load from RTDB users node ONLY if stored data not available (OPTIMIZATION: avoid unnecessary read)
           if (displayName === 'Anonymous' && invitedUserId && onlineUsersMap === null) {
             try {
@@ -256,7 +256,7 @@ const GroupChatScreen = () => {
                 get(ref(appdatabase, `users/${invitedUserId}/displayName`)).catch(() => null),
                 get(ref(appdatabase, `users/${invitedUserId}/avatar`)).catch(() => null),
               ]);
-              
+
               if (displayNameSnap?.exists() || avatarSnap?.exists()) {
                 onlineUsersMap = {
                   [invitedUserId]: {
@@ -272,7 +272,7 @@ const GroupChatScreen = () => {
               onlineUsersMap = {}; // Mark as loaded (empty) to avoid retrying
             }
           }
-          
+
           // 3. Use RTDB users node data if available
           if (displayName === 'Anonymous' && invitedUserId && onlineUsersMap) {
             const invitedUserData = onlineUsersMap[invitedUserId];
@@ -281,7 +281,7 @@ const GroupChatScreen = () => {
               avatar = invitedUserData.avatar || avatar;
             }
           }
-          
+
           invitations.push({
             id: docSnapshot.id,
             invitedUserId: invitedUserId, // The person who was invited
@@ -308,7 +308,7 @@ const GroupChatScreen = () => {
 
     // ✅ Only show pending invitations to creator
     const isCreator = groupData.createdBy === user.id;
-    
+
     if (isCreator) {
       fetchPendingInvitations();
     } else {
@@ -354,7 +354,7 @@ const GroupChatScreen = () => {
         let parsedMessages = Object.entries(data)
           .map(([key, value]) => ({ id: key, ...value }))
           .sort((a, b) => (b?.timestamp || 0) - (a?.timestamp || 0)); // ✅ DESCENDING: newest -> oldest (for inverted FlatList)
-        
+
         // ✅ Filter out the lastKey itself when loading more (to avoid duplicate)
         if (!reset && lastKey && parsedMessages.length > 0) {
           parsedMessages = parsedMessages.filter(msg => String(msg.id) !== String(lastKey));
@@ -373,7 +373,7 @@ const GroupChatScreen = () => {
 
         // ✅ Track new messages for pagination key update
         const newMessagesRef = { value: parsedMessages };
-        
+
         setMessages((prev) => {
           if (!Array.isArray(prev)) return parsedMessages;
           const existingIds = new Set(prev.map((m) => String(m?.id)));
@@ -508,7 +508,7 @@ const GroupChatScreen = () => {
       return () => {
         clearActiveChat(user.id);
         clearActiveGroupChat(user.id, groupId);
-        
+
         // ✅ Show ad when leaving if: 10+ seconds spent AND message sent AND not Pro
         const timeSpent = Date.now() - (chatEnterTimeRef.current || Date.now());
         if (timeSpent >= 20000 && hasSentMessageRef.current && !localState?.isPro) {
@@ -707,7 +707,7 @@ const GroupChatScreen = () => {
         Alert.alert('Error', 'Could not send your message. Please try again.');
       }
     },
-    [user, groupId, appdatabase, firestoreDB, groupData, t, localState?.isPro]
+    [user, groupId, appdatabase, firestoreDB, groupData, localState?.isPro]
   );
 
   // Handle remove member (admin action)
@@ -752,7 +752,7 @@ const GroupChatScreen = () => {
   const handleMakeCreator = useCallback((memberId, memberName) => {
     // Close members modal first to avoid nested modal issues on iOS
     setShowMembersModal(false);
-    
+
     // Use setTimeout to ensure modal closes before showing alert
     setTimeout(() => {
       Alert.alert(
@@ -937,10 +937,10 @@ const GroupChatScreen = () => {
     navigation.setOptions({
       headerBackVisible: true,
       headerTitle: () => (
-        <Text 
-          style={{ 
-            fontSize: 18, 
-            fontFamily: 'Lato-Bold', 
+        <Text
+          style={{
+            fontSize: 18,
+            fontFamily: 'Lato-Bold',
             color: isDarkMode ? '#fff' : '#000',
             textAlign: 'center',
           }}
@@ -1127,10 +1127,10 @@ const GroupChatScreen = () => {
                 // ✅ Load next batch of member statuses on scroll
                 // ✅ Prevent loading if already loading or if all members are loaded
                 if (loadingMemberStatuses || !groupData?.memberIds) return;
-                
+
                 const allMemberIds = groupData.memberIds || [];
                 const unloadedIds = allMemberIds.filter(id => !loadedMemberStatuses.has(id));
-                
+
                 // ✅ Only load if there are unloaded members
                 if (unloadedIds.length > 0) {
                   const nextBatch = unloadedIds.slice(0, MEMBER_STATUS_BATCH_SIZE);

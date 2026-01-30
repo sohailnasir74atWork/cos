@@ -10,15 +10,15 @@ import { useHaptic } from '../Helper/HepticFeedBack';
 import { useLocalState } from '../LocalGlobelStats';
 import { requestPermission } from '../Helper/PermissionCheck';
 import { useIsFocused } from '@react-navigation/native';
-import { useTranslation } from 'react-i18next';
+
 import { showSuccessMessage, showWarningMessage } from '../Helper/MessageHelper';
-import { mixpanel } from '../AppHelper/MixPenel';
+
 import InterstitialAdManager from '../Ads/IntAd';
 import BannerAdComponent from '../Ads/bannerAds';
 
 
 const TimerScreen = ({ selectedTheme }) => {
-  const { user, updateLocalStateAndDatabase, theme,  reload } = useGlobalState();
+  const { user, updateLocalStateAndDatabase, theme, reload } = useGlobalState();
   const [hasAdBeenShown, setHasAdBeenShown] = useState(false);
   const [fruitRecords, setFruitRecords] = useState([]);
   const [isDrawerVisible, setDrawerVisible] = useState(false);
@@ -29,7 +29,7 @@ const TimerScreen = ({ selectedTheme }) => {
   const [mirageStock, setmirageStock] = useState([]);
   const [prenormalStock, setPreNormalStock] = useState([]);
   const [premirageStock, setPremirageStock] = useState([]);
-  const { t } = useTranslation();
+  
   // const platform = Platform.OS.toLowerCase();
 
 
@@ -52,21 +52,21 @@ const TimerScreen = ({ selectedTheme }) => {
       return {};
     }
   };
-  
+
   useEffect(() => {
     const newFruitRecords = parseJSONSafely(localState?.data);
     const newNormalStock = parseJSONSafely(localState?.normalStock);
     const newMirageStock = parseJSONSafely(localState?.mirageStock);
     const newPreNormalStock = parseJSONSafely(localState?.prenormalStock);
     const newPreMirageStock = parseJSONSafely(localState?.premirageStock);
-  
+
     setFruitRecords((prev) => (JSON.stringify(prev) !== JSON.stringify(newFruitRecords) ? Object.values(newFruitRecords) : prev));
     setNormalStock((prev) => (JSON.stringify(prev) !== JSON.stringify(newNormalStock) ? Object.values(newNormalStock) : prev));
     setmirageStock((prev) => (JSON.stringify(prev) !== JSON.stringify(newMirageStock) ? Object.values(newMirageStock) : prev));
     setPreNormalStock((prev) => (JSON.stringify(prev) !== JSON.stringify(newPreNormalStock) ? Object.values(newPreNormalStock) : prev));
     setPremirageStock((prev) => (JSON.stringify(prev) !== JSON.stringify(newPreMirageStock) ? Object.values(newPreMirageStock) : prev));
   }, [localState.data, localState.normalStock, localState.mirageStock, localState.prenormalStock, localState.premirageStock]);
-  
+
 
 
   const openDrawer = () => {
@@ -97,7 +97,6 @@ const TimerScreen = ({ selectedTheme }) => {
 
     const selectedFruits = user.selectedFruits || []; // Ensure `selectedFruits` is always an array
     const isAlreadySelected = selectedFruits.some((item) => item.name === fruit.name);
-    mixpanel.track("Select Fruit", {fruit:fruit.name});
 
 
     // ✅ Prevent duplicate selection
@@ -241,7 +240,7 @@ const TimerScreen = ({ selectedTheme }) => {
 
 
 
-  
+
   // Render FlatList Item
   const renderItem = ({ item, index, isLastItem }) => {
     return (
@@ -268,7 +267,7 @@ const TimerScreen = ({ selectedTheme }) => {
 
 
 
-  
+
   const styles = useMemo(() => getStyles(isDarkMode), [isDarkMode]);
   // console.log(state.premirageStock)
   // console.log(localState.normalStock, localState.mi)
@@ -326,7 +325,7 @@ const TimerScreen = ({ selectedTheme }) => {
                     source={{
                       uri: `https://bloxfruitscalc.com/wp-content/uploads/2024/09/${item.name?.replace(/^\+/, '')
                         .replace(/\s+/g, '-') || item.Name?.replace(/^\+/, '')
-                        .replace(/\s+/g, '-')}_Icon.webp`,
+                          .replace(/\s+/g, '-')}_Icon.webp`,
                     }}
                     style={styles.iconselected}
                   />
@@ -453,15 +452,15 @@ const TimerScreen = ({ selectedTheme }) => {
               onClose={handleLoginSuccess}
               selectedTheme={selectedTheme}
               message={t("stock.signin_required_message")}
-               screen='Stock'
+              screen='Stock'
             />
           </ScrollView>
         </View>
-       
+
 
       </GestureHandlerRootView>
 
-      {!localState.isPro && <BannerAdComponent/>}
+      {!localState.isPro && <BannerAdComponent />}
 
       {/* {!localState.isPro && <View style={{ alignSelf: 'center' }}>
         {isAdVisible && (
@@ -609,7 +608,7 @@ const getStyles = (isDarkMode, user) =>
       margin: 10,
       opacity: .3
     },
-    preContrefresh:{
+    preContrefresh: {
       justifyContent: 'center',
       flex: 1,
       padding: 20,

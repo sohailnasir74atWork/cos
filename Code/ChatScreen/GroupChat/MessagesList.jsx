@@ -19,14 +19,14 @@ import { parseMessageText } from '../ChatHelper';
 import { useHaptic } from '../../Helper/HepticFeedBack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import config from '../../Helper/Environment';
-import { useTranslation } from 'react-i18next';
+
 import { useGlobalState } from '../../GlobelStats';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { showSuccessMessage } from '../../Helper/MessageHelper';
 import axios from 'axios';
 import { useLocalState } from '../../LocalGlobelStats';
-import { getDeviceLanguage } from '../../../i18n';
-import { mixpanel } from '../../AppHelper/MixPenel';
+
+
 import { FRUIT_KEYWORDS } from '../../Helper/filter';
 import { banUserwithEmail, unbanUserWithEmail } from '../utils';
 
@@ -64,10 +64,10 @@ const MessagesList = ({
   const { triggerHapticFeedback } = useHaptic();
   const scrollButtonOpacity = useMemo(() => new Animated.Value(0), []);
 
-  const { t } = useTranslation();
+
   const { isAdmin, api, freeTranslation } = useGlobalState();
   const { canTranslate, incrementTranslationCount, getRemainingTranslationTries, localState } = useLocalState();
-  const deviceLanguage = useMemo(() => getDeviceLanguage(), []);
+  const deviceLanguage = useMemo(() => 'en', []);
 
   // ✅ Memoize handleCopy
   const handleCopy = useCallback((message) => {
@@ -212,7 +212,6 @@ const MessagesList = ({
       Object.entries(placeholders).forEach(([placeholder, word]) => {
         translated = translated.replace(new RegExp(placeholder, 'g'), word);
       });
-      mixpanel.track("Translation", { lang: targetLang });
 
 
       return translated;
@@ -423,7 +422,7 @@ const MessagesList = ({
 
                         {!!item.isAdmin && (
                           <View style={styles.adminContainer}>
-                            <Text style={[styles.userNameAdmin, { color: 'white' }]}>{t("chat.admin")}</Text>
+                            <Text style={[styles.userNameAdmin, { color: 'white' }]}>Admin</Text>
                           </View>
                         )}
 
@@ -579,14 +578,14 @@ const MessagesList = ({
                   </MenuOption>
                   {user.id && (
                     <MenuOption onSelect={() => onReply(item)}>
-                      <Text style={styles.menuOptionText}>{t("chat.reply")}</Text>
+                      <Text style={styles.menuOptionText}>Reply</Text>
                     </MenuOption>
                   )}
                   <MenuOption onSelect={() => handleTranslate(item)}>
                     <Text style={styles.menuOptionText}>Translate</Text>
                   </MenuOption>
                   <MenuOption onSelect={() => handleReport(item)}>
-                    <Text style={styles.menuOptionText}>{t("chat.report")}</Text>
+                    <Text style={styles.menuOptionText}>Report</Text>
                   </MenuOption>
                 </MenuOptions>
               </Menu>
@@ -693,7 +692,7 @@ const MessagesList = ({
         )}
       </View>
     );
-  }, [messages, highlightedMessageId, user?.id, styles, getReplyPreview, handleCopy, handleTranslate, handleReport, handleLongPress, handleProfileClick, scrollToMessage, isAdmin, t, fruitColors, onReply, onDeleteMessage, onDeleteAllMessage, onPinMessage, banUserwithEmail, unbanUserWithEmail]);
+  }, [messages, highlightedMessageId, user?.id, styles, getReplyPreview, handleCopy, handleTranslate, handleReport, handleLongPress, handleProfileClick, scrollToMessage, isAdmin, fruitColors, onReply, onDeleteMessage, onDeleteAllMessage, onPinMessage, banUserwithEmail, unbanUserWithEmail]);
 
   return (
     <>

@@ -47,6 +47,10 @@ export const ChatStack = ({ selectedTheme, setChatFocused, modalVisibleChatinfo,
     headerTintColor: selectedTheme.colors.text,
     headerTitleStyle: { fontFamily: 'Lato-Bold', fontSize: 24 },
     headerBackTitleVisible: false,
+    // ✅ Fix iOS SDK header sizing issue (liquid view bug)
+    headerLargeTitle: false,
+    headerLargeTitleShadowVisible: false,
+    headerShadowVisible: false,
   }), [selectedTheme]);
 
 
@@ -225,6 +229,10 @@ export const ChatStack = ({ selectedTheme, setChatFocused, modalVisibleChatinfo,
       left: 0,
       paddingLeft: 0,
     },
+    // ✅ Fix iOS SDK header sizing issue
+    headerLargeTitle: false,
+    headerLargeTitleShadowVisible: false,
+    headerShadowVisible: false,
     headerRight: () => (
       <CommunityChatHeader
         selectedTheme={selectedTheme}
@@ -242,12 +250,10 @@ export const ChatStack = ({ selectedTheme, setChatFocused, modalVisibleChatinfo,
         }}
       />
     ),
+    // ✅ Removed flex:1 to prevent iOS liquid view bug
     headerRightContainerStyle: {
       paddingRight: 0,
       marginRight: 0,
-      flex: 1,
-      justifyContent: 'flex-end',
-      alignItems: 'flex-end',
     },
   }), [selectedTheme, unreadcount, setunreadcount, groupUnreadCount, setGroupUnreadCount, triggerHapticFeedback]);
 

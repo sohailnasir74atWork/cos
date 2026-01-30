@@ -18,7 +18,7 @@ import { useGlobalState } from '../../GlobelStats';
 import Icon from 'react-native-vector-icons/Ionicons';
 import config from '../../Helper/Environment';
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
-import { useTranslation } from 'react-i18next';
+
 import { leaveGroup, acceptGroupInvite, declineGroupInvite, updateGroupAvatar, approveJoinRequest, rejectJoinRequest, getAllGroups, sendJoinRequest, deleteGroup } from '../utils/groupUtils';
 import { showSuccessMessage, showErrorMessage } from '../../Helper/MessageHelper';
 import { collection, query, where, onSnapshot, doc, getDoc } from '@react-native-firebase/firestore';
@@ -83,7 +83,7 @@ const GroupsScreen = ({ groups = [], setGroups, groupsLoading = false }) => {
   const navigation = useNavigation();
   const { user, theme, appdatabase, firestoreDB, isAdmin } = useGlobalState();
   const { localState } = useLocalState();
-  const { t } = useTranslation();
+  
   const [pendingInvitations, setPendingInvitations] = useState([]);
   const [invitationsLoading, setInvitationsLoading] = useState(false);
   const [pendingJoinRequests, setPendingJoinRequests] = useState([]); // Join requests for groups where user is creator

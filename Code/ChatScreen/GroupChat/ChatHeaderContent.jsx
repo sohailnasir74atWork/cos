@@ -13,7 +13,7 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useGlobalState } from '../../GlobelStats';
 import config from '../../Helper/Environment';
-import { useTranslation } from 'react-i18next';
+
 import ChatRulesModal from './ChatRuleModal';
 import OnlineUsersList from './OnlineUsersList';
 
@@ -31,9 +31,9 @@ const ChatHeaderContent = ({
 }) => {
   const { theme, isAdmin } = useGlobalState();
   const isDarkMode = theme === 'dark';
-  const { t } = useTranslation();
+
   const [pinMessageOpen, setPinMessageOpen] = useState(false);
-  
+
   const styles = useMemo(() => getStyles(isDarkMode), [isDarkMode]);
 
   const renderMessageWithLinks = useCallback((message) => {
@@ -81,7 +81,7 @@ const ChatHeaderContent = ({
           🚫 No Spamming ❌ No Abuse 🛑 Be Civil & Polite 😊
         </Text>
         <TouchableOpacity onPress={() => { setModalVisibleChatinfo(true); triggerHapticFeedback('impactLight'); }}>
-          <Icon name="information-circle-outline" size={20} color={config.colors.primary} style={{ marginRight: 10 }} />
+          <Icon name="information-circle-outline" size={20} color={config.getPrimaryColor(isDarkMode)} style={{ marginRight: 10 }} />
         </TouchableOpacity>
       </View>
 
@@ -91,8 +91,8 @@ const ChatHeaderContent = ({
           {uniquePinnedMessages.slice(0, 1).map((msg) => {
             const msgText = msg?.text || '';
             const normalizedText = msgText.replace(/\n/g, ' ');
-            const displayText = normalizedText.length > 40 
-              ? normalizedText.substring(0, 40) + '...' 
+            const displayText = normalizedText.length > 40
+              ? normalizedText.substring(0, 40) + '...'
               : normalizedText;
 
             return (
@@ -102,7 +102,7 @@ const ChatHeaderContent = ({
                   <Text style={styles.pinnedText}>{displayText}</Text>
                 </View>
                 <TouchableOpacity onPress={() => setPinMessageOpen(true)} style={{ justifyContent: 'center' }}>
-                  <Icon name="chevron-forward-outline" size={20} color={config.colors.primary} style={styles.pinIcon} />
+                  <Icon name="chevron-forward-outline" size={20} color={config.getPrimaryColor(isDarkMode)} style={styles.pinIcon} />
                 </TouchableOpacity>
               </View>
             );
@@ -123,18 +123,18 @@ const ChatHeaderContent = ({
               <Text style={styles.modalTitle}>Pin Messages</Text>
               {uniquePinnedMessages.map((msg) => {
                 if (!msg || !msg.firebaseKey) return null;
-                
+
                 return (
                   <View key={msg.firebaseKey} style={styles.singlePinnedMessageModal}>
                     {renderMessageWithLinks(msg.text || '')}
                     {isAdmin && (
-                      <TouchableOpacity 
+                      <TouchableOpacity
                         onPress={() => {
                           if (onUnpinMessage && typeof onUnpinMessage === 'function') {
                             onUnpinMessage(msg.firebaseKey);
                           }
-                        }} 
-                        style={{ backgroundColor: config.colors.primary, marginVertical: 3 }}
+                        }}
+                        style={{ backgroundColor: config.getPrimaryColor(isDarkMode), marginVertical: 3 }}
                       >
                         <Text style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 5, color: 'white' }}>Delete</Text>
                       </TouchableOpacity>
@@ -146,7 +146,7 @@ const ChatHeaderContent = ({
                 style={styles.closeButton}
                 onPress={() => setPinMessageOpen(false)}
               >
-                <Text style={styles.closeButtonText}>{t("chat.got_it")}</Text>
+                <Text style={styles.closeButtonText}>Got it</Text>
               </TouchableOpacity>
             </View>
           </ScrollView>
@@ -207,7 +207,7 @@ const getStyles = (isDarkMode) => StyleSheet.create({
     fontSize: 12,
     paddingRight: 20,
     fontFamily: 'Lato-Regular',
-    color: config.colors.primary,
+    color: config.getPrimaryColor(isDarkMode),
   },
   pinIcon: {
     marginLeft: 10,

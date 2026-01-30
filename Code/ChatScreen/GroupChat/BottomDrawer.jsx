@@ -17,9 +17,9 @@ import config from '../../Helper/Environment';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { getStyles } from '../../SettingScreen/settingstyle';
 import { useLocalState } from '../../LocalGlobelStats';
-import { useTranslation } from 'react-i18next';
+
 import { showSuccessMessage } from '../../Helper/MessageHelper';
-import { mixpanel } from '../../AppHelper/MixPenel';
+
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useHaptic } from '../../Helper/HepticFeedBack';
 import {
@@ -127,7 +127,7 @@ const ProfileBottomDrawer = ({
 }) => {
   const { theme, firestoreDB, appdatabase } = useGlobalState();
   const { updateLocalState, localState } = useLocalState();
-  const { t } = useTranslation();
+
   const { triggerHapticFeedback } = useHaptic();
 
   const isDarkMode = theme === 'dark';
@@ -242,8 +242,8 @@ const ProfileBottomDrawer = ({
   const copyToClipboard = (code) => {
     triggerHapticFeedback('impactLight');
     Clipboard.setString(code);
-    showSuccessMessage(t('value.copy'), 'Copied to Clipboard');
-    mixpanel.track('Code UserName', { UserName: code });
+    showSuccessMessage('Copied', 'Copied to Clipboard');
+
   };
 
   // ─────────────────────────────────────────────
@@ -352,13 +352,13 @@ const ProfileBottomDrawer = ({
   const handleBanToggle = async () => {
     if (!selectedUserId) return;
 
-    const action = isBlock ? t('chat.unblock') : t('chat.block');
+    const action = isBlock ? "Unblock" : "Block";
 
     Alert.alert(
       `${action}`,
-      `${t('chat.are_you_sure')} ${action.toLowerCase()} ${userName}?`,
+      `Are you sure you want to ${action.toLowerCase()} ${userName}?`,
       [
-        { text: t('chat.cancel'), style: 'cancel' },
+        { text: "Cancel", style: 'cancel' },
         {
           text: action,
           style: 'destructive',
@@ -380,10 +380,10 @@ const ProfileBottomDrawer = ({
 
               setTimeout(() => {
                 showSuccessMessage(
-                  t('home.alert.success'),
+                  "Success",
                   isBlock
-                    ? `${userName} ${t('chat.user_unblocked')}`
-                    : `${userName} ${t('chat.user_blocked')}`,
+                    ? `${userName} unblocked successfully`
+                    : `${userName} blocked successfully`,
                 );
               }, 100);
             } catch (error) {
@@ -1008,7 +1008,7 @@ const ProfileBottomDrawer = ({
                 <View style={{
                   backgroundColor: trade.status === 'w' ? '#10B981' : // Green for win
                     trade.status === 'f' ? config.colors.secondary : // Blue for fair
-                      config.colors.primary, // Pink/red for lose
+                      config.getPrimaryColor(isDarkMode), // Pink/red for lose
                   paddingVertical: 1,
                   paddingHorizontal: 6,
                   borderRadius: 6,
@@ -1047,7 +1047,7 @@ const ProfileBottomDrawer = ({
                   marginRight: 8,
                 }}>
                   <Text style={{ color: '#fff', fontSize: 8, fontWeight: '600' }}>
-                    {t(deal.label) || deal.label}
+                    {deal.label}
                   </Text>
                 </View>
                 <Text style={{
@@ -1197,7 +1197,7 @@ const ProfileBottomDrawer = ({
                       </View>
                     );
                   } else {
-                    return <Text style={{ fontSize: 8, fontFamily: 'Lato-Bold', color: config.colors.primary, textAlign: 'center' }}>-</Text>;
+                    return <Text style={{ fontSize: 8, fontFamily: 'Lato-Bold', color: config.getPrimaryColor(isDarkMode), textAlign: 'center' }}>-</Text>;
                   }
                 })()}
               </>
@@ -1236,7 +1236,7 @@ const ProfileBottomDrawer = ({
         )}
       </View>
     );
-  }, [isDarkMode, t, localState.isGG, localState.imgurl, localState.imgurlGG, parsedValuesData]);
+  }, [isDarkMode, localState.isGG, localState.imgurl, localState.imgurlGG, parsedValuesData]);
 
   // ─────────────────────────────────────────────
   return (
@@ -1406,7 +1406,7 @@ const ProfileBottomDrawer = ({
                   {loadingRating ? (
                     <ActivityIndicator
                       size="small"
-                      color={config.colors.primary}
+                      color={config.getPrimaryColor(isDarkMode)}
                     />
                   ) : ratingSummary ? (
                     <>
@@ -1572,7 +1572,7 @@ const ProfileBottomDrawer = ({
                 {loadingPets ? (
                   <ActivityIndicator
                     size="small"
-                    color={config.colors.primary}
+                    color={config.getPrimaryColor(isDarkMode)}
                   />
                 ) : (
                   <>
@@ -1692,7 +1692,7 @@ const ProfileBottomDrawer = ({
                 {loadingReviews && reviews.length === 0 ? (
                   <ActivityIndicator
                     size="small"
-                    color={config.colors.primary}
+                    color={config.getPrimaryColor(isDarkMode)}
                   />
                 ) : reviews.length === 0 ? (
                   <Text
@@ -1811,7 +1811,7 @@ const ProfileBottomDrawer = ({
                     {loadingReviews && hasMoreReviews && (
                       <ActivityIndicator
                         size="small"
-                        color={config.colors.primary}
+                        color={config.getPrimaryColor(isDarkMode)}
                         style={{ marginTop: 6, alignSelf: 'center' }}
                       />
                     )}
@@ -1844,7 +1844,7 @@ const ProfileBottomDrawer = ({
                 {loadingTrades && trades.length === 0 ? (
                   <ActivityIndicator
                     size="small"
-                    color={config.colors.primary}
+                    color={config.getPrimaryColor(isDarkMode)}
                   />
                 ) : trades.length === 0 ? (
                   <Text
@@ -1886,7 +1886,7 @@ const ProfileBottomDrawer = ({
                     {loadingTrades && hasMoreTrades && (
                       <ActivityIndicator
                         size="small"
-                        color={config.colors.primary}
+                        color={config.getPrimaryColor(isDarkMode)}
                         style={{ marginTop: 6, alignSelf: 'center' }}
                       />
                     )}
@@ -1940,7 +1940,7 @@ const ProfileBottomDrawer = ({
             {!fromPvtChat && (
               <TouchableOpacity style={styles.saveButton} onPress={handleStartChat}>
                 <Text style={styles.saveButtonText}>
-                  {t('chat.start_chat')}
+                  Start Chat
                 </Text>
               </TouchableOpacity>
             )}

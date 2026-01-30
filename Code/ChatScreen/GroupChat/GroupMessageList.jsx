@@ -12,7 +12,7 @@ import {
 import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 import { useGlobalState } from '../../GlobelStats';
 import { getStyles } from '../Style';
-import { useTranslation } from 'react-i18next';
+
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useHaptic } from '../../Helper/HepticFeedBack';
 import { showSuccessMessage } from '../../Helper/MessageHelper';
@@ -42,7 +42,7 @@ const GroupMessageList = ({
   const { theme } = useGlobalState();
   const isDarkMode = theme === 'dark';
   const styles = useMemo(() => getStyles(isDarkMode), [isDarkMode]);
-  const { t } = useTranslation();
+
   const navigation = useNavigation();
   const { triggerHapticFeedback } = useHaptic();
 
@@ -414,7 +414,7 @@ const GroupMessageList = ({
                 </MenuOption>
                 {userId && onReply && (
                   <MenuOption onSelect={() => onReply(item)}>
-                    <Text style={styles.menuOptionText}>{t('chat.reply')}</Text>
+                    <Text style={styles.menuOptionText}>Reply</Text>
                   </MenuOption>
                 )}
               </MenuOptions>
@@ -432,7 +432,7 @@ const GroupMessageList = ({
         </View>
       );
     },
-    [userId, user, groupData, styles, fruitColors, handleCopy, navigation, triggerHapticFeedback, onUserPress, isDarkMode, onReply, scrollToMessage, highlightedMessageId, getReplyPreview, t]
+    [userId, user, groupData, styles, fruitColors, handleCopy, navigation, triggerHapticFeedback, onUserPress, isDarkMode, onReply, scrollToMessage, highlightedMessageId, getReplyPreview]
   );
 
   const keyExtractor = useCallback((item, index) => {

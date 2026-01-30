@@ -7,7 +7,7 @@ import { useGlobalState } from '../GlobelStats';
 import { useLocalState } from '../LocalGlobelStats';
 import config from '../Helper/Environment';
 import { showErrorMessage } from '../Helper/MessageHelper';
-import { mixpanel } from '../AppHelper/MixPenel';
+
 import InterstitialAdManager from '../Ads/IntAd';
 
 const getTradeStatus = (hasTotal, wantsTotal) => {
@@ -36,18 +36,18 @@ const ShareTradeModal = ({ visible, onClose, hasItems, wantsItems, hasTotal, wan
     const getImageUrl = (item, isGG, baseImgUrl, baseImgUrlGG) => {
 
         if (!item || !item.name) return '';
-    
+
         if (isGG) {
-          const encoded = encodeURIComponent(item.name);
-        //   console.log(`${baseImgUrlGG.replace(/"/g, '')}/items/${encoded}.webp`)
-          return `${baseImgUrlGG.replace(/"/g, '')}/items/${encoded}.webp`;
+            const encoded = encodeURIComponent(item.name);
+            //   console.log(`${baseImgUrlGG.replace(/"/g, '')}/items/${encoded}.webp`)
+            return `${baseImgUrlGG.replace(/"/g, '')}/items/${encoded}.webp`;
         }
-    
+
         if (!item.image || !baseImgUrl) return '';
         return `${baseImgUrl.replace(/"/g, '').replace(/\/$/, '')}/${item.image.replace(/^\//, '')}`;
-      };
-    
-    
+    };
+
+
     const progressBarStyle = useMemo(() => {
         if (!hasTotal && !wantsTotal) return { left: '50%', right: '50%' };
         const total = hasTotal + wantsTotal;
@@ -68,41 +68,43 @@ const ShareTradeModal = ({ visible, onClose, hasItems, wantsItems, hasTotal, wan
     const handleShare = async () => {
         try {
             if (!viewRef.current) return;
-            mixpanel.track("Trade Share");
+
             const uri = await viewRef.current.capture();
-            const callbackfunction = async ()=>{
+            const callbackfunction = async () => {
                 await Share.open({
                     url: uri,
                     type: 'image/png',
                     failOnCancel: false,
                 });
             }
-           if(Platform.OS !== 'ios'){ setTimeout(() => {
-                if (!localState.isPro) {
-                  requestAnimationFrame(() => {
-                    setTimeout(() => {
-                      try {
-                        InterstitialAdManager.showAd(callbackfunction);
-                      } catch (err) {
-                        console.warn('[AdManager] Failed to show ad:', err);
+            if (Platform.OS !== 'ios') {
+                setTimeout(() => {
+                    if (!localState.isPro) {
+                        requestAnimationFrame(() => {
+                            setTimeout(() => {
+                                try {
+                                    InterstitialAdManager.showAd(callbackfunction);
+                                } catch (err) {
+                                    console.warn('[AdManager] Failed to show ad:', err);
+                                    callbackfunction();
+                                }
+                            }, 100);
+                        });
+                    } else {
                         callbackfunction();
-                      }
-                    }, 100); 
-                  });
-                } else {
-                  callbackfunction();
-                }
-              }, 10); }
-          
-            if(Platform.OS === 'ios'){
-                 await Share.open({
+                    }
+                }, 10);
+            }
+
+            if (Platform.OS === 'ios') {
+                await Share.open({
                     url: uri,
                     type: 'image/png',
                     failOnCancel: false,
                 });
             }
             onClose();
-         
+
         } catch (error) {
             console.error('Error sharing trade screenshot:', error);
             showErrorMessage('Error', 'Could not share the trade screenshot.');
@@ -128,7 +130,7 @@ const ShareTradeModal = ({ visible, onClose, hasItems, wantsItems, hasTotal, wan
 
     const renderBadge = useCallback((type, text) => {
         if (!showBadges) return null;
-        
+
         let backgroundColor;
         switch (type) {
             case 'fly':
@@ -146,7 +148,7 @@ const ShareTradeModal = ({ visible, onClose, hasItems, wantsItems, hasTotal, wan
             default:
                 backgroundColor = '#FF6666';
         }
-        
+
         return (
             <View style={[styles.badge, { backgroundColor }]}>
                 <Text style={styles.badgeText}>{text}</Text>
@@ -160,16 +162,16 @@ const ShareTradeModal = ({ visible, onClose, hasItems, wantsItems, hasTotal, wan
             return (
                 <View style={styles.gridItem}>
                     {isLastFilledIndex && (
-                        <Icon 
-                            name="add-circle" 
-                            size={30} 
-                            color={isDarkMode ? "#fdf7e5" : '#fdf7e5'} 
+                        <Icon
+                            name="add-circle"
+                            size={30}
+                            color={isDarkMode ? "#fdf7e5" : '#fdf7e5'}
                         />
                     )}
                 </View>
             );
         }
-        
+
         return (
             <View style={styles.gridItem}>
                 <Image
@@ -233,7 +235,7 @@ const ShareTradeModal = ({ visible, onClose, hasItems, wantsItems, hasTotal, wan
                         </TouchableOpacity>
                     </View>
 
-                    <ViewShot ref={viewRef} options={{ format: 'png', quality: 0.8 }} style={{ backgroundColor: isDarkMode ? '#121212' : '#f2f2f7' , padding: 8,}}>
+                    <ViewShot ref={viewRef} options={{ format: 'png', quality: 0.8 }} style={{ backgroundColor: isDarkMode ? '#121212' : '#f2f2f7', padding: 8, }}>
                         {showSummary && showLeftGrid && showRightGrid && (
                             <View style={styles.summaryContainer}>
                                 <View style={styles.summaryInner}>
@@ -324,8 +326,8 @@ const getStyles = (isDarkMode) => StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.7)',
         justifyContent: 'center',
         alignItems: 'center',
-       
-        
+
+
     },
     modalContent: {
         backgroundColor: isDarkMode ? '#121212' : '#f2f2f7',
@@ -346,7 +348,7 @@ const getStyles = (isDarkMode) => StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         color: isDarkMode ? '#f2f2f7' : '#121212',
-         padding: 8,
+        padding: 8,
     },
     summaryContainer: {
         width: '100%',
@@ -537,7 +539,7 @@ const getStyles = (isDarkMode) => StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginTop: 16,
-         padding: 8,
+        padding: 8,
     },
     cancelButton: {
         backgroundColor: config.colors.wantBlockRed,

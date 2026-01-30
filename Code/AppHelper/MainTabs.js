@@ -7,7 +7,7 @@ import ValueScreen from '../ValuesScreen/ValueScreen';
 // import TimerScreen from '../StockScreen/TimerScreen';
 import { ChatStack } from '../ChatScreen/ChatNavigator';
 import { TradeStack } from '../Trades/TradeNavigator';
-import { useTranslation } from 'react-i18next';
+
 import config from '../Helper/Environment';
 import FontAwesome from 'react-native-vector-icons/FontAwesome6';
 import { useGlobalState } from '../GlobelStats';
@@ -32,7 +32,6 @@ const AnimatedTabIcon = React.memo(({ iconName, color, size, focused }) => {
 
 
 const MainTabs = React.memo(({ selectedTheme, chatFocused, setChatFocused, modalVisibleChatinfo, setModalVisibleChatinfo }) => {
-  const { t } = useTranslation();
   const { isAdmin, user, theme } = useGlobalState();
 
   // ✅ Memoize icons object to avoid recreation
@@ -108,14 +107,14 @@ const MainTabs = React.memo(({ selectedTheme, chatFocused, setChatFocused, modal
           <AnimatedTabIcon
             focused={focused}
             iconName={getTabIcon(route.name, focused)}
-            color={config.colors.primary}
+            color={focused ? (isDarkMode ? '#E0B0FF' : config.colors.primary) : (isDarkMode ? '#B0B0B0' : config.colors.primary)}
             size={18}
           />
         ),
         tabBarButton: (props) => {
           const { onPress, children } = props;
           const isSelected = props?.['aria-selected'];
-        
+
           return (
             <TouchableOpacity
               onPress={onPress}
@@ -131,7 +130,7 @@ const MainTabs = React.memo(({ selectedTheme, chatFocused, setChatFocused, modal
             </TouchableOpacity>
           );
         },
-        
+
         tabBarStyle: {
           // height: 50,
           backgroundColor: selectedTheme.colors.background,
@@ -139,11 +138,9 @@ const MainTabs = React.memo(({ selectedTheme, chatFocused, setChatFocused, modal
         tabBarLabelStyle: {
           fontSize: 9, // 👈 Your custom label font size
           fontFamily: 'Lato-Bold', // Optional: Custom font family
-          color: config.colors.primary,
-
         },
-        tabBarActiveTintColor: config.colors.primary,
-        tabBarInactiveTintColor: selectedTheme.colors.text,
+        tabBarActiveTintColor: isDarkMode ? '#E0B0FF' : config.colors.primary,
+        tabBarInactiveTintColor: isDarkMode ? '#B0B0B0' : '#666666',
         headerStyle: {
           backgroundColor: selectedTheme.colors.background,
         },
@@ -154,7 +151,7 @@ const MainTabs = React.memo(({ selectedTheme, chatFocused, setChatFocused, modal
       <Tab.Screen
         name="Calculator"
         options={({ navigation }) => ({
-          title: t('tabs.calculator'),
+          title: 'Calculator',
           headerRight: () => headerRight(navigation),
         })}
       >
@@ -174,7 +171,7 @@ const MainTabs = React.memo(({ selectedTheme, chatFocused, setChatFocused, modal
         name="Trade"
         options={{
           headerShown: false,
-          title: t('tabs.trade'), // Translation applied here
+          title: 'Trade', // Translation applied here
         }}
       >
         {() => (
@@ -200,7 +197,7 @@ const MainTabs = React.memo(({ selectedTheme, chatFocused, setChatFocused, modal
         name="Chat"
         options={{
           headerShown: false,
-          title: t('tabs.chat'), // Translation applied here
+          title: 'Chat', // Translation applied here
           tabBarBadge: chatFocused ? "" : null,
           tabBarBadgeStyle: {
             maxWidth: 4,

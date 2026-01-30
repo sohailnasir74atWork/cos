@@ -41,7 +41,6 @@ export const GlobalStateProvider = ({ children }) => {
 
 
   const [isAdmin, setIsAdmin] = useState(false);
-  const [isInActiveGame, setIsInActiveGame] = useState(false); // ✅ Track if user is in active game
   const [user, setUser] = useState({
     id: null,
     // selectedFruits: [],
@@ -237,10 +236,10 @@ export const GlobalStateProvider = ({ children }) => {
 
     const run = async () => {
       try {
-        console.log('Registering push token for user:', user.id);
+        // console.log('Registering push token for user:', user.id);
         await registerForNotifications(user.id);
       } catch (e) {
-        console.log('registerForNotifications error', e);
+        // console.log('registerForNotifications error', e);
       }
     };
 
@@ -248,16 +247,40 @@ export const GlobalStateProvider = ({ children }) => {
   }, [user?.id]);
 
 
+  const checkInternetConnection = async () => {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+      const response = await fetch('https://www.google.com', { method: 'HEAD', signal: controller.signal });
+      clearTimeout(timeoutId);
+      return response.ok;
+    } catch (error) {
+      // console.log('⚠️ No internet connection detected');
+      return false;
+    }
+  };
+
   // ✅ Ensure useEffect runs only when necessary
   useEffect(() => {
+    // 🛡️ Failsafe: Force app ready after 5 seconds if Firebase hangs (e.g., poor internet)
+    const failsafeTimeout = setTimeout(async () => {
+      // console.log('⚠️ App initialization timed out - forcing AppReady');
+      await updateLocalState('isAppReady', true);
+    }, 5000);
+
     const unsubscribe = onAuthStateChanged(auth, async (loggedInUser) => {
       if (loggedInUser && !loggedInUser.emailVerified) {
         await auth().signOut();
         // showErrorMessage("Email Not Verified", "Please check your inbox and verify your email.");
+        clearTimeout(failsafeTimeout);
         return;
       }
 
       const handle = requestIdleCallback(async () => {
+        // Optional: Check connection first
+        // const isOnline = await checkInternetConnection();
+        // if (!isOnline) console.log("⚠️ booting in offline mode");
+
         await handleUserLogin(loggedInUser);
 
         if (loggedInUser?.uid) {
@@ -265,10 +288,14 @@ export const GlobalStateProvider = ({ children }) => {
         }
 
         await updateLocalState('isAppReady', true);
+        clearTimeout(failsafeTimeout); // ✅ Clear failsafe if successful
       });
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      clearTimeout(failsafeTimeout);
+    };
   }, []);
 
 
@@ -305,7 +332,7 @@ export const GlobalStateProvider = ({ children }) => {
           setSingle_offer_wall(value);
           // console.log('🔑 [Firebase] Free Translation Key from /free_translation:', value);
         } else {
-          console.warn('⚠️ No free translation key found at /free_translation');
+          // console.warn('⚠️ No free translation key found at /free_translation');
         }
 
 
@@ -353,7 +380,7 @@ export const GlobalStateProvider = ({ children }) => {
           }
         }
       } catch (error) {
-        console.error('Error fetching trading server link:', error);
+        // console.error('Error fetching trading server link:', error);
         // Fallback to cached link if available
         if (localState.tradingServerLink) {
           setTradingServerLink(localState.tradingServerLink);
@@ -463,7 +490,7 @@ export const GlobalStateProvider = ({ children }) => {
       setLoading(true);
 
       const lastActivity = localState.lastActivity ? new Date(localState.lastActivity).getTime() : 0;
-      console.log('lastActivity', lastActivity)
+      // console.log('lastActivity', lastActivity)
       const now = Date.now();
       const timeElapsed = now - lastActivity;
       const EXPIRY_LIMIT = refresh ? 1 * 1000 : 3 * 60 * 1000; // 10s for refresh, 6min default
@@ -479,7 +506,7 @@ export const GlobalStateProvider = ({ children }) => {
         // User has not provided the full URL yet.
         const COSA_API_URL = 'https://cosapi.b-cdn.net/cos_catalog.json';
 
-        console.log('🌐 Fetching CoS data from:', COSA_API_URL);
+        // console.log('🌐 Fetching CoS data from:', COSA_API_URL);
 
         try {
           const res = await fetch(COSA_API_URL, {
@@ -492,16 +519,16 @@ export const GlobalStateProvider = ({ children }) => {
           }
 
           const json = await res.json();
-          console.log(json)
+          // console.log(json)
 
           if (!json || typeof json !== 'object') {
-            console.error('❌ API returned invalid JSON structure:', json);
+            // console.error('❌ API returned invalid JSON structure:', json);
             throw new Error('API returned invalid data');
           }
 
           // Parse the "cleaned" array from the response as per user provided structure
           const rawList = json.cleaned || [];
-          console.log(`📦 API Response contains ${rawList.length} items in 'cleaned' array.`);
+          // console.log(`📦 API Response contains ${rawList.length} items in 'cleaned' array.`);
 
           // Transform for easier consumption/lookup
           const dataMap = {};
@@ -511,11 +538,11 @@ export const GlobalStateProvider = ({ children }) => {
               dataMap[item.id] = item;
             }
           });
-          console.log(`🗺️ Parsed ${Object.keys(dataMap).length} items into dataMap.`);
+          // console.log(`🗺️ Parsed ${Object.keys(dataMap).length} items into dataMap.`);
 
           // If rawList was empty but json was valid, warn?
           if (rawList.length === 0) {
-            console.warn('⚠️ API returned data but "cleaned" array was empty or missing. Full JSON keys:', Object.keys(json));
+            // console.warn('⚠️ API returned data but "cleaned" array was empty or missing. Full JSON keys:', Object.keys(json));
           }
 
           await updateLocalState('data', JSON.stringify(dataMap));
@@ -525,18 +552,18 @@ export const GlobalStateProvider = ({ children }) => {
           await updateLocalState('ggData', JSON.stringify({}));
 
         } catch (err) {
-          console.warn('⚠️ API fetch failed, using cached data:', err.message);
+          // console.warn('⚠️ API fetch failed, using cached data:', err.message);
           const hasLocalData = localState.data && Object.keys(JSON.parse(localState.data || '{}')).length > 0;
 
           if (!hasLocalData) {
-            console.error('❌ No API data and no cached data available.');
+            // console.error('❌ No API data and no cached data available.');
           } else {
-            console.log('✅ Using cached data');
+            // console.log('✅ Using cached data');
           }
         }
       }
     } catch (error) {
-      console.error("❌ Error fetching stock data:", error);
+      // console.error("❌ Error fetching stock data:", error);
     } finally {
       setLoading(false);
     }
@@ -697,10 +724,8 @@ export const GlobalStateProvider = ({ children }) => {
       isAdmin,
       reload,
       robloxUsernameRef, api, currentUserEmail, single_offer_wall, tradingServerLink,
-      isInActiveGame, // ✅ Game state for invite notifications
-      setIsInActiveGame, // ✅ Set game state
     }),
-    [user, theme, fetchStockData, loading, robloxUsernameRef, api, freeTranslation, currentUserEmail, auth, tradingServerLink, isInActiveGame]
+    [user, theme, fetchStockData, loading, robloxUsernameRef, api, freeTranslation, currentUserEmail, auth, tradingServerLink]
   );
 
   return (

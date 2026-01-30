@@ -19,9 +19,9 @@ import { useGlobalState } from '../GlobelStats';
 import CodesDrawer from './Code';
 import { useHaptic } from '../Helper/HepticFeedBack';
 import { useLocalState } from '../LocalGlobelStats';
-import { useTranslation } from 'react-i18next';
+
 import { ref, update } from '@react-native-firebase/database';
-import { mixpanel } from '../AppHelper/MixPenel';
+
 import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
 import InterstitialAdManager from '../Ads/IntAd';
 import BannerAdComponent from '../Ads/bannerAds';
@@ -72,7 +72,7 @@ const ValueScreen = React.memo(({ selectedTheme, fromChat, selectedFruits, setSe
   const { localState, toggleAd } = useLocalState()
   const [valuesData, setValuesData] = useState([]);
   const [codesData, setCodesData] = useState([]);
-  const { t } = useTranslation();
+
   const [filters, setFilters] = useState(['All']);
   const displayedFilter = selectedFilter === 'PREMIUM' ? 'GAME PASS' : selectedFilter;
   const formatName = (name) => name.replace(/^\+/, '').replace(/\s+/g, '-');
@@ -509,7 +509,7 @@ const ValueScreen = React.memo(({ selectedTheme, fromChat, selectedFruits, setSe
         setIsDrawerVisible(prev => !prev);
       }
     }
-    mixpanel.track("Code Drawer Open");
+
   }, [triggerHapticFeedback, hasAdBeenShown, localState.isPro]); // ✅ Removed isDrawerVisible - using functional update
 
 
@@ -680,7 +680,7 @@ const ValueScreen = React.memo(({ selectedTheme, fromChat, selectedFruits, setSe
             />
           ) : (
             <Text style={[styles.description, { textAlign: 'center', marginTop: 20, color: 'gray' }]}>
-              {t("value.no_results")}
+              No items match your search criteria.
             </Text>
           )}
         </View>

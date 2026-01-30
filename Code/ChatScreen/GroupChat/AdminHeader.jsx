@@ -14,11 +14,10 @@ import { useGlobalState } from '../../GlobelStats';
 import { ScrollView } from 'react-native-gesture-handler';
 import config from '../../Helper/Environment';
 import { useNavigation } from '@react-navigation/native';
-import { useTranslation } from 'react-i18next';
+
 import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
 import ChatRulesModal from './ChatRuleModal';
 import OnlineUsersList from './OnlineUsersList';
-import PetGuessingGameScreen from '../../ValuesScreen/PetGuessingGame/PetGuessingGameScreen';
 
 // ✅ Pre-compile regex for better performance
 const URL_REGEX = /(https?:\/\/[^\s]+)/g;
@@ -36,10 +35,9 @@ const AdminHeader = ({
   const { theme, user, isAdmin } = useGlobalState();
   const isDarkMode = theme === 'dark';
   const navigation = useNavigation();
-  const { t } = useTranslation();
+
   const [pinMessageOpen, setPinMessageOpen] = useState(false);
   const [onlineUsersVisible, setOnlineUsersVisible] = useState(false);
-  const [gameModalVisible, setGameModalVisible] = useState(false);
 
   // ✅ Memoize styles
   const styles = useMemo(() => getStyles(isDarkMode), [isDarkMode]);
@@ -105,24 +103,10 @@ const AdminHeader = ({
                 <Icon
                   name="people-outline"
                   size={24}
-                  color={config.colors.primary}
+                  color={config.getPrimaryColor(isDarkMode)}
                 />
               </TouchableOpacity>
 
-              {/* Pet Guessing Game Button */}
-              <TouchableOpacity
-                onPress={() => {
-                  setGameModalVisible(true);
-                  triggerHapticFeedback?.('impactLight');
-                }}
-                style={styles.iconContainer}
-              >
-                <Icon
-                  name="game-controller-outline"
-                  size={24}
-                  color={config.colors.primary}
-                />
-              </TouchableOpacity>
 
               {/* Inbox Button */}
               <TouchableOpacity
@@ -150,7 +134,7 @@ const AdminHeader = ({
           {user?.id && (
             <Menu>
               <MenuTrigger>
-                <Icon name="ellipsis-vertical-outline" size={24} color={config.colors.primary} />
+                <Icon name="ellipsis-vertical-outline" size={24} color={config.getPrimaryColor(isDarkMode)} />
               </MenuTrigger>
               <MenuOptions
                 customStyles={{
@@ -166,7 +150,7 @@ const AdminHeader = ({
 
                 <MenuOption onSelect={() => navigation?.navigate('BlockedUsers')}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', padding: 10 }}>
-                    <Icon name="ban-outline" size={20} color={config.colors.primary} style={{ marginRight: 10 }} />
+                    <Icon name="ban-outline" size={20} color={config.getPrimaryColor(isDarkMode)} style={{ marginRight: 10 }} />
                     <Text style={{ fontSize: 16, color: config.colors.text || '#000' }}>
                       {t("chat.blocked_users")}
                     </Text>
@@ -184,7 +168,7 @@ const AdminHeader = ({
         </Text>
         <TouchableOpacity onPress={() => { setModalVisibleChatinfo(true); triggerHapticFeedback('impactLight'); }}>
 
-          <Icon name="information-circle-outline" size={20} color={config.colors.primary} style={{ marginRight: 10 }} />
+          <Icon name="information-circle-outline" size={20} color={config.getPrimaryColor(isDarkMode)} style={{ marginRight: 10 }} />
           {/* <Text style={{ fontSize: 16, color: config.colors.text || '#000' }}>
                       {t("chat.chat_rules")}
                     </Text> */}
@@ -198,8 +182,8 @@ const AdminHeader = ({
             // ✅ Safety check and optimize string operations
             const msgText = msg?.text || '';
             const normalizedText = msgText.replace(/\n/g, ' ');
-            const displayText = normalizedText.length > 40 
-              ? normalizedText.substring(0, 40) + '...' 
+            const displayText = normalizedText.length > 40
+              ? normalizedText.substring(0, 40) + '...'
               : normalizedText;
 
             return (
@@ -209,7 +193,7 @@ const AdminHeader = ({
                   <Text style={styles.pinnedText}>{displayText}</Text>
                 </View>
                 <TouchableOpacity onPress={() => setPinMessageOpen(true)} style={{ justifyContent: 'center' }}>
-                  <Icon name="chevron-forward-outline" size={20} color={config.colors.primary} style={styles.pinIcon} />
+                  <Icon name="chevron-forward-outline" size={20} color={config.getPrimaryColor(isDarkMode)} style={styles.pinIcon} />
                 </TouchableOpacity>
               </View>
             );
@@ -231,18 +215,18 @@ const AdminHeader = ({
               {uniquePinnedMessages.map((msg) => {
                 // ✅ Safety check
                 if (!msg || !msg.firebaseKey) return null;
-                
+
                 return (
                   <View key={msg.firebaseKey} style={styles.singlePinnedMessageModal}>
                     {renderMessageWithLinks(msg.text || '')}
                     {isAdmin && (
-                      <TouchableOpacity 
+                      <TouchableOpacity
                         onPress={() => {
                           if (onUnpinMessage && typeof onUnpinMessage === 'function') {
                             onUnpinMessage(msg.firebaseKey);
                           }
-                        }} 
-                        style={{ backgroundColor: config.colors.primary, marginVertical: 3 }}
+                        }}
+                        style={{ backgroundColor: config.getPrimaryColor(isDarkMode), marginVertical: 3 }}
                       >
                         <Text style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 5, color: 'white' }}>Delete</Text>
                       </TouchableOpacity>
@@ -271,8 +255,7 @@ const AdminHeader = ({
         mode="view"
       />
 
-      {/* Full-screen Pet Guessing Game Modal */}
-     
+
     </View>
   );
 };
@@ -323,7 +306,7 @@ export const getStyles = (isDarkMode) =>
       fontSize: 12,
       paddingRight: 20,
       fontFamily: 'Lato-Regular',
-      color: config.colors.primary,
+      color: config.getPrimaryColor(isDarkMode),
     },
     pinnedText: {
       fontSize: 12,

@@ -3,10 +3,10 @@ import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import config from '../Helper/Environment';
-import { useTranslation } from 'react-i18next';
+
 
 export const FilterMenu = ({ selectedFilters, setSelectedFilters, analytics, platform }) => {
-  const { t } = useTranslation();
+
 
   // Toggle any filter (myTrades, win, lose, fair)
   const toggleFilter = (filterKey) => {
@@ -19,7 +19,7 @@ export const FilterMenu = ({ selectedFilters, setSelectedFilters, analytics, pla
 
   // Filter options: My Trades and Status filters
   const filterOptions = [
-    { key: "myTrades", label: t("trade.filter_my_trades") },
+    { key: "myTrades", label: "My Trades" },
     { key: "win", label: "Win" },
     { key: "lose", label: "Lose" },
     { key: "fair", label: "Fair" },

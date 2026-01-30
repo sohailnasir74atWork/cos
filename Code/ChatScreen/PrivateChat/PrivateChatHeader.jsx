@@ -3,22 +3,22 @@ import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-na
 import Icon from 'react-native-vector-icons/Ionicons';
 import config from '../../Helper/Environment';
 import { useLocalState } from '../../LocalGlobelStats';
-import { useTranslation } from 'react-i18next';
+
 import { isUserOnline } from '../utils';
 import { showSuccessMessage } from '../../Helper/MessageHelper';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useHaptic } from '../../Helper/HepticFeedBack';
-import { mixpanel } from '../../AppHelper/MixPenel';
+
 import { useGlobalState } from '../../GlobelStats';
 import { ref, get } from '@react-native-firebase/database';
 
 const PrivateChatHeader = React.memo(({ selectedUser, selectedTheme, bannedUsers, isDrawerVisible, setIsDrawerVisible }) => {
   const { updateLocalState } = useLocalState();
-  const { t } = useTranslation();
+
   const [isOnline, setIsOnline] = useState(false); // ✅ Add state to store online status
   const { triggerHapticFeedback } = useHaptic();
   const { appdatabase } = useGlobalState();
-  
+
   // ✅ State for fetched user data (roblox username, etc.)
   const [userData, setUserData] = useState(null);
 
@@ -27,15 +27,14 @@ const PrivateChatHeader = React.memo(({ selectedUser, selectedTheme, bannedUsers
     if (!code || typeof code !== 'string') return;
     triggerHapticFeedback('impactLight');
     Clipboard.setString(code);
-    showSuccessMessage(t("value.copy"), "Copied to Clipboard");
-    mixpanel.track("Code UserName", { UserName: code });
-  }, [triggerHapticFeedback, t]);
+    showSuccessMessage("Copied", "Copied to Clipboard");
+  }, [triggerHapticFeedback]);
 
   // ✅ Fetch user data from Firebase if roblox data is missing
   useEffect(() => {
     const selectedUserId = selectedUser?.senderId || selectedUser?.id;
     if (!selectedUserId || !appdatabase) return;
-    
+
     // Only fetch if robloxUsername is not already in selectedUser
     if (selectedUser?.robloxUsername || selectedUser?.robloxUserId) {
       setUserData(null); // Clear fetched data if already in selectedUser
@@ -47,17 +46,17 @@ const PrivateChatHeader = React.memo(({ selectedUser, selectedTheme, bannedUsers
     const fetchUserData = async () => {
       try {
         // ✅ OPTIMIZED: Fetch only specific fields instead of full user object
-        const [robloxUsernameSnap, robloxUserIdSnap, robloxUsernameVerifiedSnap, 
-               isProSnap, lastGameWinAtSnap] = await Promise.all([
-          get(ref(appdatabase, `users/${selectedUserId}/robloxUsername`)).catch(() => null),
-          get(ref(appdatabase, `users/${selectedUserId}/robloxUserId`)).catch(() => null),
-          get(ref(appdatabase, `users/${selectedUserId}/robloxUsernameVerified`)).catch(() => null),
-          get(ref(appdatabase, `users/${selectedUserId}/isPro`)).catch(() => null),
-          get(ref(appdatabase, `users/${selectedUserId}/lastGameWinAt`)).catch(() => null),
-        ]);
-        
+        const [robloxUsernameSnap, robloxUserIdSnap, robloxUsernameVerifiedSnap,
+          isProSnap, lastGameWinAtSnap] = await Promise.all([
+            get(ref(appdatabase, `users/${selectedUserId}/robloxUsername`)).catch(() => null),
+            get(ref(appdatabase, `users/${selectedUserId}/robloxUserId`)).catch(() => null),
+            get(ref(appdatabase, `users/${selectedUserId}/robloxUsernameVerified`)).catch(() => null),
+            get(ref(appdatabase, `users/${selectedUserId}/isPro`)).catch(() => null),
+            get(ref(appdatabase, `users/${selectedUserId}/lastGameWinAt`)).catch(() => null),
+          ]);
+
         if (!isMounted) return;
-        
+
         // ✅ Extract values only if they exist
         setUserData({
           robloxUsername: robloxUsernameSnap?.exists() ? robloxUsernameSnap.val() : null,
@@ -86,23 +85,23 @@ const PrivateChatHeader = React.memo(({ selectedUser, selectedTheme, bannedUsers
       ...selectedUser,
       robloxUsername: selectedUser?.robloxUsername || userData.robloxUsername,
       robloxUserId: selectedUser?.robloxUserId || userData.robloxUserId,
-      robloxUsernameVerified: selectedUser?.robloxUsernameVerified !== undefined 
-        ? selectedUser.robloxUsernameVerified 
+      robloxUsernameVerified: selectedUser?.robloxUsernameVerified !== undefined
+        ? selectedUser.robloxUsernameVerified
         : userData.robloxUsernameVerified,
       isPro: selectedUser?.isPro !== undefined ? selectedUser.isPro : userData.isPro,
-      lastGameWinAt: selectedUser?.lastGameWinAt !== undefined 
-        ? selectedUser.lastGameWinAt 
+      lastGameWinAt: selectedUser?.lastGameWinAt !== undefined
+        ? selectedUser.lastGameWinAt
         : userData.lastGameWinAt, // ✅ Game win timestamp
     };
   }, [selectedUser, userData]);
 
   // ✅ Memoize avatarUri and userName
-  const avatarUri = useMemo(() => 
+  const avatarUri = useMemo(() =>
     mergedUser?.avatar || 'https://bloxfruitscalc.com/wp-content/uploads/2025/display-pic.png',
     [mergedUser?.avatar]
   );
-  
-  const userName = useMemo(() => 
+
+  const userName = useMemo(() =>
     mergedUser?.sender || 'User',
     [mergedUser?.sender]
   );
@@ -137,9 +136,9 @@ const PrivateChatHeader = React.memo(({ selectedUser, selectedTheme, bannedUsers
     const action = !isBanned ? 'Block' : 'Unblock';
     Alert.alert(
       `${action}`,
-      `${t("chat.are_you_sure")} ${action.toLowerCase()} ${userName}?`,
+      `Are you sure you want to ${action.toLowerCase()} ${userName}?`,
       [
-        { text: t("chat.cancel"), style: 'cancel' },
+        { text: "Cancel", style: 'cancel' },
         {
           text: action,
           style: 'destructive',
@@ -147,7 +146,7 @@ const PrivateChatHeader = React.memo(({ selectedUser, selectedTheme, bannedUsers
             try {
               const currentBanned = Array.isArray(bannedUsers) ? bannedUsers : [];
               let updatedBannedUsers;
-              
+
               if (isBanned) {
                 // 🔹 Unban: Remove from bannedUsers
                 updatedBannedUsers = currentBanned.filter(id => id !== selectedUserId);
@@ -167,7 +166,7 @@ const PrivateChatHeader = React.memo(({ selectedUser, selectedTheme, bannedUsers
         },
       ]
     );
-  }, [isBanned, bannedUsers, mergedUser?.senderId, mergedUser?.id, userName, t, updateLocalState]);
+  }, [isBanned, bannedUsers, mergedUser?.senderId, mergedUser?.id, userName, updateLocalState]);
 
   // ✅ Memoize drawer open handler
   const handleOpenDrawer = useCallback(() => {
@@ -183,17 +182,17 @@ const PrivateChatHeader = React.memo(({ selectedUser, selectedTheme, bannedUsers
       </TouchableOpacity>
       <TouchableOpacity style={styles.infoContainer} onPress={handleOpenDrawer}>
         <Text style={[styles.userName, { color: selectedTheme?.colors?.text || '#000' }]}>
-          {userName} 
+          {userName}
           {mergedUser?.isPro && (
             <Image
-              source={require('../../../assets/pro.png')} 
-              style={{ width: 12, height: 12, marginLeft: 4 }} 
+              source={require('../../../assets/pro.png')}
+              style={{ width: 12, height: 12, marginLeft: 4 }}
             />
           )}
           {mergedUser?.robloxUsernameVerified && (
             <Image
-              source={require('../../../assets/verification.png')} 
-              style={{ width: 12, height: 12, marginLeft: 4 }} 
+              source={require('../../../assets/verification.png')}
+              style={{ width: 12, height: 12, marginLeft: 4 }}
             />
           )}
           {(() => {
@@ -209,27 +208,27 @@ const PrivateChatHeader = React.memo(({ selectedUser, selectedTheme, bannedUsers
             ) : null;
           })()}
           {'  '}
-          <Icon 
-            name="copy-outline" 
-            size={16} 
-            color="#007BFF" 
+          <Icon
+            name="copy-outline"
+            size={16}
+            color="#007BFF"
             onPress={() => copyToClipboard(userName)}
           />
         </Text>
         <Text style={[
-                    styles.drawerSubtitleUser,
-                    {
-                      color: !isOnline
-                        ? config.colors.hasBlockGreen
-                        : config.colors.wantBlockRed,
-                      fontSize: 10,
-                      marginTop: 2,
-                    },
-                  ]}
-                >
+          styles.drawerSubtitleUser,
+          {
+            color: !isOnline
+              ? config.colors.hasBlockGreen
+              : config.colors.wantBlockRed,
+            fontSize: 10,
+            marginTop: 2,
+          },
+        ]}
+        >
           {isOnline ? 'Online' : 'Offline'}
         </Text>
-        
+
       </TouchableOpacity>
       <TouchableOpacity onPress={handleBanToggle}>
         <Icon

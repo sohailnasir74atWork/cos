@@ -5,7 +5,7 @@ import { ref, get, update } from '@react-native-firebase/database';
 import {  showErrorMessage, showWarningMessage } from '../../Helper/MessageHelper';
 import { getStyles } from '../settingstyle';
 import getAdUnitId from '../../Ads/ads';
-import { useTranslation } from 'react-i18next';
+
 import { useGlobalState } from '../../GlobelStats';
 
 const adUnitId = getAdUnitId('rewarded');
@@ -24,7 +24,7 @@ const RewardedAdComponent = ({
   isAdsDrawerVisible,
   setIsAdsDrawerVisible,
 }) => {
-  const { t } = useTranslation();
+  
   const [loaded, setLoaded] = useState(false);
   const [lastRewardTime, setLastRewardTime] = useState(user?.lastRewardtime || 0);
   const { theme } = useGlobalState();

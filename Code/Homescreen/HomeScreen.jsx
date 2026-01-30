@@ -10,10 +10,9 @@ import { useHaptic } from '../Helper/HepticFeedBack';
 import { getDatabase, ref, get } from '@react-native-firebase/database';
 import { useLocalState } from '../LocalGlobelStats';
 import SignInDrawer from '../Firebase/SigninDrawer';
-import { useTranslation } from 'react-i18next';
-import { useLanguage } from '../Translation/LanguageProvider';
+
 import { showSuccessMessage, showErrorMessage } from '../Helper/MessageHelper';
-import { mixpanel } from '../AppHelper/MixPenel';
+
 import InterstitialAdManager from '../Ads/IntAd';
 import BannerAdComponent from '../Ads/bannerAds';
 import Share from 'react-native-share';
@@ -89,13 +88,13 @@ const HomeScreen = ({ selectedTheme }) => {
   const [description, setDescription] = useState('');
   const [isSigninDrawerVisible, setIsSigninDrawerVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { language } = useLanguage();
+
   const [lastTradeTime, setLastTradeTime] = useState(null);
   const [adShowen, setadShowen] = useState(false);
   const [selectedTrade, setSelectedTrade] = useState(null);
   const [type, setType] = useState(null);
   const platform = Platform.OS.toLowerCase();
-  const { t } = useTranslation();
+
   const isDarkMode = theme === 'dark';
   const viewRef = useRef();
   // ✅ Add refs to track timeouts and animation frames for cleanup
@@ -539,10 +538,10 @@ const HomeScreen = ({ selectedTheme }) => {
     localState.favorites,
   ]);
 
-  // Debug Log
-  useEffect(() => {
-    console.log(`🎨 HomeScreen: Rendering ${filteredData.length} items. Selected Type: ${selectedPetType}`);
-  }, [filteredData.length, selectedPetType]);
+  // Debug Log - hidden for production
+  // useEffect(() => {
+  //   console.log(`🎨 HomeScreen: Rendering ${filteredData.length} items. Selected Type: ${selectedPetType}`);
+  // }, [filteredData.length, selectedPetType]);
 
   // ✅ Handler for badge presses in favorites (N, M, D, R, F)
   const handleFavoriteBadgePress = useCallback((itemId, badge) => {
@@ -827,7 +826,7 @@ const HomeScreen = ({ selectedTheme }) => {
       const wantsItemsCount = wantsItems.filter(Boolean).length;
 
       if (hasItemsCount === 0 && wantsItemsCount === 0) {
-        showErrorMessage(t("home.alert.error"), t("home.alert.missing_items_error"));
+        showErrorMessage("Error", "Missing required items for the trade.");
         return;
       }
 
@@ -836,7 +835,7 @@ const HomeScreen = ({ selectedTheme }) => {
       // Clean up after execution
       delete timeoutRefs.current[timeoutKey];
     }, 100); // Small delay to allow React state to settle
-  }, [hasItems, wantsItems, t, user?.id]);
+  }, [hasItems, wantsItems, user?.id]);
 
   const handleCreateTrade = useCallback(async () => {
     if (isSubmitting) return;
@@ -960,7 +959,7 @@ const HomeScreen = ({ selectedTheme }) => {
           ? `${minutesLeft} minute${minutesLeft === 1 ? '' : 's'} and ${remainingSeconds} second${remainingSeconds === 1 ? '' : 's'}`
           : `${secondsLeft} second${secondsLeft === 1 ? '' : 's'}`;
         if (!isMountedRef.current) return;
-        showErrorMessage(t("home.alert.error"), `Please wait ${timeMessage} before creating a new trade.`);
+        showErrorMessage("Error", `Please wait ${timeMessage} before creating a new trade.`);
         setIsSubmitting(false);
         return;
       }
@@ -980,14 +979,13 @@ const HomeScreen = ({ selectedTheme }) => {
       // Step 3: Define the success callback
       const callbackfunction = () => {
         if (!isMountedRef.current) return;
-        showSuccessMessage(t("home.alert.success"), "Your trade has been posted successfully!");
+        showSuccessMessage("Success", "Your trade has been posted successfully!");
       };
 
       // Step 4: Update timestamp and analytics
       if (isMountedRef.current) {
         setLastTradeTime(now); // ✅ Use Date.now() for cooldown tracking
       }
-      mixpanel.track("Trade Created", { user: user?.id });
 
       // ✅ Store timeout and animation frame IDs for cleanup
       const rafKey1 = `createTrade_raf_${Date.now()}_1`;
@@ -1035,25 +1033,25 @@ const HomeScreen = ({ selectedTheme }) => {
     } catch (error) {
       console.error("Error creating trade:", error);
       if (!isMountedRef.current) return;
-      showErrorMessage(t("home.alert.error"), "Something went wrong while posting the trade.");
+      showErrorMessage("Error", "Something went wrong while posting the trade.");
     } finally {
       if (isMountedRef.current) {
         setIsSubmitting(false);
       }
     }
-  }, [isSubmitting, user, localState.isPro, hasItems, wantsItems, description, type, lastTradeTime, tradesCollection, t, resetState]);
+  }, [isSubmitting, user, localState.isPro, hasItems, wantsItems, description, type, lastTradeTime, tradesCollection, resetState]);
 
   const handleShareTrade = useCallback(() => {
     const hasItemsCount = hasItems.filter(Boolean).length;
     const wantsItemsCount = wantsItems.filter(Boolean).length;
 
     if (hasItemsCount === 0 && wantsItemsCount === 0) {
-      showErrorMessage(t("home.alert.error"), t("home.alert.missing_items_error"));
+      showErrorMessage("Error", "Missing required items for the trade.");
       return;
     }
 
     setIsShareModalVisible(true);
-  }, [hasItems, wantsItems, t]);
+  }, [hasItems, wantsItems]);
 
   const profitLoss = wantsTotal - hasTotal;
   const isProfit = profitLoss >= 0;
@@ -1076,7 +1074,7 @@ const HomeScreen = ({ selectedTheme }) => {
   return (
     <>
       <GestureHandlerRootView>
-        <View style={styles.container} key={language}>
+        <View style={styles.container}>
           <ScrollView showsVerticalScrollIndicator={false}>
             <ViewShot ref={viewRef} style={styles.screenshotView}>
               {config.isNoman && (
@@ -1103,7 +1101,7 @@ const HomeScreen = ({ selectedTheme }) => {
                           styles.statusText,
                           tradeStatus === 'lose' ? {
                             ...styles.statusActive,
-                            backgroundColor: config.colors.primary // Primary color for lose
+                            backgroundColor: config.getPrimaryColor(isDarkMode) // Primary color for lose
                           } : styles.statusInactive
                         ]}>LOSE</Text>
                       </View>
@@ -1233,7 +1231,7 @@ const HomeScreen = ({ selectedTheme }) => {
               >
                 <View style={styles.lastUpdatedContent}>
                   {refreshing ? (
-                    <ActivityIndicator size="small" color={config.colors.primary} style={{ marginRight: 6 }} />
+                    <ActivityIndicator size="small" color={config.getPrimaryColor(isDarkMode)} style={{ marginRight: 6 }} />
                   ) : (
                     <Icon name="time-outline" size={14} color={isDarkMode ? '#aaa' : '#888'} style={{ marginRight: 6 }} />
                   )}
@@ -1241,7 +1239,7 @@ const HomeScreen = ({ selectedTheme }) => {
                     {refreshing ? 'Updating...' : `Updated ${getLastUpdatedText()}`}
                   </Text>
                   {!refreshing && (
-                    <Icon name="refresh-outline" size={14} color={config.colors.primary} style={{ marginLeft: 6 }} />
+                    <Icon name="refresh-outline" size={14} color={config.getPrimaryColor(isDarkMode)} style={{ marginLeft: 6 }} />
                   )}
                 </View>
               </TouchableOpacity>
@@ -1253,14 +1251,14 @@ const HomeScreen = ({ selectedTheme }) => {
                   <View style={[styles.summaryBox, styles.hasBox]}>
                     <View style={{ width: '90%', backgroundColor: '#e0e0e0', alignSelf: 'center', }} />
                     <View style={{ justifyContent: 'space-between', flexDirection: 'row' }} >
-                      <Text style={styles.priceValue}>{t('home.value')}:</Text>
+                      <Text style={styles.priceValue}>Value:</Text>
                       <Text style={styles.priceValue}>${formatCompactNumber(hasTotal)}</Text>
                     </View>
                   </View>
                   <View style={[styles.summaryBox, styles.wantsBox]}>
                     <View style={{ width: '90%', backgroundColor: '#e0e0e0', alignSelf: 'center', }} />
                     <View style={{ justifyContent: 'space-between', flexDirection: 'row' }} >
-                      <Text style={styles.priceValue}>{t('home.value')}:</Text>
+                      <Text style={styles.priceValue}>Value:</Text>
                       <Text style={styles.priceValue}>${formatCompactNumber(wantsTotal)}</Text>
                     </View>
                   </View>
@@ -1272,13 +1270,13 @@ const HomeScreen = ({ selectedTheme }) => {
                 style={styles.createtradeButton}
                 onPress={() => handleCreateTradePress()}
               >
-                <Text style={{ color: 'white' }}>{t('home.create_trade')}</Text>
+                <Text style={{ color: 'white' }}>Create Trade</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.shareTradeButton}
                 onPress={handleShareTrade}
               >
-                <Text style={{ color: 'white' }}>{t('home.share_trade')}</Text>
+                <Text style={{ color: 'white' }}>Share Trade</Text>
               </TouchableOpacity>
             </View>
             {!localState.isPro && <View style={styles.createtradeAds}>
@@ -1329,7 +1327,7 @@ const HomeScreen = ({ selectedTheme }) => {
                   onPress={() => setIsDrawerVisible(false)}
                   style={styles.closeButton}
                 >
-                  <Text style={styles.closeButtonText}>{t('home.close')}</Text>
+                  <Text style={styles.closeButtonText}>CLOSE</Text>
                 </TouchableOpacity>
               </View>
 
@@ -1396,14 +1394,14 @@ const HomeScreen = ({ selectedTheme }) => {
               <View style={{ flexDirection: 'row', flex: 1 }}>
                 <View style={[styles.drawerContainer2, { backgroundColor: isDarkMode ? '#3B404C' : 'white' }]}>
                   <Text style={styles.modalMessage}>
-                    {t("home.trade_description")}
+                    Describe your trade
                   </Text>
                   <Text style={styles.modalMessagefooter}>
-                    {t("home.trade_description_hint")}
+                    Add a short description to let others know what you are looking for.
                   </Text>
                   <TextInput
                     style={styles.input}
-                    placeholder={t("home.write_description")}
+                    placeholder="Write description..."
                     maxLength={40}
                     value={description}
                     onChangeText={setDescription}
@@ -1413,7 +1411,7 @@ const HomeScreen = ({ selectedTheme }) => {
                       style={[styles.button, styles.cancelButton]}
                       onPress={() => setModalVisible(false)}
                     >
-                      <Text style={styles.buttonText}>{t('home.cancel')}</Text>
+                      <Text style={styles.buttonText}>Cancel</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={[styles.button, styles.confirmButton]}
@@ -1421,7 +1419,7 @@ const HomeScreen = ({ selectedTheme }) => {
                       disabled={isSubmitting}
                     >
                       <Text style={styles.buttonText}>
-                        {isSubmitting ? t('home.submit') : t('home.confirm')}
+                        {isSubmitting ? 'Submitting' : 'Confirm'}
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -1435,7 +1433,7 @@ const HomeScreen = ({ selectedTheme }) => {
             onClose={handleLoginSuccess}
             selectedTheme={selectedTheme}
             screen='Chat'
-            message={t("home.alert.sign_in_required")}
+            message="Sign in required"
           />
         </View>
         <SubscriptionScreen visible={showofferwall} onClose={() => setShowofferwall(false)} track='Home' oneWallOnly={single_offer_wall} showoffer={!single_offer_wall} />
@@ -1614,7 +1612,7 @@ const getStyles = (isDarkMode, isGG) =>
       alignItems: 'center',
       marginBottom: 5,
       borderWidth: 1,
-      borderColor: isGG ? '#333333' : config.colors.primary,
+      borderColor: isGG ? '#333333' : config.getPrimaryColor(isDarkMode),
       marginHorizontal: 'auto',
       borderRadius: 4,
       overflow: 'hidden',
@@ -1628,7 +1626,7 @@ const getStyles = (isDarkMode, isGG) =>
       position: 'relative',
       borderRightWidth: 1,
       borderBottomWidth: 1,
-      borderColor: isGG ? '#333333' : config.colors.primary,
+      borderColor: isGG ? '#333333' : config.getPrimaryColor(isDarkMode),
     },
     itemText: {
       color: isDarkMode ? 'white' : 'black',
@@ -1647,7 +1645,7 @@ const getStyles = (isDarkMode, isGG) =>
     divider: {
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: config.colors.primary,
+      backgroundColor: config.getPrimaryColor(isDarkMode),
       margin: 'auto',
       borderRadius: 12,
       padding: 5,
@@ -1995,7 +1993,7 @@ const getStyles = (isDarkMode, isGG) =>
     },
     favoriteItemRarity: {
       fontSize: 8,
-      color: config.colors.primary,
+      color: config.getPrimaryColor(isDarkMode),
       fontWeight: '600',
       textTransform: 'uppercase',
       letterSpacing: 0.3,
@@ -2024,7 +2022,7 @@ const getStyles = (isDarkMode, isGG) =>
       justifyContent: 'center',
     },
     favoriteBadgeButtonActive: {
-      backgroundColor: config.colors.primary,
+      backgroundColor: config.getPrimaryColor(isDarkMode),
     },
     favoriteBadgeButtonText: {
       fontSize: 8,

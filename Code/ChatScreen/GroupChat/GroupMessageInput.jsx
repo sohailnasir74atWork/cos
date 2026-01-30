@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { getStyles } from '../Style';
 import config from '../../Helper/Environment';
 import { useGlobalState } from '../../GlobelStats';
-import { useTranslation } from 'react-i18next';
+
 import InterstitialAdManager from '../../Ads/IntAd';
 import { useLocalState } from '../../LocalGlobelStats';
 import { launchImageLibrary } from 'react-native-image-picker';
@@ -70,7 +70,7 @@ const GroupMessageInput = ({
   const { localState } = useLocalState();
   const { theme, user } = useGlobalState();
   const isDark = theme === 'dark';
-  const { t } = useTranslation();
+
 
   const styles = useMemo(() => getStyles(isDark), [isDark]);
 
@@ -197,7 +197,7 @@ const GroupMessageInput = ({
       const newCount = prevCount + 1;
       if (!localState?.isPro && newCount % 15 === 0) {
         // Show A/B test interstitial ad every 15th message for non-pro users
-        InterstitialAdManager.showAd(() => {});
+        InterstitialAdManager.showAd(() => { });
       }
       return newCount;
     });
@@ -217,7 +217,7 @@ const GroupMessageInput = ({
       const imageUrlToSend = imageUrls.length === 1 ? imageUrls[0] : (imageUrls.length > 1 ? imageUrls : null);
 
       await onSend(textToSend, imageUrlToSend, fruitsToSend, replyTo);
-      
+
       // Clear reply after successful send
       if (onCancelReply) {
         onCancelReply();
@@ -271,14 +271,14 @@ const GroupMessageInput = ({
     <View style={styles.inputWrapper}>
       {/* Reply context UI */}
       {replyTo && (
-        <View style={[styles.replyContainer, { 
+        <View style={[styles.replyContainer, {
           backgroundColor: isDark ? '#374151' : '#E5E7EB',
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
         }]}>
           <Text style={[styles.replyText, { color: isDark ? '#9CA3AF' : '#6B7280', flex: 1 }]} numberOfLines={1}>
-            {t('chat.replying_to')}: {getReplyPreview(replyTo)}
+            Replying to: {getReplyPreview(replyTo)}
           </Text>
           <TouchableOpacity
             onPress={onCancelReply}
@@ -314,7 +314,7 @@ const GroupMessageInput = ({
 
         <TextInput
           style={[styles.input, { color: isDark ? '#FFF' : '#000' }]}
-          placeholder={t('chat.type_message')}
+          placeholder="Type a message..."
           placeholderTextColor="#888"
           value={input}
           onChangeText={setInput}
@@ -334,7 +334,7 @@ const GroupMessageInput = ({
           disabled={!hasContent || isSending || isBanned}
         >
           <Text style={styles.sendButtonText}>
-            {isSending ? t('chat.sending') : t('chat.send')}
+            {isSending ? "Sending..." : "Send"}
           </Text>
         </TouchableOpacity>
       </View>

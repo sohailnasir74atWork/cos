@@ -10,10 +10,10 @@ import ReportTradePopup from './ReportTradePopUp';
 import SignInDrawer from '../Firebase/SigninDrawer';
 import { useLocalState } from '../LocalGlobelStats';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { useTranslation } from 'react-i18next';
+
 import { showSuccessMessage, showErrorMessage } from '../Helper/MessageHelper';
 import SubscriptionScreen from '../SettingScreen/OfferWall';
-import { mixpanel } from '../AppHelper/MixPenel';
+
 import InterstitialAdManager from '../Ads/IntAd';
 import BannerAdComponent from '../Ads/bannerAds';
 import FontAwesome from 'react-native-vector-icons/FontAwesome6';
@@ -73,7 +73,7 @@ const TradeList = ({ route }) => {
   const navigation = useNavigation()
   const { theme, firestoreDB } = useGlobalState()
   const [isProStatus, setIsProStatus] = useState(localState.isPro);
-  const { t } = useTranslation();
+
   const platform = Platform.OS.toLowerCase();
   const isDarkMode = theme === 'dark'
   const isInitialMountRef = useRef(true); // ✅ Track initial mount to prevent double fetch
@@ -170,12 +170,12 @@ const TradeList = ({ route }) => {
   // console.log(localState.featuredCount, 'featu')
   const handleDelete = useCallback((item) => {
     Alert.alert(
-      t("trade.delete_confirmation_title"),
-      t("trade.delete_confirmation_message"),
+      "Delete Trade",
+      "Are you sure you want to delete this trade?",
       [
-        { text: t("trade.cancel"), style: "cancel" },
+        { text: "Cancel", style: "cancel" },
         {
-          text: t("trade.delete"),
+          text: "Delete",
           style: "destructive",
           onPress: async () => {
             try {
@@ -197,17 +197,17 @@ const TradeList = ({ route }) => {
               setTrades((prev) => prev.filter((trade) => trade.id !== item.id));
               setFilteredTrades((prev) => prev.filter((trade) => trade.id !== item.id));
 
-              showSuccessMessage(t("trade.delete_success"), t("trade.delete_success_message"));
+              showSuccessMessage("Trade Deleted", "Your trade has been successfully deleted.");
 
             } catch (error) {
               console.error("🔥 [handleDelete] Error deleting trade:", error);
-              showErrorMessage(t("trade.delete_error"), t("trade.delete_error_message"));
+              showErrorMessage("Delete Failed", "Unable to delete this trade. Please try again.");
             }
           },
         },
       ]
     );
-  }, [t, localState.featuredCount, firestoreDB]);
+  }, [localState.featuredCount, firestoreDB]);
 
 
 
@@ -220,12 +220,12 @@ const TradeList = ({ route }) => {
   const handleMakeFeatureTrade = async (item) => {
     if (!isProStatus) {
       Alert.alert(
-        t("trade.feature_pro_only_title"),
-        t("trade.feature_pro_only_message"),
+        "Pro Only",
+        "Featuring trades is only available for Pro users.",
         [
-          { text: t("trade.cancel"), style: "cancel" },
+          { text: "Cancel", style: "cancel" },
           {
-            text: t("trade.upgrade"),
+            text: "Upgrade",
             onPress: () => setShowofferwall(true),
           },
         ]
@@ -255,12 +255,12 @@ const TradeList = ({ route }) => {
 
       // ✅ Proceed with confirmation
       Alert.alert(
-        t("trade.feature_confirmation_title"),
-        t("trade.feature_confirmation_message"),
+        "Feature This Trade",
+        "This trade will be featured for 24 hours. Continue?",
         [
-          { text: t("trade.cancel"), style: "cancel" },
+          { text: "Cancel", style: "cancel" },
           {
-            text: t("feature"),
+            text: "Feature",
             onPress: async () => {
               try {
                 await updateDoc(
@@ -290,10 +290,10 @@ const TradeList = ({ route }) => {
                   )
                 );
 
-                showSuccessMessage(t("trade.feature_success"), t("trade.feature_success_message"));
+                showSuccessMessage("Trade Featured", "Your trade is now featured!");
               } catch (error) {
                 console.error("🔥 Error making trade featured:", error);
-                showErrorMessage(t("trade.feature_error"), t("trade.feature_error_message"));
+                showErrorMessage("Feature Failed", "Unable to feature this trade. Please try again.");
               }
             },
           },
@@ -421,7 +421,7 @@ const TradeList = ({ route }) => {
 
 
     const callbackfunction = () => {
-      mixpanel.track("Inbox Trade");
+
       navigation.navigate('PrivateChatTrade', {
         selectedUser: selectedUser,
         item: selectedTrade,
@@ -1005,7 +1005,6 @@ const TradeList = ({ route }) => {
           setIsSigninDrawerVisible(true);
           return;
         }
-        mixpanel.track("Inbox Trade");
         navigation.navigate('PrivateChatTrade', {
           selectedUser: selectedUser,
           item,
@@ -1102,7 +1101,7 @@ const TradeList = ({ route }) => {
             <FontAwesome
               name='message'
               size={18}
-              color={config.colors.primary}
+              color={config.getIconColor(isDarkMode)}
               onPress={() => handleOpenProfile(item)}
               solid={false}
             />
@@ -1292,7 +1291,7 @@ const TradeList = ({ route }) => {
         <View style={styles.searchInputContainer}>
           <TextInput
             style={[styles.searchInput, { color: isDarkMode ? '#fff' : '#000' }]}
-            placeholder={t("trade.search_placeholder") || "Search items..."}
+            placeholder="Search items..."
             placeholderTextColor={isDarkMode ? '#888' : '#666'}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -1427,7 +1426,7 @@ const TradeList = ({ route }) => {
         visible={isSigninDrawerVisible}
         onClose={handleLoginSuccess}
         selectedTheme={selectedTheme}
-        message={t("trade.signin_required_message")}
+        message="Please sign in to post or interact with trades."
         screen='Trade'
 
       />

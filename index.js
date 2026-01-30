@@ -9,7 +9,7 @@ import { name as appName } from './app.json';
 import { GlobalStateProvider } from './Code/GlobelStats';
 import { LocalStateProvider } from './Code/LocalGlobelStats';
 import { MenuProvider } from 'react-native-popup-menu';
-import { LanguageProvider } from './Code/Translation/LanguageProvider';
+
 
 // 🔁 MODULAR Firebase Messaging imports
 import { getMessaging, setBackgroundMessageHandler } from '@react-native-firebase/messaging';
@@ -25,10 +25,6 @@ const NotificationHandler = lazy(() =>
   import('./Code/Firebase/FrontendNotificationHandling'),
 );
 
-// 🎮 Lazy load Global Invite Toast for game invites
-const GlobalInviteToast = lazy(() =>
-  import('./Code/ValuesScreen/PetGuessingGame/components/GlobalInviteToast'),
-);
 
 // ✅ Create a messaging instance (default Firebase app)
 const messaging = getMessaging();
@@ -62,7 +58,7 @@ setBackgroundMessageHandler(messaging, async remoteMessage => {
     if (senderId) {
       // Read bannedUsers directly from MMKV storage (works in background)
       const bannedUsers = safeParseJSON('bannedUsers', []);
-      
+
       if (Array.isArray(bannedUsers) && bannedUsers.includes(senderId)) {
         // User is blocked - don't show notification
         // console.log('[Background] Sender is banned, skipping notification:', senderId);
@@ -108,32 +104,27 @@ class ErrorBoundary extends React.Component {
 // ✅ Memoized App component to prevent unnecessary re-renders
 const App = React.memo(() => (
   <MenuProvider skipInstanceCheck>
-    <LanguageProvider>
-      <LocalStateProvider>
-        <GlobalStateProvider>
-          <ErrorBoundary>
-            <AppWrapper />
-          </ErrorBoundary>
+    <LocalStateProvider>
+      <GlobalStateProvider>
+        <ErrorBoundary>
+          <AppWrapper />
+        </ErrorBoundary>
 
-          {/* ✅ Flash Message below status bar */}
-          <FlashMessage
-            position="top"
-            floating
-            statusBarHeight={STATUS_BAR_HEIGHT}
-          />
+        {/* ✅ Flash Message below status bar */}
+        <FlashMessage
+          position="top"
+          floating
+          statusBarHeight={STATUS_BAR_HEIGHT}
+        />
 
-          {/* Lazy loaded Notification Handler */}
-          <Suspense fallback={null}>
-            <NotificationHandler />
-          </Suspense>
+        {/* Lazy loaded Notification Handler */}
+        <Suspense fallback={null}>
+          <NotificationHandler />
+        </Suspense>
 
-          {/* 🎮 Global Invite Toast - Shows on any screen */}
-          <Suspense fallback={null}>
-            <GlobalInviteToast />
-          </Suspense>
-        </GlobalStateProvider>
-      </LocalStateProvider>
-    </LanguageProvider>
+
+      </GlobalStateProvider>
+    </LocalStateProvider>
   </MenuProvider>
 ));
 

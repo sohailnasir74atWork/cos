@@ -16,9 +16,9 @@ import { useGlobalState } from '../../GlobelStats';
 import { ref, get } from '@react-native-firebase/database';
 import { collection, getDocs, query, orderBy, limit, doc, getDoc } from '@react-native-firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
-import { useTranslation } from 'react-i18next';
+
 import { useLocalState } from '../../LocalGlobelStats';
-import { mixpanel } from '../../AppHelper/MixPenel';
+
 import config from '../../Helper/Environment';
 import { useHaptic } from '../../Helper/HepticFeedBack';
 import ProfileBottomDrawer from './BottomDrawer';
@@ -26,17 +26,17 @@ import { isUserOnline } from '../utils';
 
 const CACHE_DURATION_MS = 2 * 24 * 60 * 60 * 1000; // 2 days in milliseconds
 
-const LeaderboardModal = ({ 
-  visible, 
+const LeaderboardModal = ({
+  visible,
   onClose,
 }) => {
   const { theme, user, appdatabase, firestoreDB } = useGlobalState();
   const { localState, updateLocalState } = useLocalState();
   const navigation = useNavigation();
-  const { t } = useTranslation();
+  
   const { triggerHapticFeedback } = useHaptic();
   const isDarkMode = theme === 'dark';
-  
+
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
@@ -69,7 +69,7 @@ const LeaderboardModal = ({
       );
 
       const summarySnapshot = await getDocs(summaryQuery);
-      
+
       if (summarySnapshot.empty) {
         setLeaderboardData([]);
         setLoading(false);
@@ -159,7 +159,7 @@ const LeaderboardModal = ({
   // ✅ Handle user click - open BottomDrawer
   const handleUserClick = useCallback(async (item) => {
     triggerHapticFeedback('impactLight');
-    
+
     const selectedUserData = {
       senderId: item.userId,
       sender: item.displayName,
@@ -178,7 +178,7 @@ const LeaderboardModal = ({
     }
 
     setIsDrawerVisible(true);
-    mixpanel.track("Leaderboard User Click");
+
   }, [triggerHapticFeedback]);
 
   // ✅ Handle start chat from BottomDrawer
@@ -188,7 +188,7 @@ const LeaderboardModal = ({
     const callbackFunction = () => {
       setIsDrawerVisible(false);
       onClose();
-      
+
       if (navigation && typeof navigation.navigate === 'function') {
         navigation.navigate('PrivateChat', {
           selectedUser: {
@@ -198,7 +198,7 @@ const LeaderboardModal = ({
           },
         });
       }
-      mixpanel.track("Leaderboard Start Chat");
+
     };
 
     // ✅ Removed navigation ad - exit ads are shown when leaving chat instead
@@ -254,8 +254,8 @@ const LeaderboardModal = ({
         transparent={true}
         onRequestClose={onClose}
       >
-        <TouchableOpacity 
-          style={styles.modalOverlay} 
+        <TouchableOpacity
+          style={styles.modalOverlay}
           activeOpacity={1}
           onPress={onClose}
         >
@@ -264,7 +264,7 @@ const LeaderboardModal = ({
             style={{ flex: 1, justifyContent: 'flex-end' }}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
           >
-            <View 
+            <View
               style={styles.modalContent}
               onStartShouldSetResponder={() => true}
             >

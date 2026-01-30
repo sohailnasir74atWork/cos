@@ -18,9 +18,9 @@ import appleAuth, { AppleButton } from '@invertase/react-native-apple-authentica
 import { useHaptic } from '../Helper/HepticFeedBack';
 import { useGlobalState } from '../GlobelStats';
 import ConditionalKeyboardWrapper from '../Helper/keyboardAvoidingContainer';
-import { useTranslation } from 'react-i18next';
+
 import { showSuccessMessage, showErrorMessage, showWarningMessage } from '../Helper/MessageHelper';
-import { mixpanel } from '../AppHelper/MixPenel';
+
 import { requestPermission } from '../Helper/PermissionCheck';
 // import { showMessage } from 'react-native-flash-message';
 
@@ -48,7 +48,7 @@ const SignInDrawer = ({ visible, onClose, selectedTheme, message, screen }) => {
 
   const { triggerHapticFeedback } = useHaptic();
   const { theme, robloxUsernameRef } = useGlobalState();
-  const { t } = useTranslation();
+
 
   // 🔐 Modular Auth instance
   const app = getApp();
@@ -82,25 +82,25 @@ const SignInDrawer = ({ visible, onClose, selectedTheme, message, screen }) => {
 
   const handleForgotPassword = async () => {
     if (!email) {
-      Alert.alert(t('home.alert.error'), 'Enter valid email address');
+      Alert.alert('Error', 'Enter valid email address');
       return;
     }
 
     const isValidEmail = (em) => /\S+@\S+\.\S+/.test(em);
     if (!isValidEmail(email)) {
-      Alert.alert(t('home.alert.error'), t('signin.error_input_message'));
+      Alert.alert('Error', 'Please enter both email and password.');
       return;
     }
 
     setIsLoading(true);
     try {
       await sendPasswordResetEmail(auth, email);
-      showSuccessMessage(t('home.alert.success'), t('signin.password_reset_email_sent'));
+      showSuccessMessage('Success', 'Password reset email sent!');
       setIsForgotPasswordMode(false);
     } catch (error) {
       showErrorMessage(
-        t('home.alert.error'),
-        error?.message || t('signin.error_reset_password')
+        'Error',
+        error?.message || 'Failed to send reset email'
       );
     } finally {
       setIsLoading(false);
@@ -116,34 +116,34 @@ const SignInDrawer = ({ visible, onClose, selectedTheme, message, screen }) => {
         requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
       });
 
-      if (!identityToken) throw new Error(t('signin.error_apple_token'));
+      if (!identityToken) throw new Error('Apple Sign-In failed - no identity token returned');
 
       const appleCredential = AppleAuthProvider.credential(identityToken, nonce);
       await signInWithCredential(auth, appleCredential);
 
-      showSuccessMessage(t('home.alert.success'), t('signin.success_signin'));
+      showSuccessMessage('Success', 'Welcome Back! You have logged in successfully!');
       setTimeout(onClose, 200);
-      mixpanel.track(`Login with apple from ${screen}`);
+
       await requestPermission();
     } catch (error) {
       showErrorMessage(
-        t('home.alert.error'),
-        error?.message || t('signin.error_signin_message')
+        'Error',
+        error?.message || 'An unexpected error occurred. Please try again later.'
       );
     }
-  }, [auth, t, triggerHapticFeedback, onClose, screen]);
+  }, [auth, triggerHapticFeedback, onClose, screen]);
 
   const handleSignInOrRegister = async () => {
     triggerHapticFeedback('impactLight');
 
     if (!email || !password) {
-      Alert.alert(t('home.alert.error'), t('signin.error_input_message'));
+      Alert.alert('Error', 'Please enter both email and password.');
       return;
     }
 
     const isValidEmail = (em) => /\S+@\S+\.\S+/.test(em);
     if (!isValidEmail(email)) {
-      Alert.alert(t('home.alert.error'), t('signin.error_input_message'));
+      Alert.alert('Error', 'Please enter both email and password.');
       return;
     }
 
@@ -181,24 +181,24 @@ const SignInDrawer = ({ visible, onClose, selectedTheme, message, screen }) => {
           return;
         }
 
-        mixpanel.track(`Login with email from ${screen}`);
-        Alert.alert(t('signin.alert_welcome_back'), t('signin.success_signin'));
+
+        Alert.alert('Welcome Back!', 'Welcome Back! You have logged in successfully!');
         await requestPermission();
         setTimeout(onClose, 200);
       }
     } catch (error) {
-      console.error(t('signin.auth_error'), error);
+      console.error('Authentication Error', error);
 
-      let errorMessage = t('signin.error_signin_message');
+      let errorMessage = 'An unexpected error occurred. Please try again later.';
 
-      if (error?.code === 'auth/invalid-email') errorMessage = t('signin.error_invalid_email_format');
-      else if (error?.code === 'auth/user-disabled') errorMessage = t('signin.error_user_disabled');
-      else if (error?.code === 'auth/user-not-found') errorMessage = t('signin.error_user_not_found');
-      else if (error?.code === 'auth/wrong-password') errorMessage = t('signin.error_wrong_password');
-      else if (error?.code === 'auth/email-already-in-use') errorMessage = t('signin.error_email_in_use');
-      else if (error?.code === 'auth/weak-password') errorMessage = t('signin.error_weak_password');
+      if (error?.code === 'auth/invalid-email') errorMessage = 'The email address is not valid.';
+      else if (error?.code === 'auth/user-disabled') errorMessage = 'This user account has been disabled.';
+      else if (error?.code === 'auth/user-not-found') errorMessage = 'No user found with this email.';
+      else if (error?.code === 'auth/wrong-password') errorMessage = 'Incorrect password. Please try again.';
+      else if (error?.code === 'auth/email-already-in-use') errorMessage = 'This email is already in use.';
+      else if (error?.code === 'auth/weak-password') errorMessage = 'The password is too weak. Please use a stronger password.';
 
-      Alert.alert(t('signin.error_signin_message'), errorMessage);
+      Alert.alert('Sign-In Error', errorMessage);
     } finally {
       setIsLoadingSecondary(false);
     }
@@ -212,24 +212,24 @@ const SignInDrawer = ({ visible, onClose, selectedTheme, message, screen }) => {
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
       const signInResult = await GoogleSignin.signIn();
       const idToken = signInResult?.idToken || signInResult?.data?.idToken;
-      if (!idToken) throw new Error(t('signin.error_signin_message'));
+      if (!idToken) throw new Error('An unexpected error occurred. Please try again later.');
 
       const googleCredential = GoogleAuthProvider.credential(idToken);
       await signInWithCredential(auth, googleCredential);
 
-      showSuccessMessage(t('signin.alert_welcome_back'), t('signin.success_signin'));
+      showSuccessMessage('Welcome Back!', 'Welcome Back! You have logged in successfully!');
       setTimeout(onClose, 200);
-      mixpanel.track(`Login with google from ${screen}`);
+
       await requestPermission();
     } catch (error) {
       showErrorMessage(
-        t('home.alert.error'),
-        error?.message || t('signin.error_signin_message')
+        'Error',
+        error?.message || 'An unexpected error occurred. Please try again later.'
       );
     } finally {
       setIsLoading(false);
     }
-  }, [auth, t, triggerHapticFeedback, onClose, screen]);
+  }, [auth, triggerHapticFeedback, onClose, screen]);
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
@@ -239,10 +239,10 @@ const SignInDrawer = ({ visible, onClose, selectedTheme, message, screen }) => {
           <View style={[styles.drawer, { backgroundColor: isDarkMode ? '#3B404C' : 'white' }]}>
             <Text style={[styles.title, { color: selectedTheme.colors.text }]}>
               {isRegisterMode
-                ? t('signin.title_register')
+                ? 'Register'
                 : isForgotPasswordMode
                   ? 'Forget Password'
-                  : t('signin.title_signin')}
+                  : 'Sign In'}
             </Text>
 
             <View>
@@ -254,7 +254,7 @@ const SignInDrawer = ({ visible, onClose, selectedTheme, message, screen }) => {
               <>
                 <TextInput
                   style={[styles.input, { color: selectedTheme.colors.text }]}
-                  placeholder={t('signin.placeholder_email')}
+                  placeholder="Email"
                   value={email}
                   onChangeText={setEmail}
                   keyboardType="email-address"
@@ -264,7 +264,7 @@ const SignInDrawer = ({ visible, onClose, selectedTheme, message, screen }) => {
 
                 <TextInput
                   style={[styles.input, { color: selectedTheme.colors.text }]}
-                  placeholder={t('signin.placeholder_password')}
+                  placeholder="Password"
                   value={password}
                   onChangeText={setPassword}
                   secureTextEntry
@@ -276,7 +276,7 @@ const SignInDrawer = ({ visible, onClose, selectedTheme, message, screen }) => {
             {isForgotPasswordMode && (
               <TextInput
                 style={[styles.input, { color: selectedTheme.colors.text }]}
-                placeholder={t('signin.placeholder_email')}
+                placeholder="Email"
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -316,7 +316,7 @@ const SignInDrawer = ({ visible, onClose, selectedTheme, message, screen }) => {
                   <ActivityIndicator size="small" color="white" />
                 ) : (
                   <Text style={styles.primaryButtonText}>
-                    {isRegisterMode ? t('signin.title_register') : t('signin.title_signin')}
+                    {isRegisterMode ? 'Register' : 'Sign In'}
                   </Text>
                 )}
               </TouchableOpacity>
@@ -325,7 +325,7 @@ const SignInDrawer = ({ visible, onClose, selectedTheme, message, screen }) => {
             <View style={styles.container}>
               <View style={styles.line} />
               <Text style={[styles.textoR, { color: selectedTheme.colors.text }]}>
-                {t('signin.or')}
+                OR
               </Text>
               <View style={styles.line} />
             </View>
@@ -340,7 +340,7 @@ const SignInDrawer = ({ visible, onClose, selectedTheme, message, screen }) => {
               ) : (
                 <>
                   <Icon name="google" size={20} color="white" style={styles.googleIcon} />
-                  <Text style={styles.googleButtonText}>{t('signin.google_signin')}</Text>
+                  <Text style={styles.googleButtonText}>Sign in with Google</Text>
                 </>
               )}
             </TouchableOpacity>
@@ -370,8 +370,8 @@ const SignInDrawer = ({ visible, onClose, selectedTheme, message, screen }) => {
             >
               <Text style={styles.secondaryButtonText}>
                 {isRegisterMode
-                  ? t('signin.button_switch_signin')
-                  : t('signin.button_switch_register')}
+                  ? 'Switch to Sign In'
+                  : 'Switch to Register'}
               </Text>
             </TouchableOpacity>
           </View>

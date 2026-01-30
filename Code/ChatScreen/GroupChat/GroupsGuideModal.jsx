@@ -37,14 +37,14 @@ const GroupsGuideModal = ({ visible, onClose }) => {
           </View>
 
           {/* Content */}
-          <ScrollView 
-            showsVerticalScrollIndicator={false} 
+          <ScrollView
+            showsVerticalScrollIndicator={false}
             style={styles.scrollContainer}
             contentContainerStyle={styles.scrollContent}
           >
             <View style={styles.section}>
               <View style={styles.iconContainer}>
-                <Icon name="people" size={24} color={config.colors.primary} />
+                <Icon name="people" size={24} color={config.getPrimaryColor(isDarkMode)} />
               </View>
               <Text style={[styles.sectionTitle, { color: isDarkMode ? '#fff' : '#000' }]}>
                 How to Create a Group
@@ -63,7 +63,7 @@ const GroupsGuideModal = ({ visible, onClose }) => {
 
             <View style={styles.section}>
               <View style={styles.iconContainer}>
-                <Icon name="information-circle" size={24} color={config.colors.primary} />
+                <Icon name="information-circle" size={24} color={config.getPrimaryColor(isDarkMode)} />
               </View>
               <Text style={[styles.sectionTitle, { color: isDarkMode ? '#fff' : '#000' }]}>
                 Important Rules
@@ -83,7 +83,7 @@ const GroupsGuideModal = ({ visible, onClose }) => {
 
             <View style={styles.section}>
               <View style={styles.iconContainer}>
-                <Icon name="chatbubbles" size={24} color={config.colors.primary} />
+                <Icon name="chatbubbles" size={24} color={config.getPrimaryColor(isDarkMode)} />
               </View>
               <Text style={[styles.sectionTitle, { color: isDarkMode ? '#fff' : '#000' }]}>
                 Group Features
@@ -99,7 +99,7 @@ const GroupsGuideModal = ({ visible, onClose }) => {
 
           {/* Close Button */}
           <TouchableOpacity
-            style={[styles.gotItButton, { backgroundColor: config.colors.primary }]}
+            style={[styles.gotItButton, { backgroundColor: config.getPrimaryColor(isDarkMode) }]}
             onPress={onClose}
           >
             <Text style={styles.gotItButtonText}>Got It!</Text>
@@ -168,7 +168,7 @@ const getStyles = (isDarkMode) =>
     },
     boldText: {
       fontFamily: 'Lato-Bold',
-      color: config.colors.primary,
+      color: config.getPrimaryColor(isDarkMode),
     },
     divider: {
       height: 1,

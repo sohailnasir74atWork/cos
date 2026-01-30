@@ -42,6 +42,7 @@ const config = {
   colors: isNoman
     ? {
       primary: '#7b1fa2', // Modern Mobility Blue
+      primaryLight: '#E0B0FF', // Light lavender for dark mode icons
       secondary: '#3E8BFC', // Bright action blue
       hasBlockGreen: '#f75a07', // Diet Teal (Proper Green)
       wantBlockRed: '#ce93d8', // Vibrant Pinkish Red
@@ -52,6 +53,7 @@ const config = {
     }
     : {
       primary: '#697565', // Deep navy blue
+      primaryLight: '#E0B0FF', // Light lavender for dark mode icons
       secondary: '#457B9D', // Muted teal
       hasBlockGreen: '#B8860B', // Light mint green
       wantBlockRed: '#ce93d8', // Warm, soft red
@@ -60,6 +62,18 @@ const config = {
       white: 'white',
       black: 'black'
     },
+
+  // Helper function to get the appropriate primary color based on theme
+  // Use this everywhere instead of config.colors.primary for theme-aware colors
+  // Dark mode: #E0B0FF (light lavender) | Light mode: original primary
+  getPrimaryColor: (isDarkMode) => {
+    return isDarkMode ? '#E0B0FF' : (isNoman ? '#7b1fa2' : '#697565');
+  },
+
+  // Alias for backward compatibility - same as getPrimaryColor
+  getIconColor: (isDarkMode) => {
+    return isDarkMode ? '#E0B0FF' : (isNoman ? '#7b1fa2' : '#697565');
+  },
 
   getTagColor: (category, isDarkMode) => {
     if (!category) return isDarkMode

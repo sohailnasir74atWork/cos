@@ -1,11 +1,11 @@
-import React, {  useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet, ScrollView, Image } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import TradeList from './Trades';
 import { useHaptic } from '../Helper/HepticFeedBack';
 import PrivateChatScreen from '../ChatScreen/PrivateChat/PrivateChat';
 import PrivateChatHeader from '../ChatScreen/PrivateChat/PrivateChatHeader';
-import { useTranslation } from 'react-i18next';
+
 import Icon from 'react-native-vector-icons/Ionicons';
 import config from '../Helper/Environment';
 import { useGlobalState } from '../GlobelStats';
@@ -62,7 +62,6 @@ const TradeRulesModal = ({ visible, onClose }) => {
 export const TradeStack = ({ selectedTheme }) => {
   const [bannedUsers, setBannedUsers] = useState([]);
   const { triggerHapticFeedback } = useHaptic();
-  const { t } = useTranslation();
   const [modalVisible, setModalVisible] = useState(false);
   const { theme } = useGlobalState();
   const isDarkMode = theme === 'dark';
@@ -75,6 +74,11 @@ export const TradeStack = ({ selectedTheme }) => {
       headerStyle: { backgroundColor: selectedTheme.colors.background },
       headerTintColor: selectedTheme.colors.text,
       headerTitleStyle: { fontFamily: 'Lato-Bold', fontSize: 24 },
+      // ✅ Fix iOS SDK header sizing issue (liquid view bug)
+      headerLargeTitle: false,
+      headerLargeTitleShadowVisible: false,
+      headerShadowVisible: false,
+      headerBackTitleVisible: false,
     }),
     [selectedTheme]
   );
@@ -88,9 +92,9 @@ export const TradeStack = ({ selectedTheme }) => {
           component={TradeList}
           initialParams={{ bannedUsers, selectedTheme }}
           options={({ navigation }) => ({
-            title: t("tabs.trade"),
+            title: "Trade",
             headerRight: () => (
-              <View style={{ flexDirection: 'row', }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 6 }}>
                 {/* <TouchableOpacity onPress={() => navigation.navigate('Server')} style={{ marginRight: 5, backgroundColor:config.colors.hasBlockGreen, borderRadius:5, flexDirection:'row', alignItems:'center', paddingHorizontal:5}}>
                   <Image
                     source={
@@ -111,58 +115,57 @@ export const TradeStack = ({ selectedTheme }) => {
                   <Text style={{color:'white', fontFamily:'Lato-Bold' }}>Pvt Servers</Text>
                 </TouchableOpacity> */}
 
-                <TouchableOpacity onPress={() => navigation.navigate('Trade Notifier')} style={{ marginRight: 5 }}>
-                  <Icon
-                    name="notifications"
-                    size={24}
-                    color={config.colors.primary}
-                  />
-                </TouchableOpacity>
-          
-                <TouchableOpacity onPress={() => setModalVisible(true)} style={{ marginRight: 8 }}>
-                  <Icon
-                    name="information-circle-outline"
-                    size={24}
-                    color={config.colors.primary}
-                  />
-                </TouchableOpacity>
+                <Icon
+                  name="notifications"
+                  size={24}
+                  color={config.getIconColor(isDarkMode)}
+                  onPress={() => navigation.navigate('Trade Notifier')}
+                  style={{ marginRight: 15 }}
+                />
+
+                <Icon
+                  name="information-circle-outline"
+                  size={24}
+                  color={config.getIconColor(isDarkMode)}
+                  onPress={() => setModalVisible(true)}
+                />
               </View>
             ),
           })}
-          
+
         />
 
         {/* Private Chat Screen */}
         <Stack.Screen
-  name="PrivateChatTrade"
-  options={({ route }) => ({
-    headerTitle: () => (
-      <PrivateChatHeader
-        selectedUser={route.params?.selectedUser}
-        selectedTheme={selectedTheme}
-        bannedUsers={bannedUsers}
-        isDrawerVisible={isDrawerVisible}
-        setIsDrawerVisible={setIsDrawerVisible}
-      />
-    ),
-  })}
->
-  {(props) => (
-    <PrivateChatScreen
-      {...props}
-      bannedUsers={bannedUsers}
-      isDrawerVisible={isDrawerVisible}
-      setIsDrawerVisible={setIsDrawerVisible}
-    />
-  )}
-</Stack.Screen>
+          name="PrivateChatTrade"
+          options={({ route }) => ({
+            headerTitle: () => (
+              <PrivateChatHeader
+                selectedUser={route.params?.selectedUser}
+                selectedTheme={selectedTheme}
+                bannedUsers={bannedUsers}
+                isDrawerVisible={isDrawerVisible}
+                setIsDrawerVisible={setIsDrawerVisible}
+              />
+            ),
+          })}
+        >
+          {(props) => (
+            <PrivateChatScreen
+              {...props}
+              bannedUsers={bannedUsers}
+              isDrawerVisible={isDrawerVisible}
+              setIsDrawerVisible={setIsDrawerVisible}
+            />
+          )}
+        </Stack.Screen>
         <Stack.Screen
           name="Trade Notifier"
           component={NotifierDrawer}
-         
+
         />
       </Stack.Navigator>
-      
+
 
       {/* Trade Rules Modal */}
       <TradeRulesModal visible={modalVisible} onClose={() => setModalVisible(false)} />

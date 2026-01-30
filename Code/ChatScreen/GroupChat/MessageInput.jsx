@@ -4,7 +4,7 @@ import { getStyles } from './../Style';
 import Icon from 'react-native-vector-icons/Ionicons';
 import config from '../../Helper/Environment';
 import { useHaptic } from '../../Helper/HepticFeedBack';
-import { useTranslation } from 'react-i18next';
+
 import { useLocalState } from '../../LocalGlobelStats';
 import InterstitialAdManager from '../../Ads/IntAd';
 import { useGlobalState } from '../../GlobelStats';
@@ -52,7 +52,7 @@ const MessageInput = ({
   handleSendMessage,
   selectedTheme,
   replyTo,
-  selectedEmoji, 
+  selectedEmoji,
   onCancelReply,
   setPetModalVisible,
   selectedFruits,
@@ -62,12 +62,12 @@ const MessageInput = ({
   // ✅ Memoize styles
   const isDarkMode = selectedTheme?.colors?.text === 'white';
   const styles = useMemo(() => getStyles(isDarkMode), [isDarkMode]);
-  
+
   const [isSending, setIsSending] = useState(false);
   const [messageCount, setMessageCount] = useState(0);
 
   const { triggerHapticFeedback } = useHaptic();
-  const { t } = useTranslation();
+
   const { localState } = useLocalState();
   const { theme } = useGlobalState();
   const isDark = theme === 'dark';
@@ -84,10 +84,10 @@ const MessageInput = ({
     triggerHapticFeedback('impactLight');
 
     const trimmedInput = (input || '').trim();
-  
+
     const emojiFromArg = typeof emojiArg === 'string' ? emojiArg : undefined;
-    const emojiToSend  = emojiFromArg || selectedEmoji || null;
-    const hasEmoji     = !!emojiToSend;
+    const emojiToSend = emojiFromArg || selectedEmoji || null;
+    const hasEmoji = !!emojiToSend;
     const fruits = hasFruits ? [...selectedFruits] : [];
     if (!trimmedInput && !hasFruits && !hasEmoji) return;
     if (isSending) return;
@@ -143,7 +143,7 @@ const MessageInput = ({
     handleSend(emojiUrl);
     setShowEmojiPopup(false);
   }, [handleSend]);
-  
+
 
   // console.log(selectedFruits);
 
@@ -153,7 +153,7 @@ const MessageInput = ({
       {replyTo && (
         <View style={styles.replyContainer}>
           <Text style={styles.replyText}>
-            {t('chat.replying_to')}: {replyTo.text}
+            Replying to: {replyTo.text}
           </Text>
           <TouchableOpacity
             onPress={onCancelReply}
@@ -179,14 +179,14 @@ const MessageInput = ({
 
         <TextInput
           style={[styles.input, { color: selectedTheme.colors.text }]}
-          placeholder={t('chat.type_message')}
+          placeholder="Type a message..."
           placeholderTextColor="#888"
           value={input}
           onChangeText={setInput}
           multiline
         />
 
-<TouchableOpacity onPress={() => setShowEmojiPopup(true)} style={styles.gifButton}>
+        <TouchableOpacity onPress={() => setShowEmojiPopup(true)} style={styles.gifButton}>
           <Text style={{ fontSize: 25 }}>😊</Text>
         </TouchableOpacity>
 
@@ -202,7 +202,7 @@ const MessageInput = ({
           disabled={isSending || !hasContent}
         >
           <Text style={styles.sendButtonText}>
-            {isSending ? t('chat.sending') : t('chat.send')}
+            {isSending ? "Sending..." : "Send"}
           </Text>
         </TouchableOpacity>
       </View>
@@ -233,13 +233,13 @@ const MessageInput = ({
         </View>
       )}
       <Modal visible={showEmojiPopup} transparent animationType="slide">
-        <TouchableOpacity 
-          style={modalStyles.backdrop} 
+        <TouchableOpacity
+          style={modalStyles.backdrop}
           onPress={() => setShowEmojiPopup(false)}
           activeOpacity={1}
         >
           <View style={[modalStyles.sheet, { backgroundColor: isDark ? '#1e1e1e' : '#fff' }]} onStartShouldSetResponder={() => true}>
-            <ScrollView 
+            <ScrollView
               style={modalStyles.emojiScrollContainer}
               showsVerticalScrollIndicator={false}
             >

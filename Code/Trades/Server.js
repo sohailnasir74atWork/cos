@@ -18,7 +18,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome6';
 import { useLocalState } from '../LocalGlobelStats';
 import BannerAdComponent from '../Ads/bannerAds';
 import InterstitialAdManager from '../Ads/IntAd';
-import { mixpanel } from '../AppHelper/MixPenel';
+
 import ConditionalKeyboardWrapper from '../Helper/keyboardAvoidingContainer';
 
 
@@ -98,10 +98,10 @@ const ServerScreen = () => {
         const urlRegex = /^(https?:\/\/)([\w-]+\.)+[\w-]{2,}(\/[\w\-._~:/?#[\]@!$&'()*+,;=]*)?$/i;
 
         if (!urlRegex.test(link)) {
-          showErrorMessage('Error', 'There must be a valid link');
-          return;
+            showErrorMessage('Error', 'There must be a valid link');
+            return;
         }
-        
+
         const characterCount = message.trim().length;
         if (characterCount > 250) {
             showWarningMessage('Warning', 'Description can only be 250 characters max.');
@@ -173,20 +173,20 @@ const ServerScreen = () => {
         // console.log(url)
         const trimmedUrl = url?.trim();
         const openLink = () => {
-          Linking.openURL(trimmedUrl).catch(err => {
-            console.warn('Failed to open link:', err);
-            showErrorMessage('Error', 'Failed to open link');
-          });
+            Linking.openURL(trimmedUrl).catch(err => {
+                console.warn('Failed to open link:', err);
+                showErrorMessage('Error', 'Failed to open link');
+            });
         };
-      
+
         if (!localState.isPro) {
-          InterstitialAdManager.showAd(openLink);
+            InterstitialAdManager.showAd(openLink);
         } else {
-          openLink();
-          mixpanel.track("Server Open");
+            openLink();
+
         }
-      };
-      
+    };
+
 
     const handleDelete = (serverId) => {
         Alert.alert('Delete', 'Are you sure you want to delete this?', [
@@ -305,40 +305,40 @@ const ServerScreen = () => {
 
 
             <Modal visible={modalVisible} transparent animationType="slide" onRequestClose={() => setModalVisible(false)}>
-            <View style={{ flexDirection: 'row', flex: 1,   }}>
+                <View style={{ flexDirection: 'row', flex: 1, }}>
 
-<ConditionalKeyboardWrapper style={{width:'100%'}}>
-                <View style={styles.modalBackdrop}>
-                    <View style={styles.modalContainer}>
-                        <TouchableOpacity onPress={() => setModalVisible(false)} style={{ position: 'absolute', top: 10, right: 10 }}>
-                            <Icon name="close" size={22} color="#555" />
-                        </TouchableOpacity>
-                        <Text style={styles.modalHeader}>Submit Your Server or Help Link</Text>
-                        <TextInput style={styles.input} placeholder="Server link or help link" value={link} onChangeText={setLink} placeholderTextColor={'lightgrey'} />
-                        <TextInput
-                            style={[styles.input, { height: 100 }]} // you can adjust height as needed
-                            placeholder="Optional message"
-                            value={message}
-                            onChangeText={setMessage}
-                            placeholderTextColor={'lightgrey'}
-                            multiline={true}
-                            numberOfLines={4}
-                        />
+                    <ConditionalKeyboardWrapper style={{ width: '100%' }}>
+                        <View style={styles.modalBackdrop}>
+                            <View style={styles.modalContainer}>
+                                <TouchableOpacity onPress={() => setModalVisible(false)} style={{ position: 'absolute', top: 10, right: 10 }}>
+                                    <Icon name="close" size={22} color="#555" />
+                                </TouchableOpacity>
+                                <Text style={styles.modalHeader}>Submit Your Server or Help Link</Text>
+                                <TextInput style={styles.input} placeholder="Server link or help link" value={link} onChangeText={setLink} placeholderTextColor={'lightgrey'} />
+                                <TextInput
+                                    style={[styles.input, { height: 100 }]} // you can adjust height as needed
+                                    placeholder="Optional message"
+                                    value={message}
+                                    onChangeText={setMessage}
+                                    placeholderTextColor={'lightgrey'}
+                                    multiline={true}
+                                    numberOfLines={4}
+                                />
 
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Expiry in hours (default 24)"
-                            placeholderTextColor={'lightgrey'}
-                            value={expiryHours}
-                            onChangeText={setExpiryHours}
-                            keyboardType="numeric"
-                        />
-                        <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
-                            <Text style={styles.submitText}>Submit</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                </ConditionalKeyboardWrapper>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Expiry in hours (default 24)"
+                                    placeholderTextColor={'lightgrey'}
+                                    value={expiryHours}
+                                    onChangeText={setExpiryHours}
+                                    keyboardType="numeric"
+                                />
+                                <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
+                                    <Text style={styles.submitText}>Submit</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </ConditionalKeyboardWrapper>
                 </View>
             </Modal>
         </View>
@@ -426,7 +426,7 @@ const getStyles = (isDarkMode) =>
             justifyContent: 'center',
             alignItems: 'center',
             // width:'100%'
-            
+
         },
         modalContainer: {
             backgroundColor: isDarkMode ? '#1e1e1e' : '#ffffff',

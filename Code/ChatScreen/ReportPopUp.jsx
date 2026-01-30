@@ -12,7 +12,7 @@ import {
 import { useGlobalState } from "../GlobelStats";
 import config from "../Helper/Environment";
 import { ref, get, update, remove } from "@react-native-firebase/database";
-import { useTranslation } from "react-i18next";
+
 import { banUserwithEmail } from "./utils";
 
 
@@ -23,14 +23,14 @@ const ReportPopup = ({ visible, message, onClose, messagePath }) => {
   const [loading, setLoading] = useState(false);
   const { theme, appdatabase } = useGlobalState();
   const isDarkMode = theme === "dark";
-  const { t } = useTranslation();
+
 
   // ✅ Memoize reason options array
   const reasonOptions = useMemo(() => [
-    t("chat.spam"),
-    t("chat.religious"),
-    t("chat.hate_speech")
-  ], [t]);
+    "Spam",
+    "Religious",
+    "Hate Speech"
+  ], []);
 
   // ✅ Memoize styles
   const styles = useMemo(() => getStyles(isDarkMode), [isDarkMode]);
@@ -51,30 +51,30 @@ const ReportPopup = ({ visible, message, onClose, messagePath }) => {
     const sanitizedId = messageId.startsWith("chat-")
       ? messageId.replace("chat-", "")
       : messageId;
-  
+
     if (!sanitizedId || sanitizedId.trim().length === 0) {
       Alert.alert("Error", "Invalid message. Unable to report.");
       return;
     }
-  
+
     setLoading(true);
     // ✅ Support both group chat (chat_new) and private messages (private_messages/{chatId}/messages)
     // If messagePath is provided, use it; otherwise default to chat_new for backward compatibility
-    const messageRef = messagePath 
+    const messageRef = messagePath
       ? ref(appdatabase, `${messagePath}/${sanitizedId}`)
       : ref(appdatabase, `chat_new/${sanitizedId}`);
-  
+
     get(messageRef)
       .then((snapshot) => {
         if (!snapshot.exists()) throw new Error("Message not found");
-  
+
         const data = snapshot.val();
         if (!data || typeof data !== 'object') {
           throw new Error("Invalid message data");
         }
 
         const reportCount = Number(data?.reportCount || 0);
-  
+
         if (reportCount >= 1) {
           // ✅ Second report: delete the message
           // ✅ Await banUserwithEmail to ensure it completes
@@ -91,7 +91,7 @@ const ReportPopup = ({ visible, message, onClose, messagePath }) => {
       })
       .then((res) => {
         setLoading(false);
-        Alert.alert(t("chat.report_submitted"), t("chat.report_submitted_message"));
+        Alert.alert("Report Submitted", "Thank you for reporting this message.");
         onClose(true);
       })
       .catch((error) => {
@@ -153,7 +153,7 @@ const ReportPopup = ({ visible, message, onClose, messagePath }) => {
                   showCustomInput && styles.selectedOptionText,
                 ]}
               >
-                { t("chat.other")}
+                other
               </Text>
             </TouchableOpacity>
           </View>
@@ -172,7 +172,7 @@ const ReportPopup = ({ visible, message, onClose, messagePath }) => {
           {/* Action Buttons */}
           <View style={styles.actions}>
             <TouchableOpacity style={styles.button} onPress={onClose}>
-              <Text style={styles.buttonText}>{t("home.cancel")}</Text>
+              <Text style={styles.buttonText}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
@@ -185,7 +185,7 @@ const ReportPopup = ({ visible, message, onClose, messagePath }) => {
               {loading ? (
                 <ActivityIndicator size="small" color="#fff" />
               ) : (
-                <Text style={styles.buttonText}> {t("chat.submit")}</Text>
+                <Text style={styles.buttonText}>Submit</Text>
               )}
             </TouchableOpacity>
           </View>

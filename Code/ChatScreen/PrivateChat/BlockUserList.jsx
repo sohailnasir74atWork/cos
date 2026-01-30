@@ -13,14 +13,14 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import config from '../../Helper/Environment';
 import { useLocalState } from '../../LocalGlobelStats';
 import { useGlobalState } from '../../GlobelStats';
-import { useTranslation } from 'react-i18next';
+
 import { showSuccessMessage } from '../../Helper/MessageHelper';
 
 
 const BlockedUsersScreen = () => {
   const { user, theme, appdatabase } = useGlobalState();
   const { localState, updateLocalState } = useLocalState();
-  const { t } = useTranslation();
+
 
 
   const isDarkMode = theme === 'dark';
@@ -39,8 +39,8 @@ const BlockedUsersScreen = () => {
       }
 
       try {
-        const bannedUserIds = Array.isArray(localState?.bannedUsers) 
-          ? localState.bannedUsers 
+        const bannedUserIds = Array.isArray(localState?.bannedUsers)
+          ? localState.bannedUsers
           : [];
 
         if (bannedUserIds.length === 0) {
@@ -69,8 +69,8 @@ const BlockedUsersScreen = () => {
             return {
               id,
               displayName: displayNameSnap?.exists() ? (displayNameSnap.val()?.trim() || 'Anonymous') : 'Anonymous',
-              avatar: avatarSnap?.exists() ? (avatarSnap.val()?.trim() || 'https://bloxfruitscalc.com/wp-content/uploads/2025/display-pic.png') 
-                     : 'https://bloxfruitscalc.com/wp-content/uploads/2025/display-pic.png',
+              avatar: avatarSnap?.exists() ? (avatarSnap.val()?.trim() || 'https://bloxfruitscalc.com/wp-content/uploads/2025/display-pic.png')
+                : 'https://bloxfruitscalc.com/wp-content/uploads/2025/display-pic.png',
             };
           } catch (error) {
             console.error(`❌ Error fetching user ${id}:`, error);
@@ -122,11 +122,11 @@ const BlockedUsersScreen = () => {
       });
 
       // ✅ Show Alert
-      showSuccessMessage(t("home.alert.success"), t("chat.user_unblocked"));
+      showSuccessMessage("Success", "User unblocked successfully.");
     } catch (error) {
       console.error('❌ Error unblocking user:', error);
     }
-  }, [localState?.bannedUsers, updateLocalState, t]);
+  }, [localState?.bannedUsers, updateLocalState]);
 
   // ✅ Memoize renderBlockedUser
   const renderBlockedUser = useCallback(({ item }) => {
@@ -149,18 +149,18 @@ const BlockedUsersScreen = () => {
             onPress={() => handleUnblockUser(userId)}
           >
             <Icon name="person-remove-outline" size={20} color={isDarkMode ? 'white' : 'black'} />
-            <Text style={styles.unblockText}>{t("chat.unblock")}</Text>
+            <Text style={styles.unblockText}>Unblock</Text>
           </TouchableOpacity>
         </View>
       </View>
     );
-  }, [styles, isDarkMode, handleUnblockUser, t]);
+  }, [styles, isDarkMode, handleUnblockUser]);
 
   return (
     <View style={styles.container}>
       {blockedUsers.length === 0 ? (
         <View style={styles.centerContainer}>
-          <Text style={styles.emptyText}>{t("chat.no_user_blocked")}</Text>
+          <Text style={styles.emptyText}>No blocked users</Text>
         </View>
       ) : (
         <FlatList

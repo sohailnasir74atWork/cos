@@ -13,10 +13,10 @@ import { useGlobalState } from '../GlobelStats';
 import SignInDrawer from '../Firebase/SigninDrawer';
 import SubscriptionScreen from '../SettingScreen/OfferWall';
 import config from '../Helper/Environment';
-import { useTranslation } from 'react-i18next';
+
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { mixpanel } from './MixPenel';
+
 import { useLocalState } from '../LocalGlobelStats';
 
 const { width } = Dimensions.get('window');
@@ -29,31 +29,19 @@ const OnboardingScreen = ({ onFinish, selectedTheme }) => {
   const [openSignin, setOpenSignin] = useState(false);
   const { theme, user, single_offer_wall } = useGlobalState();
   const isDarkMode = theme === 'dark' || selectedTheme === 'dark';
-  const { t } = useTranslation();
+
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
   // const platform = Platform.OS.toLowerCase();
   const { updateLocalState, localState } = useLocalState();
 
 
 
-  // const languageOptions = [
-  //   { code: "en", label: t("settings.languages.en"), flag: "🇺🇸" },
-  //   { code: "fil", label: t("settings.languages.fil"), flag: "🇵🇭" },
-  //   { code: "vi", label: t("settings.languages.vi"), flag: "🇻🇳" },
-  //   { code: "pt", label: t("settings.languages.pt"), flag: "🇵🇹" },
-  //   { code: "id", label: t("settings.languages.id"), flag: "🇮🇩" },
-  //   { code: "es", label: t("settings.languages.es"), flag: "🇪🇸" },
-  //   { code: "fr", label: t("settings.languages.fr"), flag: "🇫🇷" },
-  //   { code: "de", label: t("settings.languages.de"), flag: "🇩🇪" },
-  //   { code: "ru", label: t("settings.languages.ru"), flag: "🇷🇺" },
-  //   { code: "ar", label: t("settings.languages.ar"), flag: "🇸🇦" }
 
-  // ];
 
 
   const handleNext = () => {
     if (screenIndex === 0) {
-      mixpanel.track("New Install");
+
       setScreenIndex(1);
     } else if (screenIndex === 1) {
       user?.id ? setScreenIndex(2) : setOpenSignin(true);
@@ -63,7 +51,7 @@ const OnboardingScreen = ({ onFinish, selectedTheme }) => {
   };
 
   const handleGuest = () => {
-    mixpanel.track("Go as Guest");
+
     // if (Platform.OS === 'ios') {
     //   onFinish();
     // } else {
@@ -146,7 +134,7 @@ const OnboardingScreen = ({ onFinish, selectedTheme }) => {
               </View> */}
             {/* <View style={styles.spacer}></View> */}
             <View>
-              {!user.id && <Text style={[styles.title, { color: isDarkMode ? '#fff' : '#000' }]}>{t("first.signin_or_guest")}</Text>}
+              {!user.id && <Text style={[styles.title, { color: isDarkMode ? '#fff' : '#000' }]}>Sign in or continue as Guest</Text>}
               {user?.id && (
                 <Text style={[styles.title, { color: isDarkMode ? '#fff' : '#000' }]}>
                   {`Welcome ${user?.displayName || 'Anonymous'}`}
@@ -154,7 +142,7 @@ const OnboardingScreen = ({ onFinish, selectedTheme }) => {
                 </Text>
               )}
 
-              <Text style={[styles.text, { color: isDarkMode ? '#ccc' : '#666' }]}>{t("first.get_notified_text")}</Text></View>
+              <Text style={[styles.text, { color: isDarkMode ? '#ccc' : '#666' }]}>Get notified about updates</Text></View>
           </View>
 
         );
@@ -206,11 +194,11 @@ const OnboardingScreen = ({ onFinish, selectedTheme }) => {
 
 
           <TouchableOpacity style={styles.button} onPress={handleNext}>
-            <Text style={styles.buttonText}>{screenIndex === 1 && !user.id ? t("first.signin") : t("first.continue")}</Text>
+            <Text style={styles.buttonText}>{screenIndex === 1 && !user.id ? "Sign In" : "Continue"}</Text>
           </TouchableOpacity>
           {screenIndex === 1 && !user?.id && (
             <TouchableOpacity style={styles.buttonOutline} onPress={handleGuest}>
-              <Text style={styles.buttonTextOutline}>{t("first.guest_user")}</Text>
+              <Text style={styles.buttonTextOutline}>Guest User</Text>
             </TouchableOpacity>
           )}
         </View>}
@@ -218,7 +206,7 @@ const OnboardingScreen = ({ onFinish, selectedTheme }) => {
         <SignInDrawer visible={openSignin} onClose={handleLoginSuccess} selectedTheme={selectedTheme} screen='On Boarding' />
         <Modal visible={languageModalVisible} animationType="slide" transparent>
           <View style={[styles.modalContainer, { backgroundColor: isDarkMode ? '#121212' : '#f2f2f7' }]}>
-            {/* <Text style={[styles.modalTitle, { color: isDarkMode ? 'white' : '#666' }]}>{t("settings.select_language")}</Text>
+            {/* <Text style={[styles.modalTitle, { color: isDarkMode ? 'white' : '#666' }]}>Select Language</Text>
             <FlatList
               data={languageOptions}
               keyExtractor={(item) => item.code}

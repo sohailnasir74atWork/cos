@@ -12,9 +12,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useGlobalState } from '../GlobelStats';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useHaptic } from '../Helper/HepticFeedBack';
-import { t } from 'i18next';
+
 import { showSuccessMessage } from '../Helper/MessageHelper';
-import { mixpanel } from '../AppHelper/MixPenel';
+
 
 const CodesDrawer = ({ isVisible, toggleModal, codes }) => {
   // Flatten codes if necessary
@@ -33,8 +33,8 @@ const CodesDrawer = ({ isVisible, toggleModal, codes }) => {
   const copyToClipboard = (code) => {
     triggerHapticFeedback('impactLight');
     Clipboard.setString(code); // Copies the code to the clipboard
-    showSuccessMessage(t("value.copy"), t("value.copy_success"));
-    mixpanel.track("Code Copy", {Code:code});
+    showSuccessMessage("Copied", "Code copied to clipboard!");
+
 
   };
 
@@ -74,7 +74,7 @@ const CodesDrawer = ({ isVisible, toggleModal, codes }) => {
           contentContainerStyle={styles.listContainer}
           showsVerticalScrollIndicator={false}
         />
-          
+
       </View>
     </Modal>
   );

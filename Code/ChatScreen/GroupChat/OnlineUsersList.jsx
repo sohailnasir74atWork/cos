@@ -15,58 +15,50 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useGlobalState } from '../../GlobelStats';
 import { ref, get, query, orderByValue, equalTo, limitToFirst, startAfter } from '@react-native-firebase/database';
 import { useNavigation } from '@react-navigation/native';
-import { useTranslation } from 'react-i18next';
+
 import { useLocalState } from '../../LocalGlobelStats';
-import { mixpanel } from '../../AppHelper/MixPenel';
+
 import config from '../../Helper/Environment';
 import CreateGroupModal from './CreateGroupModal';
 import { useHaptic } from '../../Helper/HepticFeedBack';
 import { getUserAdminGroup, addMembersToGroup } from '../utils/groupUtils';
 import { showSuccessMessage, showErrorMessage } from '../../Helper/MessageHelper';
-import { sendGameInvite, isUserInActiveGame } from '../../ValuesScreen/PetGuessingGame/utils/gameInviteSystem';
 const INITIAL_LOAD = 5; // Fetch first 10 online users
 const LOAD_MORE = 5; // Load 5 more on scroll
 const MAX_GROUP_MEMBERS = 50;
 
-const OnlineUsersList = ({ 
-  visible, 
-  onClose, 
+const OnlineUsersList = ({
+  visible,
+  onClose,
   mode = 'view',
-  // Game invitation props (only used when mode === 'gameInvite')
-  roomId = null,
-  onInviteSent = null,
   // Group creation props (only used when mode === 'select')
   // ... existing props work for this
 }) => {
   // mode: 'view' = just view online users and start chats
   // mode: 'select' = select users for group creation/addition
-  // mode: 'gameInvite' = select users to invite to game
   const { theme, user, appdatabase, firestoreDB } = useGlobalState();
   const { localState } = useLocalState();
   const navigation = useNavigation();
-  const { t } = useTranslation();
+
   const { triggerHapticFeedback } = useHaptic();
   const isDarkMode = theme === 'dark';
-  
+
   // ✅ Store online users from RTDB (id, displayName, avatar, etc.)
   const [allOnlineUsers, setAllOnlineUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [allOnlineUserIds, setAllOnlineUserIds] = useState([]); // All online user IDs from presence
   const [loadedUserIds, setLoadedUserIds] = useState(new Set()); // Track which user IDs we've loaded
-  
+
   // ✅ Group creation state (only used in 'select' mode)
   const [isSelectionMode, setIsSelectionMode] = useState(mode === 'select');
   const [selectedUserIds, setSelectedUserIds] = useState(new Set());
   const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
-  
+
   // ✅ User's existing group state (only used in 'select' mode)
   const [userGroup, setUserGroup] = useState(null);
   const [checkingGroup, setCheckingGroup] = useState(false);
-  
-  // ✅ Game invitation state (only used in 'gameInvite' mode)
-  const [invitingIds, setInvitingIds] = useState(new Set());
-  const [invitedIds, setInvitedIds] = useState(new Set());
+
 
   // ✅ Memoize styles
   const styles = useMemo(() => getStyles(isDarkMode), [isDarkMode]);
@@ -100,13 +92,6 @@ const OnlineUsersList = ({
     checkUserGroup();
   }, [mode, visible, appdatabase, user?.id]);
 
-  // ✅ Reset game invitation state when modal closes
-  useEffect(() => {
-    if (!visible && mode === 'gameInvite') {
-      setInvitingIds(new Set());
-      setInvitedIds(new Set());
-    }
-  }, [visible, mode]);
 
   // ✅ Fetch user metadata from users node (only relevant fields)
   // ✅ OPTIMIZED: Fetch only specific child paths instead of full user objects
@@ -121,21 +106,21 @@ const OnlineUsersList = ({
 
         try {
           // ✅ Fetch only the fields we need (parallel requests to specific child paths)
-          const [displayNameSnap, avatarSnap, isProSnap, robloxUsernameVerifiedSnap, 
-                 lastGameWinAtSnap, isAdminSnap, OSSnap, isPlayingSnap] = await Promise.all([
-            get(ref(appdatabase, `users/${userId}/displayName`)).catch(() => null),
-            get(ref(appdatabase, `users/${userId}/avatar`)).catch(() => null),
-            get(ref(appdatabase, `users/${userId}/isPro`)).catch(() => null),
-            get(ref(appdatabase, `users/${userId}/robloxUsernameVerified`)).catch(() => null),
-            get(ref(appdatabase, `users/${userId}/lastGameWinAt`)).catch(() => null),
-            get(ref(appdatabase, `users/${userId}/isAdmin`)).catch(() => null),
-            get(ref(appdatabase, `users/${userId}/OS`)).catch(() => null),
-            get(ref(appdatabase, `users/${userId}/isPlaying`)).catch(() => null),
-          ]);
+          const [displayNameSnap, avatarSnap, isProSnap, robloxUsernameVerifiedSnap,
+            lastGameWinAtSnap, isAdminSnap, OSSnap, isPlayingSnap] = await Promise.all([
+              get(ref(appdatabase, `users/${userId}/displayName`)).catch(() => null),
+              get(ref(appdatabase, `users/${userId}/avatar`)).catch(() => null),
+              get(ref(appdatabase, `users/${userId}/isPro`)).catch(() => null),
+              get(ref(appdatabase, `users/${userId}/robloxUsernameVerified`)).catch(() => null),
+              get(ref(appdatabase, `users/${userId}/lastGameWinAt`)).catch(() => null),
+              get(ref(appdatabase, `users/${userId}/isAdmin`)).catch(() => null),
+              get(ref(appdatabase, `users/${userId}/OS`)).catch(() => null),
+              get(ref(appdatabase, `users/${userId}/isPlaying`)).catch(() => null),
+            ]);
 
           // ✅ Extract values (only if snapshots exist)
           const displayName = displayNameSnap?.exists() ? displayNameSnap.val() : null;
-          
+
           // If no displayName found, user might not exist - return null
           if (!displayNameSnap || (!displayNameSnap.exists() && !avatarSnap?.exists())) {
             return null;
@@ -144,8 +129,8 @@ const OnlineUsersList = ({
           return {
             id: userId,
             displayName: displayName || 'Anonymous',
-            avatar: avatarSnap?.exists() ? avatarSnap.val() : 
-                   'https://bloxfruitscalc.com/wp-content/uploads/2025/display-pic.png',
+            avatar: avatarSnap?.exists() ? avatarSnap.val() :
+              'https://bloxfruitscalc.com/wp-content/uploads/2025/display-pic.png',
             isPro: isProSnap?.exists() ? isProSnap.val() : false,
             robloxUsernameVerified: robloxUsernameVerifiedSnap?.exists() ? robloxUsernameVerifiedSnap.val() : false,
             lastGameWinAt: lastGameWinAtSnap?.exists() ? lastGameWinAtSnap.val() : null,
@@ -242,13 +227,13 @@ const OnlineUsersList = ({
   // ✅ Load more users on scroll (next 5 IDs from presence)
   const handleLoadMore = useCallback(async () => {
     if (loadingMore) return;
-    
+
     // ✅ Find next batch of user IDs that haven't been loaded
     const unloadedIds = allOnlineUserIds.filter((id) => !loadedUserIds.has(id));
     if (unloadedIds.length === 0) return; // All users loaded
 
     setLoadingMore(true);
-    
+
     // ✅ Load next batch (5 users)
     const nextBatch = unloadedIds.slice(0, LOAD_MORE);
     await loadUserBatch(nextBatch, loadedUserIds);
@@ -307,7 +292,7 @@ const OnlineUsersList = ({
     if (userGroup?.groupId) {
       const selectedIds = Array.from(selectedUserIds);
       setLoading(true);
-      
+
       try {
         // ✅ Build user data map from allOnlineUsers to avoid extra Firestore read
         const invitedUsersMap = {};
@@ -364,67 +349,6 @@ const OnlineUsersList = ({
     }
   }, [onClose, navigation]);
 
-  // ✅ Handle game invitation (only in 'gameInvite' mode)
-  const handleGameInvite = useCallback(async (selectedUser) => {
-    if (mode !== 'gameInvite' || !roomId || !firestoreDB || !appdatabase || !user?.id) {
-      if (!firestoreDB) {
-        console.error('FirestoreDB is required for game invitations');
-        showErrorMessage('Error', 'Unable to send invitation. Please try again.');
-      }
-      return;
-    }
-    if (invitingIds.has(selectedUser.id) || invitedIds.has(selectedUser.id) || selectedUser.isPlaying) {
-      return;
-    }
-
-    setInvitingIds((prev) => new Set([...prev, selectedUser.id]));
-
-    try {
-      // Check if user is in active game
-      const isInActiveGame = await isUserInActiveGame(firestoreDB, selectedUser.id);
-      if (isInActiveGame) {
-        showErrorMessage('Error', 'This user is already in a game');
-        setInvitingIds((prev) => {
-          const next = new Set(prev);
-          next.delete(selectedUser.id);
-          return next;
-        });
-        return;
-      }
-
-      // Send game invitation
-      const success = await sendGameInvite(
-        firestoreDB,
-        roomId,
-        {
-          id: user.id,
-          displayName: user.displayName || 'Anonymous',
-          avatar: user.avatar || null,
-        },
-        selectedUser.id
-      );
-
-      if (success) {
-        setInvitedIds((prev) => new Set([...prev, selectedUser.id]));
-        showSuccessMessage('Invite Sent', `Invited ${selectedUser.displayName} to play!`);
-        // ✅ Notify parent component that invite was sent
-        if (onInviteSent && typeof onInviteSent === 'function') {
-          onInviteSent(selectedUser);
-        }
-      } else {
-        showErrorMessage('Error', 'Failed to send invite. Please try again.');
-      }
-    } catch (error) {
-      console.error('Error inviting user to game:', error);
-      showErrorMessage('Error', 'Failed to send invite.');
-    } finally {
-      setInvitingIds((prev) => {
-        const next = new Set(prev);
-        next.delete(selectedUser.id);
-        return next;
-      });
-    }
-  }, [mode, roomId, firestoreDB, appdatabase, user, invitingIds, invitedIds, onInviteSent]);
 
   // ✅ Handle start private chat (only in 'view' mode)
   const handleStartChat = useCallback((selectedUser) => {
@@ -434,11 +358,6 @@ const OnlineUsersList = ({
       return;
     }
 
-    if (mode === 'gameInvite') {
-      // In game invite mode, send invite instead
-      handleGameInvite(selectedUser);
-      return;
-    }
 
     const callbackFunction = () => {
       onClose();
@@ -451,33 +370,29 @@ const OnlineUsersList = ({
           },
         });
       }
-      mixpanel.track("Online Users Chat");
+
     };
 
     // ✅ Removed navigation ad - exit ads are shown when leaving chat instead
     callbackFunction();
-  }, [mode, onClose, navigation, handleToggleUserSelection, handleGameInvite]);
+  }, [mode, onClose, navigation, handleToggleUserSelection]);
 
   // ✅ Get selected users for group creation
   const selectedUsers = useMemo(() => {
     return allOnlineUsers.filter((u) => selectedUserIds.has(u.id));
   }, [allOnlineUsers, selectedUserIds]);
 
-  // ✅ Memoize render user item
   const renderUserItem = useCallback(({ item }) => {
     if (!item || !item.id) return null;
 
     const isSelected = selectedUserIds.has(item.id);
-    const isInviting = invitingIds.has(item.id);
-    const isInvited = invitedIds.has(item.id);
-    const isPlaying = item.isPlaying || false;
 
     return (
       <TouchableOpacity
         style={[styles.userItem, isSelected && styles.userItemSelected]}
         onPress={() => handleStartChat(item)}
         activeOpacity={0.7}
-        disabled={mode === 'gameInvite' && (isInviting || isInvited || isPlaying)}
+        disabled={false}
       >
         {mode === 'select' && (
           <View style={styles.checkboxContainer}>
@@ -499,7 +414,7 @@ const OnlineUsersList = ({
             <Text style={styles.userName} numberOfLines={1}>
               {`${item.displayName || 'Anonymous'}`}
             </Text>
-            
+
             {/* Pro badge */}
             {item?.isPro && (
               <Image
@@ -520,11 +435,11 @@ const OnlineUsersList = ({
             {(item?.hasRecentGameWin ||
               (typeof item?.lastGameWinAt === 'number' &&
                 Date.now() - item.lastGameWinAt <= 24 * 60 * 60 * 1000)) && (
-              <Image
-                source={require('../../../assets/trophy.webp')}
-                style={{ width: 10, height: 10, marginLeft: 4 }}
-              />
-            )}
+                <Image
+                  source={require('../../../assets/trophy.webp')}
+                  style={{ width: 10, height: 10, marginLeft: 4 }}
+                />
+              )}
 
             {/* Platform badge (for admins) */}
             {item?.isAdmin && item?.OS && (
@@ -545,40 +460,13 @@ const OnlineUsersList = ({
               </View>
             )}
           </View>
-          {mode === 'gameInvite' && (
-            <Text style={[styles.statusText, { color: isDarkMode ? '#9CA3AF' : '#6B7280' }]}>
-              {isPlaying ? 'Currently Playing' : 'Online'}
-            </Text>
-          )}
         </View>
         {mode === 'view' && (
           <Icon name="chatbubble-outline" size={18} color={isDarkMode ? '#9CA3AF' : '#6B7280'} />
         )}
-        {mode === 'gameInvite' && (
-          <>
-            {isInviting ? (
-              <ActivityIndicator size="small" color={config.colors.primary || '#8B5CF6'} />
-            ) : isInvited ? (
-              <View style={styles.invitedBadge}>
-                <Icon name="checkmark-circle" size={20} color="#10B981" />
-              </View>
-            ) : isPlaying ? (
-              <View style={styles.playingBadge}>
-                <Icon name="game-controller-outline" size={18} color="#F59E0B" />
-              </View>
-            ) : (
-              <TouchableOpacity
-                style={styles.inviteButton}
-                onPress={() => handleGameInvite(item)}
-              >
-                <Icon name="person-add-outline" size={18} color="#fff" />
-              </TouchableOpacity>
-            )}
-          </>
-        )}
       </TouchableOpacity>
     );
-  }, [styles, handleStartChat, isDarkMode, isSelectionMode, selectedUserIds, mode, invitingIds, invitedIds, handleGameInvite]);
+  }, [styles, handleStartChat, isDarkMode, isSelectionMode, selectedUserIds, mode]);
 
   // ✅ Memoize key extractor
   const keyExtractor = useCallback((item) => item?.id || Math.random().toString(), []);
@@ -590,8 +478,8 @@ const OnlineUsersList = ({
       transparent={true}
       onRequestClose={onClose}
     >
-      <TouchableOpacity 
-        style={styles.modalOverlay} 
+      <TouchableOpacity
+        style={styles.modalOverlay}
         activeOpacity={1}
         onPress={onClose}
       >
@@ -599,107 +487,107 @@ const OnlineUsersList = ({
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={{ flex: 1, justifyContent: 'flex-end' }}
           keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
-      >
-        <View 
-          style={styles.modalContent}
-          onStartShouldSetResponder={() => true}
         >
-          {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.headerTitle}>
-              {mode === 'select' ? 'Select Members' : mode === 'gameInvite' ? 'Invite Friends to Play' : 'Online Users'}
-            </Text>
-            <View style={styles.headerRight}>
-              {mode === 'select' ? (
-                // Selection mode header
-                <>
-                  <TouchableOpacity
-                    onPress={onClose}
-                    style={styles.headerButton}
-                  >
-                    <Text style={styles.cancelText}>Cancel</Text>
-                  </TouchableOpacity>
-                  {selectedUserIds.size > 0 && (
+          <View
+            style={styles.modalContent}
+            onStartShouldSetResponder={() => true}
+          >
+            {/* Header */}
+            <View style={styles.header}>
+              <Text style={styles.headerTitle}>
+                {mode === 'select' ? 'Select Members' : 'Online Users'}
+              </Text>
+              <View style={styles.headerRight}>
+                {mode === 'select' ? (
+                  // Selection mode header
+                  <>
                     <TouchableOpacity
-                      onPress={handleCreateOrAddMembers}
-                      style={[styles.headerButton, styles.createGroupButton]}
-                      disabled={loading}
+                      onPress={onClose}
+                      style={styles.headerButton}
                     >
-                      <Text style={styles.createGroupText}>
-                        {userGroup ? `Add (${selectedUserIds.size})` : `Create (${selectedUserIds.size})`}
-                      </Text>
+                      <Text style={styles.cancelText}>Cancel</Text>
                     </TouchableOpacity>
-                  )}
-                </>
-              ) : (
-                // View mode or game invite mode header (just close button)
-                <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                  <Icon name="close" size={22} color={isDarkMode ? '#FFFFFF' : '#000000'} />
-                </TouchableOpacity>
-              )}
+                    {selectedUserIds.size > 0 && (
+                      <TouchableOpacity
+                        onPress={handleCreateOrAddMembers}
+                        style={[styles.headerButton, styles.createGroupButton]}
+                        disabled={loading}
+                      >
+                        <Text style={styles.createGroupText}>
+                          {userGroup ? `Add (${selectedUserIds.size})` : `Create (${selectedUserIds.size})`}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </>
+                ) : (
+                  // View mode or game invite mode header (just close button)
+                  <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                    <Icon name="close" size={22} color={isDarkMode ? '#FFFFFF' : '#000000'} />
+                  </TouchableOpacity>
+                )}
+              </View>
             </View>
-          </View>
 
-          {/* Users List */}
-          {loading ? (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color={config.colors.primary} />
-            </View>
-          ) : allOnlineUsers.length === 0 ? (
-            <View style={styles.emptyContainer}>
-              <Icon 
-                name="people-outline" 
-                size={64} 
-                color={isDarkMode ? '#4B5563' : '#D1D5DB'} 
+            {/* Users List */}
+            {loading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={config.colors.primary} />
+              </View>
+            ) : allOnlineUsers.length === 0 ? (
+              <View style={styles.emptyContainer}>
+                <Icon
+                  name="people-outline"
+                  size={64}
+                  color={isDarkMode ? '#4B5563' : '#D1D5DB'}
+                />
+                <Text style={styles.emptyText}>
+                  No online users
+                </Text>
+              </View>
+            ) : (
+              <FlatList
+                data={allOnlineUsers}
+                renderItem={renderUserItem}
+                keyExtractor={keyExtractor}
+                style={styles.list}
+                contentContainerStyle={styles.listContent}
+                showsVerticalScrollIndicator={false}
+                removeClippedSubviews={true}
+                maxToRenderPerBatch={5}
+                windowSize={5}
+                initialNumToRender={5}
+                onEndReached={handleLoadMore}
+                onEndReachedThreshold={0.5}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode="on-drag"
+                ListFooterComponent={
+                  allOnlineUserIds.length > loadedUserIds.size ? (
+                    <View style={styles.loadMoreContainer}>
+                      {loadingMore ? (
+                        <ActivityIndicator size="small" color={config.colors.primary} />
+                      ) : (
+                        <Text style={styles.loadMoreText}>
+                          {allOnlineUserIds.length - loadedUserIds.size} more users available
+                        </Text>
+                      )}
+                    </View>
+                  ) : null
+                }
               />
-              <Text style={styles.emptyText}>
-                No online users
+            )}
+
+            {/* Footer Info */}
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>
+                {mode === 'select'
+                  ? selectedUserIds.size > 0
+                    ? `${selectedUserIds.size} selected (max ${MAX_GROUP_MEMBERS - 1})`
+                    : 'Select users to create a group'
+                  : `${allOnlineUserIds.length} ${allOnlineUserIds.length === 1 ? 'user' : 'users'} online${allOnlineUsers.length < allOnlineUserIds.length ? ` (loaded ${allOnlineUsers.length})` : ''}`
+                }
               </Text>
             </View>
-          ) : (
-            <FlatList
-              data={allOnlineUsers}
-              renderItem={renderUserItem}
-              keyExtractor={keyExtractor}
-              style={styles.list}
-              contentContainerStyle={styles.listContent}
-              showsVerticalScrollIndicator={false}
-              removeClippedSubviews={true}
-              maxToRenderPerBatch={5}
-              windowSize={5}
-              initialNumToRender={5}
-              onEndReached={handleLoadMore}
-              onEndReachedThreshold={0.5}
-              keyboardShouldPersistTaps="handled"
-              keyboardDismissMode="on-drag"
-              ListFooterComponent={
-                allOnlineUserIds.length > loadedUserIds.size ? (
-                  <View style={styles.loadMoreContainer}>
-                    {loadingMore ? (
-                      <ActivityIndicator size="small" color={config.colors.primary} />
-                    ) : (
-                      <Text style={styles.loadMoreText}>
-                        {allOnlineUserIds.length - loadedUserIds.size} more users available
-                      </Text>
-                    )}
-                  </View>
-                ) : null
-              }
-            />
-          )}
-
-          {/* Footer Info */}
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>
-              {mode === 'select'
-                ? selectedUserIds.size > 0
-                  ? `${selectedUserIds.size} selected (max ${MAX_GROUP_MEMBERS - 1})`
-                  : 'Select users to create a group'
-                : `${allOnlineUserIds.length} ${allOnlineUserIds.length === 1 ? 'user' : 'users'} online${allOnlineUsers.length < allOnlineUserIds.length ? ` (loaded ${allOnlineUsers.length})` : ''}`
-              }
-            </Text>
           </View>
-        </View>
         </KeyboardAvoidingView>
       </TouchableOpacity>
 

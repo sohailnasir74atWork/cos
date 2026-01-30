@@ -12,7 +12,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { getStyles } from '../Style';
 import config from '../../Helper/Environment';
 import { useGlobalState } from '../../GlobelStats';
-import { useTranslation } from 'react-i18next';
+
 import InterstitialAdManager from '../../Ads/IntAd';
 import { useLocalState } from '../../LocalGlobelStats';
 import { validateContent } from '../../Helper/ContentModeration';
@@ -22,8 +22,8 @@ import RNFS from 'react-native-fs';
 
 const BUNNY_STORAGE_HOST = 'storage.bunnycdn.com';
 const BUNNY_STORAGE_ZONE = 'post-gag';
-const BUNNY_ACCESS_KEY   = '1b7e1a85-dff7-4a98-ba701fc7f9b9-6542-46e2';
-const BUNNY_CDN_BASE     = 'https://pull-gag.b-cdn.net';
+const BUNNY_ACCESS_KEY = '1b7e1a85-dff7-4a98-ba701fc7f9b9-6542-46e2';
+const BUNNY_CDN_BASE = 'https://pull-gag.b-cdn.net';
 
 // ✅ Move base64ToBytes outside component (pure function)
 const base64ToBytes = (base64) => {
@@ -83,7 +83,7 @@ const PrivateMessageInput = ({
   const { localState } = useLocalState();
   const { theme, user } = useGlobalState();
   const isDark = theme === 'dark';
-  const { t } = useTranslation();
+
 
   // ✅ Memoize styles
   const styles = useMemo(() => getStyles(isDark), [isDark]);
@@ -179,9 +179,9 @@ const PrivateMessageInput = ({
       const userId = user?.id ?? 'anon';
 
       try {
-        const filename   = `${Date.now()}-${Math.floor(Math.random() * 1e6)}.jpg`;
+        const filename = `${Date.now()}-${Math.floor(Math.random() * 1e6)}.jpg`;
         const remotePath = `uploads/${encodeURIComponent(userId)}/${encodeURIComponent(filename)}`;
-        const uploadUrl  = `https://${BUNNY_STORAGE_HOST}/${BUNNY_STORAGE_ZONE}/${remotePath}`;
+        const uploadUrl = `https://${BUNNY_STORAGE_HOST}/${BUNNY_STORAGE_ZONE}/${remotePath}`;
 
         // read file as base64
         const base64 = await RNFS.readFile(uri.replace('file://', ''), 'base64');
@@ -264,7 +264,7 @@ const PrivateMessageInput = ({
     setMessageCount(prevCount => {
       const newCount = prevCount + 1;
       if (!localState?.isPro && newCount % 15 === 0) {
-        InterstitialAdManager.showAd(() => {});
+        InterstitialAdManager.showAd(() => { });
       }
       return newCount;
     });
@@ -408,7 +408,7 @@ const PrivateMessageInput = ({
 
         <TextInput
           style={[styles.input, { color: isDark ? '#FFF' : '#000' }]}
-          placeholder={t('chat.type_message')}
+          placeholder="Type a message..."
           placeholderTextColor="#888"
           value={input}
           onChangeText={setInput}
@@ -429,7 +429,7 @@ const PrivateMessageInput = ({
           disabled={!hasContent || isSending || isBanned}
         >
           <Text style={styles.sendButtonText}>
-            {isSending ? t('chat.sending') : t('chat.send')}
+            {isSending ? "Sending..." : "Send"}
           </Text>
         </TouchableOpacity>
       </View>

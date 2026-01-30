@@ -3,8 +3,8 @@ import { Appearance } from 'react-native';
 import { createMMKV } from 'react-native-mmkv'
 import Purchases from 'react-native-purchases';
 import config from './Helper/Environment';
-import { useTranslation } from 'react-i18next';
-import { mixpanel } from './AppHelper/MixPenel';
+
+
 import { showErrorMessage, showSuccessMessage } from './Helper/MessageHelper';
 
 const storage = createMMKV()
@@ -67,7 +67,7 @@ export const LocalStateProvider = ({ children }) => {
   // const [isPro, setIsPro] = useState(true); // Sync with MMKV storage
   const [packages, setPackages] = useState([]);
   const [mySubscriptions, setMySubscriptions] = useState([]);
-  const { t } = useTranslation();
+
 
 
 
@@ -259,11 +259,6 @@ export const LocalStateProvider = ({ children }) => {
       );
 
       if (track) {
-        mixpanel.track('Purchase Completed', {
-          package: packageToPurchase.identifier,
-          price: packageToPurchase.product.price,
-          currency: packageToPurchase.product.currencyCode,
-        });
       }
 
       showSuccessMessage("Success", "Purchase completed successfully!");

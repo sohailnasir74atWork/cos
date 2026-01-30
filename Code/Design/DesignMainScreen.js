@@ -8,7 +8,7 @@ import {
   Text,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { 
+import {
   collection,
   doc,
   getDoc,
@@ -74,18 +74,18 @@ const DesignFeedScreen = ({ route }) => {
   }, [localState.bannedUsers]);
 
   function interleaveAds(items, showAds) {
-     if (!showAds) return items;
-      const out = [];
-     let real = 0;
+    if (!showAds) return items;
+    const out = [];
+    let real = 0;
     for (let i = 0; i < items.length; i++) {
-       out.push(items[i]);
-        real++;
-        if (real > 0 && real % AD_FREQUENCY === 0) {
-          out.push({ __type: 'ad', id: `ad-${i}` });
-        }
-     }
+      out.push(items[i]);
+      real++;
+      if (real > 0 && real % AD_FREQUENCY === 0) {
+        out.push({ __type: 'ad', id: `ad-${i}` });
+      }
+    }
     return out;
-     }
+  }
   // console.log('mainscreen')
   const fetchMyPosts = async (tag = null) => {
     if (!user?.id) return;
@@ -97,8 +97,8 @@ const DesignFeedScreen = ({ route }) => {
         where('userId', '==', user.id),
         orderBy('createdAt', 'desc')
       );
-      
-  
+
+
       if (tag) {
         q = query(
           collection(firestoreDB, 'designPosts'),
@@ -106,12 +106,12 @@ const DesignFeedScreen = ({ route }) => {
           where('selectedTags', 'array-contains', tag),
           orderBy('createdAt', 'desc')
         );
-        
+
       }
-  
+
       const snapshot = await getDocs(q);
       const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-      
+
       // console.log('✅ My Posts fetched:', data.length);
       setMyPosts(data);
       setHasMore(snapshot.docs.length > 0);
@@ -123,32 +123,32 @@ const DesignFeedScreen = ({ route }) => {
       setRefreshing(false);
     }
   };
-  
+
   const deleteUsersLatestPosts = async (userId, n = 15) => {
     if (!userId) throw new Error('userId is required');
-  
+
     const q = query(
       collection(firestoreDB, 'designPosts'),
       where('userId', '==', userId),
       orderBy('createdAt', 'desc'),
       limit(n)
     );
-  
+
     const snap = await getDocs(q);
     if (snap.empty) return [];
-  
+
     const batch = writeBatch(firestoreDB);
     const ids = [];
-  
+
     snap.docs.forEach(d => {
       batch.delete(d.ref);
       ids.push(d.id);
     });
-  
+
     await batch.commit();
     return ids;
   };
-  
+
   // useEffect(() => {
   //   nativeAdPool.fillIfNeeded();
   //   return () => nativeAdPool.destroyAll();
@@ -165,9 +165,9 @@ const DesignFeedScreen = ({ route }) => {
         orderBy('createdAt', 'desc'),
         limit(5)
       );
-      
+
       const snapshot = await getDocs(q);
-      
+
 
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setPosts(data);
@@ -183,16 +183,16 @@ const DesignFeedScreen = ({ route }) => {
 
 
   const skeletonArray = useMemo(() => Array.from({ length: 5 }), []);
-    const handleDeletePost = async (postId) => {
-      try {
-        await deleteDoc(doc(firestoreDB, 'designPosts', postId));
-        setPosts(prev => prev.filter(p => p.id !== postId));
-        showMessage({ message: 'Post deleted', type: 'success' });
-      } catch (err) {
-        showMessage({ message: 'Failed to delete post', type: 'danger' });
-      }
-    };
-    
+  const handleDeletePost = async (postId) => {
+    try {
+      await deleteDoc(doc(firestoreDB, 'designPosts', postId));
+      setPosts(prev => prev.filter(p => p.id !== postId));
+      showMessage({ message: 'Post deleted', type: 'success' });
+    } catch (err) {
+      showMessage({ message: 'Failed to delete post', type: 'danger' });
+    }
+  };
+
 
 
 
@@ -203,9 +203,9 @@ const DesignFeedScreen = ({ route }) => {
         orderBy('createdAt', 'desc'),
         limit(5)
       );
-      
+
       const snapshot = await getDocs(q);
-      
+
 
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setPosts(data);
@@ -218,7 +218,7 @@ const DesignFeedScreen = ({ route }) => {
       setRefreshing(false);
     }
   };
-// console.log(posts)
+  // console.log(posts)
   useEffect(() => {
     fetchInitialPosts();
   }, []);
@@ -241,18 +241,18 @@ const DesignFeedScreen = ({ route }) => {
   }, [navigation, selectedTag, filterMyPosts, fetchInitialPosts, fetchMyPosts, fetchPostsByTag]);
   useEffect(() => {
     if (posts.length === 0) return;
-  
+
     const unsubscribers = posts.map(post =>
       onSnapshot(doc(firestoreDB, 'designPosts', post.id), snap => {
         if (!snap.exists) return;   // 👈 modular API uses exists()
-  
+
         const updatedPost = { id: snap.id, ...snap.data() };
         setPosts(prev =>
           prev.map(p => (p.id === updatedPost.id ? updatedPost : p))
         );
       })
     );
-  
+
     return () => {
       unsubscribers.forEach(unsub => {
         if (typeof unsub === 'function') {
@@ -261,8 +261,8 @@ const DesignFeedScreen = ({ route }) => {
       });
     };
   }, [JSON.stringify(posts.map(p => p.id))]);
-  
-  
+
+
 
   const loadMorePosts = async () => {
     if (loadingMore || !hasMore || !lastVisibleDoc) return;
@@ -316,12 +316,12 @@ const DesignFeedScreen = ({ route }) => {
     if (isSubmittingPost) {
       return;
     }
-    
+
     if (!user?.id) return;
-    
+
     // ✅ Set submitting state IMMEDIATELY to prevent duplicate submissions
     setIsSubmittingPost(true);
-    
+
     try {
       // ✅ 2-minute cooldown check (using Date.now() for accurate comparison)
       const now = Date.now();
@@ -330,11 +330,11 @@ const DesignFeedScreen = ({ route }) => {
         const secondsLeft = Math.ceil((COOLDOWN_MS - (now - lastPostTime)) / 1000);
         const minutesLeft = Math.floor(secondsLeft / 60);
         const remainingSeconds = secondsLeft % 60;
-        const timeMessage = minutesLeft > 0 
+        const timeMessage = minutesLeft > 0
           ? `${minutesLeft} minute${minutesLeft === 1 ? '' : 's'} and ${remainingSeconds} second${remainingSeconds === 1 ? '' : 's'}`
           : `${secondsLeft} second${secondsLeft === 1 ? '' : 's'}`;
-        showMessage({ 
-          message: `Please wait ${timeMessage} before posting again.`, 
+        showMessage({
+          message: `Please wait ${timeMessage} before posting again.`,
           type: 'danger',
           duration: 3000
         });
@@ -351,17 +351,17 @@ const DesignFeedScreen = ({ route }) => {
         setIsSubmittingPost(false);
         throw new Error('Missing tags'); // ✅ Throw error to prevent clearing form
       }
-      
+
       // Ensure imageUrls is an array (PostCard expects imageUrl as array)
-      const imageUrlArray = Array.isArray(imageUrls) 
+      const imageUrlArray = Array.isArray(imageUrls)
         ? imageUrls.filter(url => url && typeof url === 'string' && url.trim().length > 0)
         : (imageUrls && typeof imageUrls === 'string' && imageUrls.trim().length > 0 ? [imageUrls] : []);
-      
+
       // ✅ Calculate hasRecentGameWin (similar to Trader.jsx)
       const hasRecentWin =
         typeof user?.lastGameWinAt === 'number' &&
         now - user.lastGameWinAt <= 24 * 60 * 60 * 1000; // last win within 24h
-      
+
       // ✅ Images are optional - posts can have text only, images only, or both
       // ✅ Tags are always required and must be saved to database
       const post = {
@@ -372,8 +372,8 @@ const DesignFeedScreen = ({ route }) => {
         avatar: user?.avatar || null,
         createdAt: serverTimestamp(),
         likes: {},
-        selectedTags: Array.isArray(selectedTags) && selectedTags.length > 0 
-          ? selectedTags 
+        selectedTags: Array.isArray(selectedTags) && selectedTags.length > 0
+          ? selectedTags
           : (selectedTags ? [selectedTags] : ['Discussion']), // ✅ Always ensure tags exist
         email: currentUserEmail || null,
         report: false,
@@ -383,16 +383,16 @@ const DesignFeedScreen = ({ route }) => {
         hasRecentGameWin: hasRecentWin, // ✅ Game win info
         lastGameWinAt: user?.lastGameWinAt || null, // ✅ Game win timestamp
       };
-      
+
       await addDoc(collection(firestoreDB, 'designPosts'), post);
-      
+
       // ✅ Update last post time after successful upload
       setLastPostTime(now);
-      
+
       // ✅ Refresh feed after posting
       setRefreshing(true);
       await fetchInitialPosts();
-      
+
       showMessage({
         message: 'Success',
         description: 'Post created successfully',
@@ -415,17 +415,17 @@ const DesignFeedScreen = ({ route }) => {
       setIsSubmittingPost(false);
     }
   };
-  
+
   const renderItem = ({ item, index }) => {
     if (initialLoading) {
       return <View style={[styles.skeletonPost, isDarkMode && { backgroundColor: '#444' }]} />;
     }
-      // if (item?.__type === 'ad') {
-      //    return <NativeFeedAd mediaHeight={220} />;
-      //  }
-      //  if (item?.__type === 'ad') {
-      //    return <View style={{flex:1}}><SingleNativeAd  /></View>;
-      //  }
+    // if (item?.__type === 'ad') {
+    //    return <NativeFeedAd mediaHeight={220} />;
+    //  }
+    //  if (item?.__type === 'ad') {
+    //    return <View style={{flex:1}}><SingleNativeAd  /></View>;
+    //  }
 
     return (
       <PostCard
@@ -457,18 +457,18 @@ const DesignFeedScreen = ({ route }) => {
       item?.__type === 'ad' || !bannedUsers.includes(item?.userId)
     );
   }, [initialLoading, baseList, bannedUsers, skeletonArray]);
-  
+
   const dataToRender = initialLoading
     ? skeletonArray
     : interleaveAds(filteredBase, false);
 
   const keyExtractor = (item, index) =>
     // initialLoading ? `skeleton-${index}` : item?.id || `post-${index}`;
-   initialLoading
-  ? `skeleton-${index}`
-   : item?.__type === 'ad'
-      ? item.id
-      : `${item?.id}_${index}}` || `post-${index}`;
+    initialLoading
+      ? `skeleton-${index}`
+      : item?.__type === 'ad'
+        ? item.id
+        : `${item?.id}_${index}}` || `post-${index}`;
 
   return (
     <View style={[styles.container, isDarkMode && styles.darkContainer]}>
@@ -485,7 +485,7 @@ const DesignFeedScreen = ({ route }) => {
         }}
         ListFooterComponent={
           loadingMore && !initialLoading ? (
-            <ActivityIndicator size="small" color={config.colors.primary} />
+            <ActivityIndicator size="small" color={config.getPrimaryColor(isDarkMode)} />
           ) : null
         }
         ListEmptyComponent={
@@ -511,7 +511,7 @@ const DesignFeedScreen = ({ route }) => {
       <TouchableOpacity style={styles.fab} onPress={() =>
         user?.id ? setModalVisible(true) : setSigninDrawerVisible(true)
       }>
-        <FontAwesome name="circle-plus" size={44} color={config.colors.primary} />
+        <FontAwesome name="circle-plus" size={44} color={config.getPrimaryColor(isDarkMode)} />
       </TouchableOpacity>
 
       <UploadModal

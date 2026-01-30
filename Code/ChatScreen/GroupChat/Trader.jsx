@@ -22,8 +22,8 @@ import ConditionalKeyboardWrapper from '../../Helper/keyboardAvoidingContainer';
 import { useHaptic } from '../../Helper/HepticFeedBack';
 import { useLocalState } from '../../LocalGlobelStats';
 import database, { onValue, ref, remove, query, orderByKey, limitToLast, endAt, onChildAdded, off, get, child, push } from '@react-native-firebase/database';
-import { useTranslation } from 'react-i18next';
-import { mixpanel } from '../../AppHelper/MixPenel';
+
+
 import BannerAdComponent from '../../Ads/bannerAds';
 import { logoutUser } from '../../Firebase/UserLogics';
 import { showMessage } from 'react-native-flash-message';
@@ -52,7 +52,7 @@ const ChatScreen = ({ selectedTheme, bannedUsers, modalVisibleChatinfo, setChatF
   const [signinMessage, setSigninMessage] = useState(false);
   const { triggerHapticFeedback } = useHaptic();
   const { localState } = useLocalState()
-  const { t } = useTranslation();
+
   const [pendingMessages, setPendingMessages] = useState([]);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const isFocused = useIsFocused();
@@ -129,7 +129,7 @@ const ChatScreen = ({ selectedTheme, bannedUsers, modalVisibleChatinfo, setChatF
       if (navigation && typeof navigation.navigate === 'function') {
         navigation.navigate('PrivateChat', { selectedUser, selectedTheme });
       }
-      mixpanel.track("Inbox Chat");
+
     };
     // ✅ Removed navigation ad - exit ads are shown when leaving chat instead
     callbackfunction();
@@ -353,8 +353,8 @@ const ChatScreen = ({ selectedTheme, bannedUsers, modalVisibleChatinfo, setChatF
     // ✅ Fixed: use && instead of &
     if (!user?.id && !signinMessage) {
       Alert.alert(
-        t('misc.loginToStartChat'),
-        t('misc.loginRequired'),
+        "Login to Start Chat",
+        "Login Required",
         [{ text: 'OK', onPress: () => setIsSigninDrawerVisible(true) }]
       );
       setSigninMessage(true);
@@ -366,7 +366,7 @@ const ChatScreen = ({ selectedTheme, bannedUsers, modalVisibleChatinfo, setChatF
     } else {
       // console.log('No more messages to load or currently loading.');
     }
-  }, [user?.id, signinMessage, loading, lastLoadedKey, loadMessages, t]);
+  }, [user?.id, signinMessage, loading, lastLoadedKey, loadMessages]);
 
 
 
@@ -383,7 +383,7 @@ const ChatScreen = ({ selectedTheme, bannedUsers, modalVisibleChatinfo, setChatF
       ]);
     } catch (error) {
       console.error('Error pinning message:', error);
-      Alert.alert(t('home.alert.error'), 'Could not pin the message. Please try again.');
+      Alert.alert("Error", 'Could not pin the message. Please try again.');
     }
   };
 
@@ -401,7 +401,7 @@ const ChatScreen = ({ selectedTheme, bannedUsers, modalVisibleChatinfo, setChatF
       });
     } catch (error) {
       console.error('Error unpinning message:', error);
-      Alert.alert(t('home.alert.error'), 'Could not unpin the message. Please try again.');
+      Alert.alert("Error", 'Could not unpin the message. Please try again.');
     }
   };
 
@@ -415,7 +415,7 @@ const ChatScreen = ({ selectedTheme, bannedUsers, modalVisibleChatinfo, setChatF
       setPinnedMessages([]);
     } catch (error) {
       console.error('Error clearing pinned messages:', error);
-      Alert.alert(t('home.alert.error'), 'Could not clear pinned messages. Please try again.');
+      Alert.alert("Error", 'Could not clear pinned messages. Please try again.');
     }
   };
 
@@ -508,31 +508,31 @@ const ChatScreen = ({ selectedTheme, bannedUsers, modalVisibleChatinfo, setChatF
 
     // ✅ Validate fruits count - maximum 18 fruits allowed
     if (hasFruits && fruits.length > 18) {
-      Alert.alert(t('home.alert.error'), 'You can only send up to 18 pets in a message.');
+      Alert.alert("Error", 'You can only send up to 18 pets in a message.');
       return;
     }
 
     // Disallow empty text + no fruits
     if (!trimmedInput && !hasFruits && !emojiUrl) {
-      Alert.alert(t('home.alert.error'), 'Message cannot be empty.');
+      Alert.alert("Error", 'Message cannot be empty.');
       return;
     }
 
     // Profanity check
     if (trimmedInput && leoProfanity.check(trimmedInput)) {
-      Alert.alert(t('home.alert.error'), t('misc.inappropriateLanguage'));
+      Alert.alert("Error", "Inappropriate language detected.");
       return;
     }
 
     // Length check
     if (trimmedInput.length > MAX_CHARACTERS) {
-      Alert.alert(t('home.alert.error'), t('misc.messageTooLong'));
+      Alert.alert("Error", "Message is too long.");
       return;
     }
 
     // Cooldown check
     if (isCooldown) {
-      Alert.alert(t('home.alert.error'), t('misc.sendingTooQuickly'));
+      Alert.alert("Error", "You are sending messages too quickly.");
       return;
     }
 
@@ -552,7 +552,7 @@ const ChatScreen = ({ selectedTheme, bannedUsers, modalVisibleChatinfo, setChatF
 
       if (isDuplicate) {
         Alert.alert(
-          t('home.alert.error'),
+          "Error",
           'You cannot send the same message twice. Please modify your message.',
         );
         return;
@@ -562,7 +562,7 @@ const ChatScreen = ({ selectedTheme, bannedUsers, modalVisibleChatinfo, setChatF
     // Link check (only for non-pro & non-admin)
     const containsLink = trimmedInput ? LINK_REGEX.test(trimmedInput) : false;
     if (containsLink && !localState?.isPro && !isAdmin) {
-      Alert.alert(t('home.alert.error'), t('misc.proUsersOnlyLinks'));
+      Alert.alert("Error", "Only Pro users can send links.");
       return;
     }
 
@@ -620,7 +620,7 @@ const ChatScreen = ({ selectedTheme, bannedUsers, modalVisibleChatinfo, setChatF
     } catch (error) {
       console.error('Error sending message:', error);
       Alert.alert(
-        t('home.alert.error'),
+        "Error",
         'Could not send your message. Please try again.',
       );
     }
@@ -702,7 +702,7 @@ const ChatScreen = ({ selectedTheme, bannedUsers, modalVisibleChatinfo, setChatF
                   setIsSigninDrawerVisible(true); triggerHapticFeedback('impactLight');
                 }}
               >
-                <Text style={styles.loginText}>{t('misc.loginToStartChat')}</Text>
+                <Text style={styles.loginText}>Login to Start Chat</Text>
               </TouchableOpacity>
 
             )}
@@ -723,7 +723,7 @@ const ChatScreen = ({ selectedTheme, bannedUsers, modalVisibleChatinfo, setChatF
             visible={isSigninDrawerVisible}
             onClose={handleLoginSuccess}
             selectedTheme={selectedTheme}
-            message={t('misc.loginRequired')}
+            message="Login Required"
             screen='Chat'
 
           />

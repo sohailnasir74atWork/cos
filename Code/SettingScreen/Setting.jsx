@@ -32,11 +32,11 @@ import notifee from '@notifee/react-native';
 import SubscriptionScreen from './OfferWall';
 import { ref, remove, get, update, set } from '@react-native-firebase/database';
 import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
-import { useLanguage } from '../Translation/LanguageProvider';
-import { useTranslation } from 'react-i18next';
+
+
 import { getFlag } from '../Helper/CountryCheck';
 import { showSuccessMessage, showErrorMessage } from '../Helper/MessageHelper';
-import { setAppLanguage } from '../../i18n';
+
 import { Image as CompressorImage } from 'react-native-compressor';
 import RNFS from 'react-native-fs';
 
@@ -155,7 +155,7 @@ const EditProfileDrawerContent = ({
   bio,
   setBio,
   handleSaveChanges,
-  t,
+
   config,
   user,
 }) => {
@@ -446,7 +446,7 @@ const EditProfileDrawerContent = ({
         <Text style={{ color: '#fff', fontSize: 15, fontFamily: 'Lato-Bold' }}>
           {shouldDisableSave
             ? `Edit Available in ${cooldownStatus.daysRemaining} Day${cooldownStatus.daysRemaining === 1 ? '' : 's'}`
-            : t('settings.save_changes')}
+            : "Save Changes"}
         </Text>
       </TouchableOpacity>
     </Animated.View>
@@ -462,7 +462,7 @@ export default function SettingsScreen({ selectedTheme }) {
   const { updateLocalState, localState, mySubscriptions } = useLocalState()
   const [isPermissionGranted, setIsPermissionGranted] = useState(false);
   const [showOfferWall, setShowofferWall] = useState(false);
-  const { language, changeLanguage } = useLanguage();
+
   const [ownedPets, setOwnedPets] = useState([]);
   const [wishlistPets, setWishlistPets] = useState([]);
   const [petModalVisible, setPetModalVisible] = useState(false);
@@ -512,7 +512,7 @@ export default function SettingsScreen({ selectedTheme }) {
 
 
 
-  const { t } = useTranslation();
+
   const BASE_ADOPTME_URL = 'https://elvebredd.com';
 
 
@@ -697,7 +697,7 @@ export default function SettingsScreen({ selectedTheme }) {
 
 
   const { triggerHapticFeedback } = useHaptic();
-  const themes = [t('settings.theme_system'), t('settings.theme_light'), t('settings.theme_dark')];
+  const themes = ["System Default", "Light", "Dark"];
   // const themes = ['System', 'Light','Dark'];
 
   const handleToggle = (value) => {
@@ -712,7 +712,7 @@ export default function SettingsScreen({ selectedTheme }) {
         "Pro Feature",
         "Buy a plan to unlock this feature",
         [
-          { text: t("home.cancel"), style: 'cancel' },
+          { text: "Cancel", style: 'cancel' },
           {
             text: "Upgrade",
             style: 'default',
@@ -755,7 +755,7 @@ export default function SettingsScreen({ selectedTheme }) {
         "Pro Feature",
         "Buy a plan to unlock this feature",
         [
-          { text: t("home.cancel"), style: 'cancel' },
+          { text: "Cancel", style: 'cancel' },
           {
             text: "Upgrade",
             style: 'default',
@@ -931,16 +931,16 @@ export default function SettingsScreen({ selectedTheme }) {
   };
 
   const languageOptions = [
-    { code: "en", label: t("settings.languages.en"), flag: "🇺🇸" },
-    { code: "fil", label: t("settings.languages.fil"), flag: "🇵🇭" },
-    { code: "vi", label: t("settings.languages.vi"), flag: "🇻🇳" },
-    { code: "pt", label: t("settings.languages.pt"), flag: "🇵🇹" },
-    { code: "id", label: t("settings.languages.id"), flag: "🇮🇩" },
-    { code: "es", label: t("settings.languages.es"), flag: "🇪🇸" },
-    { code: "fr", label: t("settings.languages.fr"), flag: "🇫🇷" },
-    { code: "de", label: t("settings.languages.de"), flag: "🇩🇪" },
-    { code: "ru", label: t("settings.languages.ru"), flag: "🇷🇺" },
-    { code: "ar", label: t("settings.languages.ar"), flag: "🇸🇦" }
+    { code: "en", label: "English", flag: "🇺🇸" },
+    { code: "fil", label: "Filipino", flag: "🇵🇭" },
+    { code: "vi", label: "Vietnamese", flag: "🇻🇳" },
+    { code: "pt", label: "Portuguese", flag: "🇵🇹" },
+    { code: "id", label: "Indonesian", flag: "🇮🇩" },
+    { code: "es", label: "Spanish", flag: "🇪🇸" },
+    { code: "fr", label: "French", flag: "🇫🇷" },
+    { code: "de", label: "German", flag: "🇩🇪" },
+    { code: "ru", label: "Russian", flag: "🇷🇺" },
+    { code: "ar", label: "Arabic", flag: "🇸🇦" }
   ];
 
 
@@ -1183,12 +1183,12 @@ export default function SettingsScreen({ selectedTheme }) {
       const settings = await notifee.requestPermission();
       if (settings.authorizationStatus === 0) {
         Alert.alert(
-          t("settings.permission_required"),
-          t("settings.notification_permissions_disabled"),
+          "Permission Required",
+          "Notifications are disabled. Please enable them in settings. this will help you to get notified when you receive a trade offer or message",
           [
-            { text: t("home.cancel"), style: 'cancel' },
+            { text: "Cancel", style: 'cancel' },
             {
-              text: t("settings.go_to_settings"),
+              text: "Go to Settings",
               onPress: () => Linking.openSettings(), // Redirect to app settings
             },
           ]
@@ -1229,8 +1229,8 @@ export default function SettingsScreen({ selectedTheme }) {
 
     if (newDisplayName.length > MAX_NAME_LENGTH) {
       showErrorMessage(
-        t("home.alert.error"),
-        t("settings.display_name_length_error")
+        "Error",
+        "Display name must be between 3 and 15 characters."
       );
       return;
     }
@@ -1262,7 +1262,7 @@ export default function SettingsScreen({ selectedTheme }) {
 
     // if (!USERNAME_REGEX.test(newDisplayName)) {
     //   showErrorMessage(
-    //     t("home.alert.error"),
+    //     "Error",
     //     "Only letters, numbers, '-' and '_' are allowed in the username."
     //   );
     //   return;
@@ -1305,13 +1305,13 @@ export default function SettingsScreen({ selectedTheme }) {
 
       setDrawerVisible(false);
       showSuccessMessage(
-        t("home.alert.success"),
-        t("settings.profile_success")
+        "Success",
+        "Profile updated successfully."
       );
     } catch (error) {
       console.error('Error updating profile:', error);
       showErrorMessage(
-        t("home.alert.error"),
+        "Error",
         "Failed to save profile changes. Please try again."
       );
     }
@@ -1668,12 +1668,12 @@ export default function SettingsScreen({ selectedTheme }) {
     if (!user?.id || !firestoreDB) return;
 
     Alert.alert(
-      t("trade.delete_confirmation_title") || "Delete Trade",
-      t("trade.delete_confirmation_message") || "Are you sure you want to delete this trade?",
+      "Delete Trade",
+      "Are you sure you want to delete this trade?",
       [
-        { text: t("trade.cancel") || "Cancel", style: "cancel" },
+        { text: "Cancel", style: "cancel" },
         {
-          text: t("trade.delete") || "Delete",
+          text: "Delete",
           style: "destructive",
           onPress: async () => {
             try {
@@ -1692,14 +1692,14 @@ export default function SettingsScreen({ selectedTheme }) {
 
               setModalMyTrades((prev) => prev.filter((trade) => trade.id !== tradeId));
               showSuccessMessage(
-                t("trade.delete_success") || "Success",
-                t("trade.delete_success_message") || "Trade deleted successfully"
+                "Success",
+                "Trade deleted successfully."
               );
             } catch (error) {
-              console.error("Error deleting trade:", error);
+              // console.error("🔥 [handleDelete] Error deleting trade:", error);
               showErrorMessage(
-                t("trade.delete_error") || "Error",
-                t("trade.delete_error_message") || "Failed to delete trade"
+                "Error",
+                "Failed to delete trade."
               );
             } finally {
               setDeletingTradeId(null);
@@ -1708,7 +1708,7 @@ export default function SettingsScreen({ selectedTheme }) {
         },
       ]
     );
-  }, [user?.id, firestoreDB, localState.featuredCount, updateLocalState, t]);
+  }, [user?.id, firestoreDB, localState.featuredCount, updateLocalState]);
 
   // Delete all trades
   const handleDeleteAllTrades = useCallback(async () => {
@@ -1718,7 +1718,7 @@ export default function SettingsScreen({ selectedTheme }) {
       "Delete All Trades",
       `Are you sure you want to delete all ${modalMyTrades.length} trades? This action cannot be undone.`,
       [
-        { text: t("trade.cancel") || "Cancel", style: "cancel" },
+        { text: "Cancel", style: "cancel" },
         {
           text: "Delete All",
           style: "destructive",
@@ -1769,7 +1769,7 @@ export default function SettingsScreen({ selectedTheme }) {
         },
       ]
     );
-  }, [user?.id, firestoreDB, modalMyTrades, localState.featuredCount, updateLocalState, t]);
+  }, [user?.id, firestoreDB, modalMyTrades, localState.featuredCount, updateLocalState]);
 
   // Render trade item for modal
   const renderTradeItem = useCallback((trade) => {
@@ -1888,7 +1888,7 @@ export default function SettingsScreen({ selectedTheme }) {
                   marginRight: 8,
                 }}>
                   <Text style={{ color: '#fff', fontSize: 10, fontWeight: '600' }}>
-                    {t(deal.label) || deal.label}
+                    {deal.label}
                   </Text>
                 </View>
                 <Text style={{
@@ -2138,7 +2138,7 @@ export default function SettingsScreen({ selectedTheme }) {
         )}
       </View>
     );
-  }, [isDarkMode, t, deletingTradeId, handleDeleteTrade, localState.isGG, localState.imgurl, localState.imgurlGG, parsedValuesData, firestoreDB]);
+  }, [isDarkMode, deletingTradeId, handleDeleteTrade, localState.isGG, localState.imgurl, localState.imgurlGG, parsedValuesData, firestoreDB]);
 
   // Load more "gave" reviews in modal - keeps loading until all are fetched
   const loadMoreGaveModalReviews = useCallback(async () => {
@@ -2399,14 +2399,14 @@ export default function SettingsScreen({ selectedTheme }) {
     try {
       await logoutUser(setUser);
       showSuccessMessage(
-        t("home.alert.success"),
-        t("settings.logout_success")
+        "Success",
+        "Logged out successfully."
       );
     } catch (error) {
       console.error('Error during logout:', error);
       showErrorMessage(
-        t("home.alert.error"),
-        t("settings.logout_error")
+        "Error",
+        "Failed to log out."
       );
     }
   };
@@ -2415,7 +2415,7 @@ export default function SettingsScreen({ selectedTheme }) {
     triggerHapticFeedback('impactLight');
 
     if (!user?.id) {
-      showErrorMessage(t("home.alert.error"), t("settings.delete_error"));
+      showErrorMessage("Error", "Failed to delete account.");
       return;
     }
 
@@ -2425,11 +2425,11 @@ export default function SettingsScreen({ selectedTheme }) {
     const showAcknowledgment = () =>
       new Promise((resolve, reject) => {
         Alert.alert(
-          t("settings.delete_account"),
-          t("settings.delete_account_warning"),
+          "Delete Account",
+          "Are you sure you want to delete your account? This action cannot be undone.",
           [
-            { text: t("home.cancel"), style: 'cancel', onPress: reject },
-            { text: t("settings.proceed"), style: 'destructive', onPress: resolve },
+            { text: "Cancel", style: 'cancel', onPress: reject },
+            { text: "Proceed", style: 'destructive', onPress: resolve },
           ]
         );
       });
@@ -2438,11 +2438,11 @@ export default function SettingsScreen({ selectedTheme }) {
     const showFinalConfirmation = () =>
       new Promise((resolve, reject) => {
         Alert.alert(
-          t("settings.confirm_deletion"),
-          t("settings.confirm_deletion_warning"),
+          "Confirm Deletion",
+          "This will permanently delete your data.",
           [
-            { text: t("home.cancel"), style: 'cancel', onPress: reject },
-            { text: t("trade.delete"), style: 'destructive', onPress: resolve },
+            { text: "Cancel", style: 'cancel', onPress: reject },
+            { text: "Delete", style: 'destructive', onPress: resolve },
           ]
         );
       });
@@ -2461,7 +2461,7 @@ export default function SettingsScreen({ selectedTheme }) {
       if (currentUser) {
         await currentUser.delete(); // 🔐 Requires recent login
       } else {
-        showErrorMessage(t("home.alert.error"), t("settings.user_not_found"));
+        showErrorMessage("Error", "User not found.");
         return;
       }
 
@@ -2470,25 +2470,25 @@ export default function SettingsScreen({ selectedTheme }) {
 
       // ✅ Success
       showSuccessMessage(
-        t("home.alert.success"),
-        t("settings.success_deleted")
+        "Success",
+        "Account deleted successfully."
       );
 
     } catch (error) {
       if (error?.code === 'auth/requires-recent-login') {
         showErrorMessage(
-          t("settings.session_expired"),
-          t("settings.session_expired_message")
+          "Session Expired",
+          "Please log in again."
         );
       } else if (error?.message) {
         showErrorMessage(
-          t("home.alert.error"),
+          "Error",
           error.message
         );
       } else {
         showErrorMessage(
-          t("home.alert.error"),
-          t("settings.delete_error")
+          "Error",
+          "There was an error deleting your account. Please try again later.",
         );
       }
     }
@@ -2517,8 +2517,8 @@ export default function SettingsScreen({ selectedTheme }) {
     } else {
       // Alert.alert(t("settings.notice"), t("settings.login_to_customize_profile")); // Show alert if user is not logged in
       showErrorMessage(
-        t("settings.notice"),
-        t("settings.login_to_customize_profile")
+        "Notice",
+        "Please login to customize your profile",
       );
     }
   };
@@ -2566,7 +2566,7 @@ export default function SettingsScreen({ selectedTheme }) {
               <TouchableOpacity onPress={user?.id ? () => { } : () => { setOpenSignin(true) }} disabled={user?.id !== null}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
                   <Text style={!user?.id ? styles.userNameLogout : styles.userName}>
-                    {!user?.id ? t("settings.login_register") : displayName}
+                    {!user?.id ? "Login / Register" : displayName}
                   </Text>
                   {/* ✅ Country Flag */}
                   {user?.id && user?.flage && localState?.showFlag !== false && (
@@ -2610,10 +2610,10 @@ export default function SettingsScreen({ selectedTheme }) {
                   </Text>
                 )}
 
-                {!user?.id && <Text style={styles.rewardLogout}>{t('settings.login_description')}</Text>}
+                {!user?.id && <Text style={styles.rewardLogout}>Login to view your points and other details</Text>}
                 {user?.id && (
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
-                    <Text style={styles.reward}>{t("settings.my_points")}: {user?.rewardPoints || 0}</Text>
+                    <Text style={styles.reward}>Points: {user?.rewardPoints || 0}</Text>
                     {/* {user?.robloxUsername && (
                     <Text style={[styles.reward, { marginLeft: 8, fontSize: 11, opacity: 0.7 }]}>
                       • Roblox: {user.robloxUsername}
@@ -3028,7 +3028,7 @@ export default function SettingsScreen({ selectedTheme }) {
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
                 <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Icon name="radio-outline" size={18} color={'white'} style={{ backgroundColor: '#B76E79', padding: 5, borderRadius: 5 }} />
-                  <Text style={styles.optionText}>{t('settings.haptic_feedback')}</Text>
+                  <Text style={styles.optionText}>Haptic Feedback</Text>
                 </TouchableOpacity>
                 <Switch value={localState.isHaptic} onValueChange={handleToggle} />
               </View>
@@ -3040,7 +3040,7 @@ export default function SettingsScreen({ selectedTheme }) {
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
                 <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Icon name="notifications" size={18} color={'white'} style={{ backgroundColor: config.colors.hasBlockGreen, padding: 5, borderRadius: 5 }} />
-                  <Text style={styles.optionText}>{t('settings.chat_notifications')}</Text></TouchableOpacity>
+                  <Text style={styles.optionText}>Chat Notifications</Text></TouchableOpacity>
                 <Switch
                   value={isPermissionGranted}
                   onValueChange={handleToggleNotification}
@@ -3111,7 +3111,7 @@ export default function SettingsScreen({ selectedTheme }) {
         </View> */}
 
 
-          <Text style={styles.subtitle}>{t('settings.pro_subscription')}</Text>
+          <Text style={styles.subtitle}>Pro Subscription</Text>
           <View style={[styles.cardContainer, { backgroundColor: '#FFD700' }]}>
 
             <TouchableOpacity style={[styles.optionLast]} onPress={() => {
@@ -3119,26 +3119,26 @@ export default function SettingsScreen({ selectedTheme }) {
             }}>
               <Icon name="prism-outline" size={18} color={'white'} style={{ backgroundColor: config.colors.hasBlockGreen, padding: 5, borderRadius: 5 }} />
               <Text style={[styles.optionText, { color: 'black' }]}>
-                {t('settings.active_plan')} : {localState.isPro ? t('settings.paid') : t('settings.free')}
+                Active Plan : {localState.isPro ? "Paid" : "Free"}
               </Text>
             </TouchableOpacity>
             {localState.isPro && (
               <View style={styles.subscriptionContainer}>
                 <Text style={styles.subscriptionText}>
-                  {t('settings.active_plan')} -
+                  Active Plan -
                   {mySubscriptions.length === 0
-                    ? t('settings.paid')
+                    ? 'Paid'
                     : mySubscriptions.map(sub => formatPlanName(sub.plan)).join(', ')}
                 </Text>
 
                 <TouchableOpacity onPress={manageSubscription} style={styles.manageButton}>
-                  <Text style={styles.manageButtonText}>{t('settings.manage')}</Text>
+                  <Text style={styles.manageButtonText}>Manage</Text>
                 </TouchableOpacity>
 
               </View>
             )}
           </View>
-          <Text style={styles.subtitle}>{t('settings.other_settings')}</Text>
+          <Text style={styles.subtitle}>Other Settings</Text>
 
           <View style={styles.cardContainer}>
 
@@ -3147,13 +3147,13 @@ export default function SettingsScreen({ selectedTheme }) {
               handleShareApp(); triggerHapticFeedback('impactLight');
             }}>
               <Icon name="share-social-outline" size={18} color={'white'} style={{ backgroundColor: '#B76E79', padding: 5, borderRadius: 5 }} />
-              <Text style={styles.optionText}>{t('settings.share_app')}</Text>
+              <Text style={styles.optionText}>Share App</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.option} onPress={() => {
               handleGetSuggestions(user); triggerHapticFeedback('impactLight');
             }}>
               <Icon name="mail-outline" size={18} color={'white'} style={{ backgroundColor: '#566D5D', padding: 5, borderRadius: 5 }} />
-              <Text style={styles.optionText}>{t('settings.give_suggestions')}</Text>
+              <Text style={styles.optionText}>Give Suggestions</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.option} onPress={() => {
               handleReport(user); triggerHapticFeedback('impactLight');
@@ -3164,19 +3164,19 @@ export default function SettingsScreen({ selectedTheme }) {
             <TouchableOpacity style={styles.option} onPress={() => { handleRateApp(); triggerHapticFeedback('impactLight'); }
             }>
               <Icon name="star-outline" size={18} color={'white'} style={{ backgroundColor: '#A2B38B', padding: 5, borderRadius: 5 }} />
-              <Text style={styles.optionText}>{t('settings.rate_us')}</Text>
+              <Text style={styles.optionText}>Rate Us</Text>
             </TouchableOpacity>
             {/* <TouchableOpacity style={styles.option} onPress={() => {
             handleOpenFacebook(); triggerHapticFeedback('impactLight');
           }}>
             <Icon name="logo-facebook" size={18} color={'white'} style={{backgroundColor:'#566D5D', padding:5, borderRadius:5}}/>
-            <Text style={styles.optionText}>{t('settings.visit_facebook_group')}</Text>
+            <Text style={styles.optionText}>Visit Facebook Group</Text>
           </TouchableOpacity> */}
             <TouchableOpacity style={user?.id ? styles.option : styles.optionLast} onPress={() => {
               handleOpenWebsite(); triggerHapticFeedback('impactLight');
             }}>
               <Icon name="link-outline" size={18} color={'white'} style={{ backgroundColor: '#4B4453', padding: 5, borderRadius: 5 }} />
-              <Text style={styles.optionText}>{t('settings.visit_website')}</Text>
+              <Text style={styles.optionText}>Visit Website</Text>
             </TouchableOpacity>
             <TouchableOpacity style={user?.id ? styles.option : styles.optionLast} onPress={() => {
               handleOpenPrivacy(); triggerHapticFeedback('impactLight');
@@ -3192,11 +3192,11 @@ export default function SettingsScreen({ selectedTheme }) {
             </TouchableOpacity>
             {user?.id && <TouchableOpacity style={styles.option} onPress={handleLogout} >
               <Icon name="person-outline" size={18} color={'white'} style={{ backgroundColor: '#4B4453', padding: 5, borderRadius: 5 }} />
-              <Text style={styles.optionTextLogout}>{t('settings.logout')}</Text>
+              <Text style={styles.optionTextLogout}>Logout</Text>
             </TouchableOpacity>}
             {user?.id && <TouchableOpacity style={styles.optionDelete} onPress={handleDeleteUser} >
               <Icon name="warning-outline" size={24} color={'#4B4453'} />
-              <Text style={styles.optionTextDelete}>{t('settings.delete_my_account')}</Text>
+              <Text style={styles.optionTextDelete}>Delete My Account</Text>
             </TouchableOpacity>}
 
           </View>
@@ -3299,7 +3299,7 @@ export default function SettingsScreen({ selectedTheme }) {
               bio={bio}
               setBio={setBio}
               handleSaveChanges={handleSaveChanges}
-              t={t}
+
               config={config}
               user={user}
             />

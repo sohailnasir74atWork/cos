@@ -22,13 +22,11 @@ import {
   requestReview,
 } from './Code/AppHelper/AppHelperFunction';
 import OnboardingScreen from './Code/AppHelper/OnBoardingScreen';
-import { useTranslation } from 'react-i18next';
 // import RewardCenterScreen from './Code/SettingScreen/RewardCenter';
 // import RewardRulesModal from './Code/SettingScreen/RewardRulesModel';
 import InterstitialAdManager from './Code/Ads/IntAd';
 import AppOpenAdManager from './Code/Ads/openApp';
 import RNBootSplash from "react-native-bootsplash";
-import SystemNavigationBar from 'react-native-system-navigation-bar';
 import { checkForUpdate } from './Code/AppHelper/InAppUpdateChecker';
 import AdminUnbanScreen from './Code/AppHelper/AdminDashboard';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -38,19 +36,12 @@ import SubscriptionScreen from './Code/SettingScreen/OfferWall';
 
 
 const Stack = createNativeStackNavigator();
-const setNavigationBarAppearance = (theme) => {
-  if (theme === 'dark') {
-    SystemNavigationBar.setNavigationColor('#000000', 'light', 'navigation');
-  } else {
-    SystemNavigationBar.setNavigationColor('#FFFFFF', 'dark', 'navigation');
-  }
-};
+
 
 // const adUnitId = getAdUnitId('openapp');
 
 function App() {
   const { theme, single_offer_wall } = useGlobalState();
-  const { t } = useTranslation();
   const { localState, updateLocalState } = useLocalState();
 
   const selectedTheme = useMemo(() => {
@@ -70,11 +61,7 @@ function App() {
 
 
 
-  useEffect(() => {
-    if (theme) {
-      setNavigationBarAppearance(theme);
-    }
-  }, [theme]);
+
 
   // useEffect(() => {
   //   const askPermission = async () => {
@@ -232,7 +219,7 @@ function App() {
             <Stack.Screen
               name="Setting"
               options={{
-                title: t('tabs.settings'),
+                title: 'Settings',
                 headerStyle: { backgroundColor: selectedTheme.colors.background },
                 headerTintColor: selectedTheme.colors.text,
               }}
