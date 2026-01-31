@@ -41,7 +41,7 @@ const config = {
 
   colors: isNoman
     ? {
-      primary: '#7b1fa2', // Modern Mobility Blue
+      primary: '#b300ffff', // Modern Mobility Blue
       primaryLight: '#E0B0FF', // Light lavender for dark mode icons
       secondary: '#3E8BFC', // Bright action blue
       hasBlockGreen: '#f75a07', // Diet Teal (Proper Green)

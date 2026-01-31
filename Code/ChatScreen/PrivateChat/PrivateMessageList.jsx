@@ -426,7 +426,9 @@ const PrivateMessageList = ({
           </Menu>
 
           <Text style={styles.timestamp}>
-            {item.timestamp ? new Date(item.timestamp).toLocaleTimeString([], {
+            {item.timestamp ? new Date(item.timestamp).toLocaleString([], {
+              month: 'short',
+              day: 'numeric',
               hour: '2-digit',
               minute: '2-digit',
             }) : ''}
