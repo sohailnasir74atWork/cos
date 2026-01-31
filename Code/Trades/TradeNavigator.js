@@ -31,7 +31,7 @@ const TradeRulesModal = ({ visible, onClose }) => {
         <View style={[styles.modalContainer, { backgroundColor: isDarkMode ? '#222' : 'white' }]}>
           <View style={styles.modalHeader}>
             <Text style={[styles.modalTitle, { color: isDarkMode ? 'white' : 'black' }]}>
-              How Trading Works in Adopt Me
+              How Trading Works
             </Text>
             <TouchableOpacity onPress={onClose}>
               <Icon name="close-circle" size={28} color={isDarkMode ? '#bbb' : '#333'} />

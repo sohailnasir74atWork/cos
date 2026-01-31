@@ -1849,7 +1849,7 @@ const getStyles = (isDarkMode) =>
       marginRight: 1
     },
     shareTradeButton: {
-      backgroundColor: config.colors.wantBlockRed,
+      backgroundColor: config.colors.primary,
       alignSelf: 'center',
       padding: 10,
       flexDirection: 'row',
