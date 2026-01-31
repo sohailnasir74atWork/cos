@@ -222,12 +222,12 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   name: {
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
     fontSize: 14,
     color: '#000',
   },
   text: {
-    fontFamily: 'Lato-Regular',
+    
     fontSize: 13,
     color: '#333',
     flex:1,
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
   timestamp: {
     fontSize: 10,
     color: 'gray',
-    fontFamily: 'Lato-Regular',
+    
   },
   inputRow: {
     flexDirection: 'row',
@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 5,
     color: '#000',
-    fontFamily: 'Lato-Regular',
+    
   },
   inputDark: {
     borderColor: '#555',
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
   sendText: {
     color: '#fff',
     fontWeight: '600',
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
   },
   textDark: {
     color: '#fff',

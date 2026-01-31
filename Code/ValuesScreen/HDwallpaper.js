@@ -646,7 +646,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 11,
     marginLeft: 3,
-    fontFamily: "Lato-Regular",
+    
   },
   downloadButton: {
     flexDirection: "row",
@@ -659,7 +659,7 @@ const styles = StyleSheet.create({
   downloadText: {
     color: "#0d1f17",
     fontSize: 12,
-    fontFamily: "Lato-Bold",
+    fontWeight: 'bold',
   },
   modalBackdrop: {
     flex: 1,
@@ -696,7 +696,7 @@ const styles = StyleSheet.create({
   loadMoreText: {
     color: "#0d1f17",
     fontSize: 14,
-    fontFamily: "Lato-Bold",
+    fontWeight: 'bold',
   },
   imageLoaderOverlay: {
     position: "absolute",

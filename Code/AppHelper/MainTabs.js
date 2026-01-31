@@ -134,10 +134,11 @@ const MainTabs = React.memo(({ selectedTheme, chatFocused, setChatFocused, modal
         tabBarStyle: {
           // height: 50,
           backgroundColor: selectedTheme.colors.background,
+          paddingBottom: 0,
         },
         tabBarLabelStyle: {
           fontSize: 9, // 👈 Your custom label font size
-          fontFamily: 'Lato-Bold', // Optional: Custom font family
+          fontWeight: 'bold', // Optional: Custom font family
         },
         tabBarActiveTintColor: isDarkMode ? '#E0B0FF' : config.colors.primary,
         tabBarInactiveTintColor: isDarkMode ? '#B0B0B0' : '#666666',
@@ -145,7 +146,7 @@ const MainTabs = React.memo(({ selectedTheme, chatFocused, setChatFocused, modal
           backgroundColor: selectedTheme.colors.background,
         },
         headerTintColor: selectedTheme.colors.text,
-        headerTitleStyle: { fontFamily: 'Lato-Bold', fontSize: 24 },
+        headerTitleStyle: { fontWeight: 'bold', fontSize: 24 },
       })}
     >
       <Tab.Screen

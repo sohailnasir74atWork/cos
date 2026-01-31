@@ -6,7 +6,7 @@ const isNoman = true; // Toggle this to switch configurations
 //waqas app id = ca-app-pub-3701208411582706~4267174419
 // noman pkgName= com.creature_of_sonaria
 //waqas pkgName = com.bloxfruitstock
-const rev_cat_id = Platform.OS === 'ios' ? 'appl_fJWiaIgCJxAeJnMeDtvGsHtEWfR' : 'goog_pxMRIZwBlHfkaLqeHmEnpjzHshJ'
+const rev_cat_id = Platform.OS === 'ios' ? 'appl_JOMNbWZLuKVWLucYrnWIaTAjvag' : 'goog_pxMRIZwBlHfkaLqeHmEnpjzHshJ'
 
 const config = {
   appName: isNoman ? 'Blox Fruit Values Calc' : 'Blox Fruit Stock',

@@ -30,7 +30,7 @@ export const DesignStack = ({ selectedTheme }) => {
   const headerOptions = useMemo(() => ({
     headerStyle: { backgroundColor: selectedTheme.colors.background },
     headerTintColor: selectedTheme.colors.text,
-    headerTitleStyle: { fontFamily: 'Lato-Bold', fontSize: 24 },
+    headerTitleStyle: { fontWeight: 'bold', fontSize: 24 },
     // ✅ Fix iOS SDK header sizing issue (liquid view bug)
     headerLargeTitle: false,
     headerLargeTitleShadowVisible: false,
@@ -97,7 +97,7 @@ export const DesignStack = ({ selectedTheme }) => {
 
 const styles = StyleSheet.create({
   highlightedText: {
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
     color: config.colors.primary,
   },
 });

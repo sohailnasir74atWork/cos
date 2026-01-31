@@ -940,7 +940,7 @@ const GroupChatScreen = () => {
         <Text
           style={{
             fontSize: 18,
-            fontFamily: 'Lato-Bold',
+            fontWeight: 'bold',
             color: isDarkMode ? '#fff' : '#000',
             textAlign: 'center',
           }}
@@ -957,7 +957,7 @@ const GroupChatScreen = () => {
           style={{ flexDirection: 'row', alignItems: 'center', marginRight: 15 }}
         >
           <Icon name="people" size={20} color={isDarkMode ? '#fff' : '#000'} />
-          <Text style={{ marginLeft: 6, color: isDarkMode ? '#fff' : '#000', fontFamily: 'Lato-SemiBold', fontSize: 14 }}>
+          <Text style={{ marginLeft: 6, color: isDarkMode ? '#fff' : '#000', fontWeight: '600', fontSize: 14 }}>
             {memberCount}
           </Text>
         </TouchableOpacity>
@@ -987,7 +987,7 @@ const GroupChatScreen = () => {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', padding: 20 }]}>
         <Icon name="mail-outline" size={64} color={isDarkMode ? '#8B5CF6' : '#8B5CF6'} />
-        <Text style={[styles.text, { fontSize: 24, fontFamily: 'Lato-Bold', marginTop: 20, marginBottom: 10 }]}>
+        <Text style={[styles.text, { fontSize: 24, fontWeight: 'bold', marginTop: 20, marginBottom: 10 }]}>
           Group Invitation
         </Text>
         <Text style={[styles.text, { fontSize: 16, textAlign: 'center', marginBottom: 30, opacity: 0.7 }]} numberOfLines={2} ellipsizeMode="tail">
@@ -1003,7 +1003,7 @@ const GroupChatScreen = () => {
               backgroundColor: isDarkMode ? '#374151' : '#E5E7EB',
             }}
           >
-            <Text style={{ color: isDarkMode ? '#fff' : '#000', fontFamily: 'Lato-SemiBold' }}>Decline</Text>
+            <Text style={{ color: isDarkMode ? '#fff' : '#000', fontWeight: '600' }}>Decline</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleAcceptInvite}
@@ -1014,7 +1014,7 @@ const GroupChatScreen = () => {
               backgroundColor: '#8B5CF6',
             }}
           >
-            <Text style={{ color: '#fff', fontFamily: 'Lato-SemiBold' }}>Accept</Text>
+            <Text style={{ color: '#fff', fontWeight: '600' }}>Accept</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -1026,7 +1026,7 @@ const GroupChatScreen = () => {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', padding: 20 }]}>
         <Icon name="lock-closed-outline" size={64} color={isDarkMode ? '#9CA3AF' : '#6B7280'} />
-        <Text style={[styles.text, { fontSize: 24, fontFamily: 'Lato-Bold', marginTop: 20, marginBottom: 10 }]}>
+        <Text style={[styles.text, { fontSize: 24, fontWeight: 'bold', marginTop: 20, marginBottom: 10 }]}>
           Access Denied
         </Text>
         <Text style={[styles.text, { fontSize: 16, textAlign: 'center', marginBottom: 30, opacity: 0.7 }]}>
@@ -1041,7 +1041,7 @@ const GroupChatScreen = () => {
             backgroundColor: '#8B5CF6',
           }}
         >
-          <Text style={{ color: '#fff', fontFamily: 'Lato-SemiBold' }}>Go Back</Text>
+          <Text style={{ color: '#fff', fontWeight: '600' }}>Go Back</Text>
         </TouchableOpacity>
       </View>
     );
@@ -1107,7 +1107,7 @@ const GroupChatScreen = () => {
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
           <View style={{ backgroundColor: isDarkMode ? '#1F2937' : '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: '80%' }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, borderBottomWidth: 1, borderBottomColor: isDarkMode ? '#374151' : '#E5E7EB' }}>
-              <Text style={{ fontSize: 20, fontFamily: 'Lato-Bold', color: isDarkMode ? '#fff' : '#000' }}>
+              <Text style={{ fontSize: 20, fontWeight: 'bold', color: isDarkMode ? '#fff' : '#000' }}>
                 Members ({memberCount})
               </Text>
               <TouchableOpacity onPress={() => setShowMembersModal(false)}>
@@ -1158,10 +1158,10 @@ const GroupChatScreen = () => {
                         style={{ width: 50, height: 50, borderRadius: 25, marginRight: 12, opacity: 0.6 }}
                       />
                       <View style={{ flex: 1 }}>
-                        <Text style={{ fontSize: 16, fontFamily: 'Lato-SemiBold', color: isDarkMode ? '#fff' : '#000' }}>
+                        <Text style={{ fontSize: 16, fontWeight: '600', color: isDarkMode ? '#fff' : '#000' }}>
                           {inviteData.displayName || 'Anonymous'}
                         </Text>
-                        <Text style={{ fontSize: 12, fontFamily: 'Lato-Regular', color: isDarkMode ? '#9CA3AF' : '#6B7280', marginTop: 2 }}>
+                        <Text style={{ fontSize: 12, color: isDarkMode ? '#9CA3AF' : '#6B7280', marginTop: 2 }}>
                           Pending to Join
                         </Text>
                       </View>
@@ -1186,14 +1186,14 @@ const GroupChatScreen = () => {
                     />
                     <View style={{ flex: 1 }}>
                       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Text style={{ fontSize: 16, fontFamily: 'Lato-SemiBold', color: isDarkMode ? '#fff' : '#000' }}>
+                        <Text style={{ fontSize: 16, fontWeight: '600', color: isDarkMode ? '#fff' : '#000' }}>
                           {member.displayName || 'Anonymous'}
                         </Text>
                         {isOnline && (
                           <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#10B981', marginLeft: 8 }} />
                         )}
                       </View>
-                      <Text style={{ fontSize: 12, fontFamily: 'Lato-Regular', color: isDarkMode ? '#9CA3AF' : '#6B7280', marginTop: 2 }}>
+                      <Text style={{ fontSize: 12, color: isDarkMode ? '#9CA3AF' : '#6B7280', marginTop: 2 }}>
                         {isMemberCreator ? 'Creator' : 'Member'}
                         {isOnline && ' · Online'}
                       </Text>

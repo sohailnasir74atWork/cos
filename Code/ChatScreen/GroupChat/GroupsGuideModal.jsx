@@ -138,7 +138,7 @@ const getStyles = (isDarkMode) =>
     },
     modalTitle: {
       fontSize: 24,
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
     },
     closeButton: {
       padding: 4,
@@ -158,16 +158,16 @@ const getStyles = (isDarkMode) =>
     },
     sectionTitle: {
       fontSize: 18,
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
       marginBottom: 12,
     },
     sectionText: {
       fontSize: 14,
-      fontFamily: 'Lato-Regular',
+      
       lineHeight: 22,
     },
     boldText: {
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
       color: config.getPrimaryColor(isDarkMode),
     },
     divider: {
@@ -185,7 +185,7 @@ const getStyles = (isDarkMode) =>
     gotItButtonText: {
       color: '#fff',
       fontSize: 16,
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
     },
   });
 

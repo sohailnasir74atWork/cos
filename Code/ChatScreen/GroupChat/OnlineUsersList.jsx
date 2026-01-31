@@ -632,7 +632,7 @@ const getStyles = (isDark) =>
       fontSize: 18,
       fontWeight: '700',
       color: isDark ? '#FFFFFF' : '#111827',
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
     },
     headerRight: {
       flexDirection: 'row',
@@ -644,7 +644,7 @@ const getStyles = (isDark) =>
     },
     cancelText: {
       fontSize: 14,
-      fontFamily: 'Lato-SemiBold',
+      fontWeight: '600',
       color: isDark ? '#FFFFFF' : '#111827',
     },
     createGroupButton: {
@@ -655,7 +655,7 @@ const getStyles = (isDark) =>
     },
     createGroupText: {
       fontSize: 13,
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
       color: '#FFFFFF',
     },
     closeButton: {
@@ -728,11 +728,11 @@ const getStyles = (isDark) =>
       fontSize: 14,
       fontWeight: '600',
       color: isDark ? '#FFFFFF' : '#111827',
-      fontFamily: 'Lato-SemiBold',
+      fontWeight: '600',
     },
     statusText: {
       fontSize: 12,
-      fontFamily: 'Lato-Regular',
+      
       marginTop: 2,
     },
     inviteButton: {
@@ -773,7 +773,7 @@ const getStyles = (isDark) =>
       marginTop: 12,
       fontSize: 14,
       color: isDark ? '#9CA3AF' : '#6B7280',
-      fontFamily: 'Lato-Regular',
+      
     },
     footer: {
       padding: 10,
@@ -785,7 +785,7 @@ const getStyles = (isDark) =>
     footerText: {
       fontSize: 12,
       color: isDark ? '#9CA3AF' : '#6B7280',
-      fontFamily: 'Lato-Regular',
+      
     },
     loadMoreContainer: {
       paddingVertical: 12,
@@ -795,7 +795,7 @@ const getStyles = (isDark) =>
     loadMoreText: {
       fontSize: 12,
       color: isDark ? '#9CA3AF' : '#6B7280',
-      fontFamily: 'Lato-Regular',
+      
     },
   });
 

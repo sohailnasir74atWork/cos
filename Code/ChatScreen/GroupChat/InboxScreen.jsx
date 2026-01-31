@@ -71,38 +71,48 @@ const InboxScreen = ({ chats, setChats, loading, bannedUsers }) => {
 
       // ✅ OPTIMIZED: Use child listeners for updates (only downloads changed chats)
       const handleChildChange = (snapshot) => {
-        if (!snapshot || !snapshot.key) return;
-        const chatData = snapshot.val();
-        if (!chatData || typeof chatData !== 'object') return;
+        try {
+          if (!snapshot || !snapshot.key) return;
+          const chatData = snapshot.val();
+          if (!chatData || typeof chatData !== 'object') return;
 
-        const chatPartnerId = snapshot.key;
-        const isBlocked = banned.includes(chatPartnerId);
-        const rawUnread = chatData?.unreadCount || 0;
+          const chatPartnerId = snapshot.key;
+          const isBlocked = banned.includes(chatPartnerId);
+          const rawUnread = chatData?.unreadCount || 0;
 
-        if (isBlocked && rawUnread > 0) {
-          const blockedChatRef = ref(appdatabase, `chat_meta_data/${user.id}/${chatPartnerId}`);
-          update(blockedChatRef, { unreadCount: 0 }).catch((error) => {
-            console.error("Error resetting unread count:", error);
+          if (isBlocked && rawUnread > 0) {
+            const blockedChatRef = ref(appdatabase, `chat_meta_data/${user.id}/${chatPartnerId}`);
+            update(blockedChatRef, { unreadCount: 0 }).catch((error) => {
+              console.error("Error resetting unread count:", error);
+            });
+          }
+
+          chatsMap.set(chatPartnerId, {
+            chatId: chatData.chatId,
+            otherUserId: chatPartnerId,
+            lastMessage: chatData.lastMessage || 'No messages yet',
+            lastMessageTimestamp: chatData.timestamp || 0,
+            unreadCount: isBlocked ? 0 : rawUnread,
+            otherUserAvatar: chatData.receiverAvatar || 'https://example.com/default-avatar.jpg',
+            otherUserName: chatData.receiverName || 'Anonymous',
           });
+
+          updateChatsList();
+        } catch (error) {
+          console.error('❌ Firebase handleChildChange error:', error);
+          // Don't crash - continue gracefully
         }
-
-        chatsMap.set(chatPartnerId, {
-          chatId: chatData.chatId,
-          otherUserId: chatPartnerId,
-          lastMessage: chatData.lastMessage || 'No messages yet',
-          lastMessageTimestamp: chatData.timestamp || 0,
-          unreadCount: isBlocked ? 0 : rawUnread,
-          otherUserAvatar: chatData.receiverAvatar || 'https://example.com/default-avatar.jpg',
-          otherUserName: chatData.receiverName || 'Anonymous',
-        });
-
-        updateChatsList();
       };
 
       const handleChildRemoved = (snapshot) => {
-        if (!snapshot || !snapshot.key) return;
-        chatsMap.delete(snapshot.key);
-        updateChatsList();
+        try {
+          if (!snapshot || !snapshot.key) return;
+          chatsMap.delete(snapshot.key);
+          updateChatsList();
+        } catch (error) {
+          console.error('❌ Firebase handleChildRemoved error:', error);
+          // Don't crash - continue gracefully
+        }
       };
 
       // Load initial data
@@ -423,7 +433,7 @@ const getStyles = (isDarkMode) =>
     },
     userName: {
       fontSize: 14,
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
       color: isDarkMode ? '#fff' : '#333',
     },
     lastMessage: {
@@ -460,7 +470,7 @@ const getStyles = (isDarkMode) =>
       marginTop: 8,
       fontSize: 12,
       color: isDarkMode ? '#9CA3AF' : '#6B7280',
-      fontFamily: 'Lato-Regular',
+
     }
   });
 

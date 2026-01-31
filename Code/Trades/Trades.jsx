@@ -883,7 +883,7 @@ const TradeList = ({ route }) => {
         return (
           <TouchableOpacity
             style={styles.descriptionclick}
-            key={index}
+            key={`username-${index}`}
             onPress={() => {
               Clipboard.setString(username);
               // Alert.alert("Copied!", `Username "${username}" copied.`);
@@ -893,7 +893,7 @@ const TradeList = ({ route }) => {
           </TouchableOpacity>
         );
       } else {
-        return <Text key={index} style={styles.description}>{part}</Text>;
+        return <Text key={`desc-${index}`} style={styles.description}>{part}</Text>;
       }
     });
   };
@@ -1244,7 +1244,7 @@ const TradeList = ({ route }) => {
 
 
 
-                style={{ color: 'white', fontFamily: 'Lato-Regular' }}
+                style={{ color: 'white', fontWeight: 'normal' }}
               >BOOST IT</Text>
             </TouchableOpacity>}
           <TouchableOpacity onPress={() => handleDelete(item)} style={[styles.boost, { backgroundColor: 'black' }]}>
@@ -1253,7 +1253,7 @@ const TradeList = ({ route }) => {
 
               color={config.colors.secondary}
 
-              style={{ color: 'white', fontFamily: 'Lato-Regular' }}
+              style={{ color: 'white', fontWeight: 'normal' }}
             >DELETE IT</Text>
           </TouchableOpacity>
           {/* <Icon
@@ -1580,7 +1580,7 @@ const getStyles = (isDarkMode) =>
     },
     checkboxLabel: {
       fontSize: 13,
-      fontFamily: 'Lato-Regular',
+
     },
     searchButton: {
       flexDirection: 'row',
@@ -1602,7 +1602,7 @@ const getStyles = (isDarkMode) =>
     searchButtonText: {
       color: '#fff',
       fontSize: 15,
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
     },
     tradeHeader: {
       flexDirection: 'row',
@@ -1615,7 +1615,7 @@ const getStyles = (isDarkMode) =>
       color: isDarkMode ? 'white' : "black",
     },
     traderName: {
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
       fontSize: 8,
       color: isDarkMode ? 'white' : "black",
 
@@ -1669,7 +1669,7 @@ const getStyles = (isDarkMode) =>
     },
     itemName: {
       fontSize: 7,
-      fontFamily: 'Lato-Regular',
+
       color: isDarkMode ? '#ccc' : '#666',
       marginTop: 2,
       textAlign: 'center',
@@ -1736,7 +1736,7 @@ const getStyles = (isDarkMode) =>
     },
     priceText: {
       fontSize: 8,
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
       color: '#007BFF',
       // width: '40%',
       textAlign: 'center', // Centers text within its own width
@@ -1750,7 +1750,7 @@ const getStyles = (isDarkMode) =>
     priceTextProfit: {
       fontSize: 10,
       lineHeight: 14,
-      fontFamily: 'Lato-Regular',
+
       // color: '#007BFF',
       // width: '40%',
       textAlign: 'center', // Centers text within its own width
@@ -1783,14 +1783,14 @@ const getStyles = (isDarkMode) =>
     },
     description: {
       color: isDarkMode ? 'lightgrey' : "grey",
-      fontFamily: 'Lato-Regular',
+
       fontSize: 10,
       marginTop: 5,
       lineHeight: 12
     },
     descriptionclick: {
       color: config.colors.secondary,
-      fontFamily: 'Lato-Regular',
+
       fontSize: 10,
       // marginTop: 5,
       // lineHeight:12
@@ -1821,7 +1821,7 @@ const getStyles = (isDarkMode) =>
     },
     dealText: {
       color: 'white',
-      fontWeight: 'Lato-Bold',
+      fontWeight: 'bold',
       fontSize: 8,
       textAlign: 'center',
       // alignItems: 'center',
@@ -1830,7 +1830,7 @@ const getStyles = (isDarkMode) =>
 
     },
     names: {
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
       fontSize: 8,
       color: isDarkMode ? 'white' : "black",
       marginTop: -3
@@ -1847,7 +1847,7 @@ const getStyles = (isDarkMode) =>
     },
     tagcounttext: {
       color: 'white',
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
       fontSize: 10
     },
     footer: {

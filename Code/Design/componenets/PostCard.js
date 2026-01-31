@@ -365,9 +365,9 @@ const getStyles = (isDark) =>
     },
     header: { flexDirection: 'row', alignItems: 'center', marginBottom: 5 },
     avatar: { width: 40, height: 40, borderRadius: 20 },
-    name: { fontFamily: 'Lato-Bold', color: isDark ? '#fff' : '#000' },
-    time: { fontSize: 10, color: 'gray', fontFamily: 'Lato-Regular' },
-    desc: { marginVertical: 5, fontSize: 14, color: isDark ? '#ccc' : '#333', fontFamily: 'Lato-Regular' },
+    name: { fontWeight: 'bold', color: isDark ? '#fff' : '#000' },
+    time: { fontSize: 10, color: 'gray', fontWeight: 'normal' },
+    desc: { marginVertical: 5, fontSize: 14, color: isDark ? '#ccc' : '#333', fontWeight: 'normal' },
 
     shadowWrapper: {
       // backgroundColor: '#fff', // needed for shadow contrast
@@ -430,7 +430,7 @@ const getStyles = (isDark) =>
       justifyContent: 'space-between',
     },
     actionBtn: { flexDirection: 'row', alignItems: 'center' },
-    likeCount: { marginLeft: 5, fontSize: 14, color: isDark ? '#ccc' : config.getPrimaryColor(isDark), fontFamily: 'Lato-Bold' },
+    likeCount: { marginLeft: 5, fontSize: 14, color: isDark ? '#ccc' : config.getPrimaryColor(isDark), fontWeight: 'bold' },
 
     sendBtn: {
       flexDirection: 'row',
@@ -453,7 +453,7 @@ const getStyles = (isDark) =>
       marginLeft: 6,
       color: config.getPrimaryColor(isDark),
       fontWeight: '600',
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
     },
 
     metaInfoRow: {
@@ -476,14 +476,14 @@ const getStyles = (isDark) =>
       fontSize: 12,
       color: isDark ? '#eee' : '#333',
       textTransform: 'capitalize',
-      fontFamily: 'Lato-Regular',
+
     },
     budgetText: {
       fontSize: 13,
       fontStyle: 'italic',
       color: isDark ? '#aaa' : 'gray',
       marginTop: 4,
-      fontFamily: 'Lato-Regular',
+
     },
     imageWrapper: {
       marginTop: 10,
@@ -519,7 +519,7 @@ const getStyles = (isDark) =>
     overlayTagText: {
       fontSize: 12,
       color: '#fff',
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
     },
 
 

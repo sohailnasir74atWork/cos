@@ -120,56 +120,58 @@ const GroupMessageInput = ({
         selectionLimit: remainingSlots, // Allow selecting up to remaining slots
       },
       async (response) => {
-        if (!response || response.didCancel) return;
+        try {
+          if (!response || response.didCancel) return;
 
-        if (response.errorCode) {
-          console.warn('ImagePicker error:', response.errorMessage);
-          return;
-        }
+          if (response.errorCode) {
+            console.error('❌ ImagePicker error:', response.errorMessage);
+            Alert.alert('Error', 'Failed to select images. Please try again.');
+            return;
+          }
 
-        const assets = response.assets || [];
-        if (assets.length > 0) {
-          const MAX_SIZE_BYTES = 1024 * 1024; // 1 MB
-          const validUris = [];
-          const rejectedCount = [];
+          const assets = response.assets || [];
+          if (assets.length > 0) {
+            const MAX_SIZE_BYTES = 1024 * 1024; // 1 MB
+            const processedUris = [];
 
-          // Check file size for each image
-          for (const asset of assets) {
-            if (!asset?.uri || typeof asset.uri !== 'string') continue;
+            // Process each image: Check size, compress if > 1MB
+            for (const asset of assets) {
+              if (!asset?.uri || typeof asset.uri !== 'string') continue;
 
-            try {
-              const filePath = asset.uri.replace('file://', '');
-              const fileInfo = await RNFS.stat(filePath);
-              const fileSize = fileInfo.size || 0;
+              try {
+                const filePath = asset.uri.replace('file://', '');
+                const fileInfo = await RNFS.stat(filePath);
 
-              if (fileSize > MAX_SIZE_BYTES) {
-                rejectedCount.push(asset.fileName || 'image');
-                continue;
+                if (fileInfo.size > MAX_SIZE_BYTES) {
+                  // Image is > 1MB, compress it
+                  const compressedUri = await CompressorImage.compress(asset.uri, {
+                    maxWidth: 1920,
+                    quality: 0.7,
+                    returnableOutputType: 'uri',
+                  });
+                  processedUris.push(compressedUri);
+                } else {
+                  // Image is small enough, use original
+                  processedUris.push(asset.uri);
+                }
+              } catch (error) {
+                console.warn('Error checking/compressing file:', error);
+                // If checking fails, try to use original
+                processedUris.push(asset.uri);
               }
+            }
 
-              validUris.push(asset.uri);
-            } catch (error) {
-              console.warn('Error checking file size:', error);
-              // If we can't check size, allow it (better UX than blocking)
-              validUris.push(asset.uri);
+            // Add processed images to existing ones, but cap at 3 total
+            if (processedUris.length > 0) {
+              setImageUris(prev => {
+                const combined = [...prev, ...processedUris];
+                return combined.slice(0, maxImages); // Ensure we never exceed 3
+              });
             }
           }
-
-          // Show alert if any images were rejected
-          if (rejectedCount.length > 0) {
-            Alert.alert(
-              'Image Too Large',
-              `${rejectedCount.length} image(s) exceed 1 MB limit and were not added. Please select smaller images.`
-            );
-          }
-
-          // Add valid images to existing ones, but cap at 3 total
-          if (validUris.length > 0) {
-            setImageUris(prev => {
-              const combined = [...prev, ...validUris];
-              return combined.slice(0, maxImages); // Ensure we never exceed 3
-            });
-          }
+        } catch (error) {
+          console.error('❌ Image picker crash:', error);
+          Alert.alert('Error', 'Failed to select images. Please try again.');
         }
       }
     );

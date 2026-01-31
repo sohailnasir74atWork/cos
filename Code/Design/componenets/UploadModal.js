@@ -29,8 +29,8 @@ const MAX_IMAGES = 4;
 
 const BUNNY_STORAGE_HOST = 'storage.bunnycdn.com';     // or your regional host
 const BUNNY_STORAGE_ZONE = 'post-gag';
-const BUNNY_ACCESS_KEY   = '1b7e1a85-dff7-4a98-ba701fc7f9b9-6542-46e2'; // ← rotate this later
-const BUNNY_CDN_BASE     = 'https://pull-gag.b-cdn.net';
+const BUNNY_ACCESS_KEY = '1b7e1a85-dff7-4a98-ba701fc7f9b9-6542-46e2'; // ← rotate this later
+const BUNNY_CDN_BASE = 'https://pull-gag.b-cdn.net';
 
 
 const UploadModal = ({ visible, onClose, onUpload, user }) => {
@@ -38,13 +38,13 @@ const UploadModal = ({ visible, onClose, onUpload, user }) => {
   const [imageUris, setImageUris] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedTags, setSelectedTags] = useState(['Discussion']);
-  const {currentUserEmail, appdatabase} = useGlobalState();
+  const { currentUserEmail, appdatabase } = useGlobalState();
   const [strikeInfo, setStrikeInfo] = useState(null)
   // const [budget, setBudget] = useState('');
   const { theme } = useGlobalState();
   const isDark = theme === 'dark';
-  const {localState} = useLocalState()
-  
+  const { localState } = useLocalState()
+
   // ✅ Session-based last post time (resets on app close/reopen - simple state, no storage)
   const [lastPostTime, setLastPostTime] = useState(null);
 
@@ -74,83 +74,97 @@ const UploadModal = ({ visible, onClose, onUpload, user }) => {
   }, [visible]);
 
   // console.log(currentUserEmail)show
-  
 
-const pickAndCompress = useCallback(async () => {
-  const result = await launchImageLibrary({
-    mediaType: 'photo',
-    selectionLimit: MAX_IMAGES,
-  });
 
-  if (result.assets?.length > 0) {
-    const MAX_SIZE_BYTES = 1024 * 1024; // 1 MB
-    const compressed = [];
-    const rejectedCount = [];
+  const pickAndCompress = useCallback(async () => {
+    try {
+      const result = await launchImageLibrary({
+        mediaType: 'photo',
+        selectionLimit: MAX_IMAGES,
+        quality: 0.8, // ✅ Compress
+        maxWidth: 1920,
+        maxHeight: 1920,
+      });
 
-    for (const asset of result.assets) {
-      try {
-        // Check file size before compression
-        if (asset?.uri) {
-          const filePath = asset.uri.replace('file://', '');
-          const fileInfo = await RNFS.stat(filePath);
-          const fileSize = fileInfo.size || 0;
+      if (result.didCancel) return;
+      if (result.errorCode) {
+        console.error('❌ ImagePicker error:', result.errorMessage);
+        return;
+      }
 
-          if (fileSize > MAX_SIZE_BYTES) {
-            rejectedCount.push(asset.fileName || 'image');
-            continue;
+      if (result.assets?.length > 0) {
+        const MAX_SIZE_BYTES = 1024 * 1024; // 1 MB
+        const compressed = [];
+        const rejectedCount = [];
+
+        for (const asset of result.assets) {
+          try {
+            // Check file size before compression
+            if (asset?.uri) {
+              const filePath = asset.uri.replace('file://', '');
+              const fileInfo = await RNFS.stat(filePath);
+              const fileSize = fileInfo.size || 0;
+
+              if (fileSize > MAX_SIZE_BYTES) {
+                rejectedCount.push(asset.fileName || 'image');
+                continue;
+              }
+            }
+
+            // Compress the image
+            const uri = await CompressorImage.compress(asset.uri, {
+              maxWidth: 400,
+              quality: 1,
+            });
+            compressed.push(uri);
+          } catch (error) {
+            console.error('Compression failed:', error);
+            // If compression fails, still try to check if we can use original
+            // But skip if we can't determine size
+            if (asset?.uri) {
+              try {
+                const filePath = asset.uri.replace('file://', '');
+                const fileInfo = await RNFS.stat(filePath);
+                const fileSize = fileInfo.size || 0;
+                if (fileSize <= MAX_SIZE_BYTES) {
+                  compressed.push(asset.uri);
+                } else {
+                  rejectedCount.push(asset.fileName || 'image');
+                }
+              } catch (statError) {
+                console.warn('Could not check file size:', statError);
+                // If we can't check, skip it to be safe
+              }
+            }
           }
         }
 
-        // Compress the image
-        const uri = await CompressorImage.compress(asset.uri, {
-          maxWidth: 400,
-          quality: 1,
-        });
-        compressed.push(uri);
-      } catch (error) {
-        console.error('Compression failed:', error);
-        // If compression fails, still try to check if we can use original
-        // But skip if we can't determine size
-        if (asset?.uri) {
-          try {
-            const filePath = asset.uri.replace('file://', '');
-            const fileInfo = await RNFS.stat(filePath);
-            const fileSize = fileInfo.size || 0;
-            if (fileSize <= MAX_SIZE_BYTES) {
-              compressed.push(asset.uri);
-            } else {
-              rejectedCount.push(asset.fileName || 'image');
+        // Show alert if any images were rejected
+        if (rejectedCount.length > 0) {
+          Alert.alert(
+            'Image Too Large',
+            `${rejectedCount.length} image(s) exceed 1 MB limit and were not added. Please select smaller images.`
+          );
+        }
+
+        // Only update state if we have valid compressed images
+        if (compressed.length > 0) {
+          setImageUris((prev) => {
+            if (prev.length + compressed.length > MAX_IMAGES) {
+              // Replace all if over limit
+              return compressed.slice(0, MAX_IMAGES);
             }
-          } catch (statError) {
-            console.warn('Could not check file size:', statError);
-            // If we can't check, skip it to be safe
-          }
+            return [...prev, ...compressed];
+          });
         }
       }
+    } catch (error) {
+      console.error('❌ Image picker crash:', error);
+      Alert.alert('Error', 'Failed to pick images. Please try again.');
     }
+  }, []);
 
-    // Show alert if any images were rejected
-    if (rejectedCount.length > 0) {
-      Alert.alert(
-        'Image Too Large',
-        `${rejectedCount.length} image(s) exceed 1 MB limit and were not added. Please select smaller images.`
-      );
-    }
 
-    // Only update state if we have valid compressed images
-    if (compressed.length > 0) {
-      setImageUris((prev) => {
-        if (prev.length + compressed.length > MAX_IMAGES) {
-          // Replace all if over limit
-          return compressed.slice(0, MAX_IMAGES);
-        }
-        return [...prev, ...compressed];
-      });
-    }
-  }
-}, []);
-
-  
 
   // const uploadToCloudinary = useCallback(async () => {
   //   const urls = [];
@@ -184,19 +198,19 @@ const pickAndCompress = useCallback(async () => {
   const uploadToBunny = useCallback(async () => {
     const urls = [];
     const userId = user?.id ?? 'anon';
-  
+
     for (const uri of imageUris) {
       try {
-        const filename   = `${Date.now()}-${Math.floor(Math.random() * 1e6)}.jpg`;
+        const filename = `${Date.now()}-${Math.floor(Math.random() * 1e6)}.jpg`;
         const remotePath = `uploads/${encodeURIComponent(userId)}/${encodeURIComponent(filename)}`;
-        const uploadUrl  = `https://${BUNNY_STORAGE_HOST}/${BUNNY_STORAGE_ZONE}/${remotePath}`;
-  
+        const uploadUrl = `https://${BUNNY_STORAGE_HOST}/${BUNNY_STORAGE_ZONE}/${remotePath}`;
+
         // Read file as base64 then convert to raw bytes
         const base64 = await RNFS.readFile(uri.replace('file://', ''), 'base64');
-  
+
         // base64 -> Uint8Array (works reliably on RN 0.77)
         const binary = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
-  
+
         // PUT raw bytes
         const res = await fetch(uploadUrl, {
           method: 'PUT',
@@ -207,14 +221,14 @@ const pickAndCompress = useCallback(async () => {
           },
           body: binary,
         });
-  
+
         const txt = await res.text().catch(() => '');
         // console.log('[Bunny PUT]', res.status, txt?.slice(0, 200));
-  
+
         if (!res.ok) {
           throw new Error(`Bunny upload failed ${res.status}: ${txt}`);
         }
-  
+
         // Public CDN URL to display
         urls.push(`${BUNNY_CDN_BASE}/${decodeURIComponent(remotePath)}`);
       } catch (e) {
@@ -222,25 +236,25 @@ const pickAndCompress = useCallback(async () => {
         throw e; // bubble up so your Alert shows
       }
     }
-  
+
     return urls;
   }, [imageUris, user?.id]);
-  
+
 
   const handleSubmit = useCallback(() => {
     // ✅ Guard: Prevent multiple simultaneous submissions
     if (loading) return;
-    
+
     if (!user?.id) return;
     if (!currentUserEmail) {
       Alert.alert('Missing Email', 'Could not detect your account email. Please re-login.');
       return;
     }
-  
+
     if (!desc && imageUris.length === 0) {
       return Alert.alert('Missing Info', 'Please add a description or at least one image.');
     }
-    
+
     // ✅ Content moderation: Check description for inappropriate content
     const trimmedDesc = (desc || '').trim();
     if (trimmedDesc) {
@@ -250,7 +264,7 @@ const pickAndCompress = useCallback(async () => {
         return;
       }
     }
-    
+
     // ✅ Check 1-minute cooldown (session-based, resets on app restart)
     const now = Date.now();
     if (lastPostTime && (now - lastPostTime) < 60000) {
@@ -263,7 +277,7 @@ const pickAndCompress = useCallback(async () => {
       });
       return;
     }
-    
+
     if (strikeInfo) {
       const { strikeCount, bannedUntil } = strikeInfo;
       // console.log('strick')
@@ -294,30 +308,30 @@ const pickAndCompress = useCallback(async () => {
         return;
       }
     }
-    
+
     // ✅ Set loading immediately to prevent duplicate submissions
     setLoading(true);
-    
+
     // Extract core logic into a callback
     const callbackfunction = async () => {
       try {
         const uploadedUrls = await uploadToBunny();
         // console.log('[UploadModal] submitting with email:', currentUserEmail);
         await onUpload(desc, uploadedUrls, selectedTags, currentUserEmail);
-        
+
         // ✅ Clear all inputs after successful upload
         setDesc('');
         setImageUris([]);
         setSelectedTags(['Discussion']);
         // setBudget('');
-        
+
         // ✅ Update last post time (session-based, not persisted - resets on app restart)
         const postTime = Date.now();
         setLastPostTime(postTime);
-        
+
         // ✅ Reset loading before closing modal
         setLoading(false);
-        
+
         onClose();
         showMessage({
           message: 'Success',
@@ -331,7 +345,7 @@ const pickAndCompress = useCallback(async () => {
         setLoading(false);
       }
     };
-  
+
     // Show ad if not Pro, then execute
     requestAnimationFrame(() => {
       setTimeout(() => {
@@ -351,57 +365,57 @@ const pickAndCompress = useCallback(async () => {
         }
       }, 500);
     });
-  
+
   }, [loading, user?.id, desc, imageUris, selectedTags, uploadToBunny, onUpload, onClose, localState.isPro, currentUserEmail, lastPostTime, strikeInfo]);
-  
+
 
   const themedStyles = getStyles(isDark);
 
   return (
     <Modal visible={visible} transparent animationType="slide">
-            <View style={{ flexDirection: 'row', flex: 1 }}>
+      <View style={{ flexDirection: 'row', flex: 1 }}>
 
-      <ConditionalKeyboardWrapper>
-      <TouchableOpacity activeOpacity={1} onPress={onClose} style={themedStyles.modalBackground}>
-        <TouchableOpacity
-          activeOpacity={1}
-          style={themedStyles.modalContent}
-          onPress={(e) => e.stopPropagation()}
-        >
-          <TextInput
-            style={themedStyles.input}
-            placeholder="Write a description..."
-            placeholderTextColor={isDark ? '#999' : '#666'}
-            value={desc}
-            onChangeText={setDesc}
-            multiline
-          />
+        <ConditionalKeyboardWrapper>
+          <TouchableOpacity activeOpacity={1} onPress={onClose} style={themedStyles.modalBackground}>
+            <TouchableOpacity
+              activeOpacity={1}
+              style={themedStyles.modalContent}
+              onPress={(e) => e.stopPropagation()}
+            >
+              <TextInput
+                style={themedStyles.input}
+                placeholder="Write a description..."
+                placeholderTextColor={isDark ? '#999' : '#666'}
+                value={desc}
+                onChangeText={setDesc}
+                multiline
+              />
 
-          <View style={themedStyles.tagSelector}>
-          {['Scam Alert', 'Looking for Trade', 'Discussion', 'Real or Fake', 'Need Help', 'Misc'].map((tag) => (
-  <TouchableOpacity
-    key={tag}
-    style={[
-      themedStyles.tagButton,
-      selectedTags.includes(tag) && themedStyles.tagButtonSelected,
-    ]}
-    onPress={() => toggleTag(tag)}
-  >
-    <Text
-      style={{
-        color: selectedTags.includes(tag) ? '#fff' : isDark ? '#eee' : '#333',
-        fontSize: 12,
-        fontFamily: 'Lato-Bold',
-      }}
-    >
-      {tag}
-    </Text>
-  </TouchableOpacity>
-))}
+              <View style={themedStyles.tagSelector}>
+                {['Scam Alert', 'Looking for Trade', 'Discussion', 'Real or Fake', 'Need Help', 'Misc'].map((tag) => (
+                  <TouchableOpacity
+                    key={tag}
+                    style={[
+                      themedStyles.tagButton,
+                      selectedTags.includes(tag) && themedStyles.tagButtonSelected,
+                    ]}
+                    onPress={() => toggleTag(tag)}
+                  >
+                    <Text
+                      style={{
+                        color: selectedTags.includes(tag) ? '#fff' : isDark ? '#eee' : '#333',
+                        fontSize: 12,
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      {tag}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
 
-          </View>
+              </View>
 
-          {/* <TextInput
+              {/* <TextInput
             style={themedStyles.input}
             placeholder="Optional: Budget (e.g. 500 Bucks)"
             placeholderTextColor={isDark ? '#999' : '#666'}
@@ -409,31 +423,31 @@ const pickAndCompress = useCallback(async () => {
             onChangeText={setBudget}
           /> */}
 
-          <TouchableOpacity style={themedStyles.imagePicker} onPress={pickAndCompress}>
-            {imageUris.length > 0 ? (
-              <View style={themedStyles.imageGrid}>
-                {imageUris.map((uri, idx) => (
-                  <Image key={idx} source={{ uri }} style={themedStyles.previewImage} />
-                ))}
-              </View>
-            ) : (
-              <Text style={{ color: isDark ? '#aaa' : '#333' }}>Upload up to 4 images</Text>
-            )}
-          </TouchableOpacity>
+              <TouchableOpacity style={themedStyles.imagePicker} onPress={pickAndCompress}>
+                {imageUris.length > 0 ? (
+                  <View style={themedStyles.imageGrid}>
+                    {imageUris.map((uri, idx) => (
+                      <Image key={idx} source={{ uri }} style={themedStyles.previewImage} />
+                    ))}
+                  </View>
+                ) : (
+                  <Text style={{ color: isDark ? '#aaa' : '#333' }}>Upload up to 4 images</Text>
+                )}
+              </TouchableOpacity>
 
-          <TouchableOpacity style={themedStyles.uploadBtn} onPress={handleSubmit} disabled={loading}>
-            {loading ? <ActivityIndicator color="#fff" /> : <Text style={themedStyles.btnText}>Submit</Text>}
-          </TouchableOpacity>
+              <TouchableOpacity style={themedStyles.uploadBtn} onPress={handleSubmit} disabled={loading}>
+                {loading ? <ActivityIndicator color="#fff" /> : <Text style={themedStyles.btnText}>Submit</Text>}
+              </TouchableOpacity>
 
-          <TouchableOpacity onPress={onClose} style={themedStyles.cancelBtn}>
-            <Text style={themedStyles.btnText}>Cancel</Text>
+              <TouchableOpacity onPress={onClose} style={themedStyles.cancelBtn}>
+                <Text style={themedStyles.btnText}>Cancel</Text>
+              </TouchableOpacity>
+            </TouchableOpacity>
           </TouchableOpacity>
-        </TouchableOpacity>
-      </TouchableOpacity>
-      </ConditionalKeyboardWrapper>
+        </ConditionalKeyboardWrapper>
       </View>
 
-      
+
     </Modal>
   );
 };
@@ -451,7 +465,7 @@ const getStyles = (isDark) =>
       padding: 20,
       borderRadius: 10,
       // width: '90%',
-      marginHorizontal:10
+      marginHorizontal: 10
     },
     input: {
       borderWidth: 1,
@@ -460,7 +474,7 @@ const getStyles = (isDark) =>
       borderRadius: 6,
       marginBottom: 10,
       color: isDark ? '#eee' : '#000',
-      fontFamily: 'Lato-Regular',
+
     },
     tagSelector: {
       flexDirection: 'row',
@@ -519,7 +533,7 @@ const getStyles = (isDark) =>
     btnText: {
       color: '#fff',
       fontWeight: '600',
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
     },
   });
 

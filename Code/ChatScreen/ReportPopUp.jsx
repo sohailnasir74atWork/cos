@@ -212,7 +212,7 @@ const getStyles = (isDarkMode) =>
     },
     title: {
       fontSize: 18,
-      fontFamily: "Lato-Bold",
+      fontWeight: 'bold',
       marginBottom: 10,
       color: isDarkMode ? "white" : "black",
     },

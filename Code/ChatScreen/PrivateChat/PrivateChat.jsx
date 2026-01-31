@@ -695,7 +695,7 @@ const PrivateChatScreen = ({ route, bannedUsers, isDrawerVisible, setIsDrawerVis
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 8, borderBottomColor: !isDarkMode ? 'lightgrey' : 'grey', borderBottomWidth: 1 }}>
                   <View style={{ width: '48%', flexWrap: 'wrap', flexDirection: 'row', gap: 4 }}>
                     {groupedHasItems?.map((hasItem, index) => (
-                      <View key={`${hasItem.name}-${hasItem.type}`} style={{ width: '19%', alignItems: 'center' }}>
+                      <View key={`has-${hasItem.name}-${hasItem.type}-${index}`} style={{ width: '19%', alignItems: 'center' }}>
                         <Image
                           source={{ uri: `${localState?.imgurl?.replace(/"/g, "").replace(/\/$/, "")}/${hasItem.image?.replace(/^\//, "")}` }}
                           style={{ width: 30, height: 30 }}
@@ -735,7 +735,7 @@ const PrivateChatScreen = ({ route, bannedUsers, isDrawerVisible, setIsDrawerVis
                   </View>
                   <View style={{ width: '48%', flexWrap: 'wrap', flexDirection: 'row', gap: 4 }}>
                     {groupedWantsItems?.map((wantitem, index) => (
-                      <View key={`${wantitem.name}-${wantitem.type}`} style={{ width: '19%', alignItems: 'center' }}>
+                      <View key={`want-${wantitem.name}-${wantitem.type}-${index}`} style={{ width: '19%', alignItems: 'center' }}>
                         <Image
                           source={{ uri: `${localState?.imgurl?.replace(/"/g, "").replace(/\/$/, "")}/${wantitem.image?.replace(/^\//, "")}` }}
                           style={{ width: 35, height: 35 }}

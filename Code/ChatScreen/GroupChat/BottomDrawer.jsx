@@ -1159,7 +1159,7 @@ const ProfileBottomDrawer = ({
           {trade.hasItems && trade.hasItems.length > 0 && (
             <Text style={{
               fontSize: 8,
-              fontFamily: 'Lato-Bold',
+              fontWeight: 'bold',
               color: 'white',
               textAlign: 'center',
               alignSelf: 'center',
@@ -1182,7 +1182,7 @@ const ProfileBottomDrawer = ({
                     return (
                       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Icon name="arrow-up-outline" size={12} color="green" />
-                        <Text style={{ fontSize: 8, fontFamily: 'Lato-Bold', color: 'green', textAlign: 'center', alignSelf: 'center', marginHorizontal: 'auto', paddingHorizontal: 4, paddingVertical: 2, borderRadius: 6 }}>
+                        <Text style={{ fontSize: 8, fontWeight: 'bold', color: 'green', textAlign: 'center', alignSelf: 'center', marginHorizontal: 'auto', paddingHorizontal: 4, paddingVertical: 2, borderRadius: 6 }}>
                           {formatTradeValue(hasValue - wantsValue)}
                         </Text>
                       </View>
@@ -1191,13 +1191,13 @@ const ProfileBottomDrawer = ({
                     return (
                       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Icon name="arrow-down-outline" size={12} color={config.colors.hasBlockGreen} />
-                        <Text style={{ fontSize: 8, fontFamily: 'Lato-Bold', color: config.colors.hasBlockGreen, textAlign: 'center', alignSelf: 'center', marginHorizontal: 'auto', paddingHorizontal: 4, paddingVertical: 2, borderRadius: 6 }}>
+                        <Text style={{ fontSize: 8, fontWeight: 'bold', color: config.colors.hasBlockGreen, textAlign: 'center', alignSelf: 'center', marginHorizontal: 'auto', paddingHorizontal: 4, paddingVertical: 2, borderRadius: 6 }}>
                           {formatTradeValue(wantsValue - hasValue)}
                         </Text>
                       </View>
                     );
                   } else {
-                    return <Text style={{ fontSize: 8, fontFamily: 'Lato-Bold', color: config.getPrimaryColor(isDarkMode), textAlign: 'center' }}>-</Text>;
+                    return <Text style={{ fontSize: 8, fontWeight: 'bold', color: config.getPrimaryColor(isDarkMode), textAlign: 'center' }}>-</Text>;
                   }
                 })()}
               </>
@@ -1206,7 +1206,7 @@ const ProfileBottomDrawer = ({
           {trade.wantsItems && trade.wantsItems.length > 0 && (
             <Text style={{
               fontSize: 8,
-              fontFamily: 'Lato-Bold',
+              fontWeight: 'bold',
               color: 'white',
               textAlign: 'center',
               alignSelf: 'center',
@@ -1478,7 +1478,7 @@ const ProfileBottomDrawer = ({
                         <Text
                           style={{
                             fontSize: 11,
-                            fontFamily: 'Lato-Bold',
+                            fontWeight: 'bold',
                             color: isDarkMode ? '#10B981' : '#059669',
                             marginLeft: 4,
                           }}
@@ -1504,7 +1504,7 @@ const ProfileBottomDrawer = ({
                         <Text
                           style={{
                             fontSize: 11,
-                            fontFamily: 'Lato-Bold',
+                            fontWeight: 'bold',
                             color: isDarkMode ? '#F59E0B' : '#D97706',
                             marginLeft: 4,
                           }}

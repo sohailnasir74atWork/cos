@@ -205,7 +205,7 @@ const ShareTradeModal = ({ visible, onClose, hasItems, wantsItems, hasTotal, wan
             <View style={styles.itemsContainer}>
                 <View style={styles.gridContainer}>
                     {ensureGridItems(items).map((item, index) => (
-                        <View key={index} style={[
+                        <View key={`grid-${item?.name || 'empty'}-${index}`} style={[
                             styles.gridItemWrapper,
                             (index + 1) % 3 === 0 && { borderRightWidth: 0 },
                             index >= 6 && { borderBottomWidth: 0 }

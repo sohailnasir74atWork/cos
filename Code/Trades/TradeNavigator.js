@@ -73,7 +73,7 @@ export const TradeStack = ({ selectedTheme }) => {
     () => ({
       headerStyle: { backgroundColor: selectedTheme.colors.background },
       headerTintColor: selectedTheme.colors.text,
-      headerTitleStyle: { fontFamily: 'Lato-Bold', fontSize: 24 },
+      headerTitleStyle: { fontWeight: 'bold', fontSize: 24 },
       // ✅ Fix iOS SDK header sizing issue (liquid view bug)
       headerLargeTitle: false,
       headerLargeTitleShadowVisible: false,
@@ -112,7 +112,7 @@ export const TradeStack = ({ selectedTheme }) => {
                     }}
                     resizeMode="contain"
                   />
-                  <Text style={{color:'white', fontFamily:'Lato-Bold' }}>Pvt Servers</Text>
+                  <Text style={{color:'white', fontWeight:'bold' }}>Pvt Servers</Text>
                 </TouchableOpacity> */}
 
                 <Icon
@@ -198,17 +198,17 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 20,
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
   },
 
   modalText: {
     fontSize: 14,
     textAlign: 'left',
-    fontFamily: 'Lato-Regular',
+
     lineHeight: 24,
   },
   highlightedText: {
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
     color: config.colors.primary,
   },
   closeButton: {
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
   },
   closeButtonText: {
     fontSize: 16,
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
   },
 });
 

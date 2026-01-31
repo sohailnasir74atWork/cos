@@ -562,10 +562,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   latoText: {
-    fontFamily: 'Lato-Regular',
+    
   },
   latoBold: {
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
   },
 
 

@@ -45,7 +45,7 @@ export const ChatStack = ({ selectedTheme, setChatFocused, modalVisibleChatinfo,
   const headerOptions = useMemo(() => ({
     headerStyle: { backgroundColor: selectedTheme.colors.background },
     headerTintColor: selectedTheme.colors.text,
-    headerTitleStyle: { fontFamily: 'Lato-Bold', fontSize: 24 },
+    headerTitleStyle: { fontWeight: 'bold', fontSize: 24 },
     headerBackTitleVisible: false,
     // ✅ Fix iOS SDK header sizing issue (liquid view bug)
     headerLargeTitle: false,
@@ -70,36 +70,46 @@ export const ChatStack = ({ selectedTheme, setChatFocused, modalVisibleChatinfo,
     // ✅ OPTIMIZED: Use child_added and child_changed to listen to individual chats
     // This only downloads data when a specific chat changes, not the entire metadata
     const handleChildChange = (snapshot) => {
-      if (!snapshot || !snapshot.key) return;
-      const chatData = snapshot.val();
-      if (!chatData || typeof chatData !== 'object') return;
+      try {
+        if (!snapshot || !snapshot.key) return;
+        const chatData = snapshot.val();
+        if (!chatData || typeof chatData !== 'object') return;
 
-      const chatPartnerId = snapshot.key;
-      const isBlocked = Array.isArray(bannedUsers) && bannedUsers.includes(chatPartnerId);
-      const rawUnread = chatData?.unreadCount || 0;
+        const chatPartnerId = snapshot.key;
+        const isBlocked = Array.isArray(bannedUsers) && bannedUsers.includes(chatPartnerId);
+        const rawUnread = chatData?.unreadCount || 0;
 
-      if (isBlocked && rawUnread > 0) {
-        update(
-          ref(appdatabase, `chat_meta_data/${user.id}/${chatPartnerId}`),
-          { unreadCount: 0 }
-        ).catch((error) => {
-          console.error("Error resetting unread count:", error);
-        });
-        unreadCounts.set(chatPartnerId, 0);
-      } else {
-        unreadCounts.set(chatPartnerId, isBlocked ? 0 : rawUnread);
+        if (isBlocked && rawUnread > 0) {
+          update(
+            ref(appdatabase, `chat_meta_data/${user.id}/${chatPartnerId}`),
+            { unreadCount: 0 }
+          ).catch((error) => {
+            console.error("Error resetting unread count:", error);
+          });
+          unreadCounts.set(chatPartnerId, 0);
+        } else {
+          unreadCounts.set(chatPartnerId, isBlocked ? 0 : rawUnread);
+        }
+
+        // Recalculate total
+        totalUnread = Array.from(unreadCounts.values()).reduce((sum, count) => sum + count, 0);
+        setunreadcount(totalUnread);
+      } catch (error) {
+        console.error('❌ Firebase handleChildChange error:', error);
+        // Don't crash - continue gracefully
       }
-
-      // Recalculate total
-      totalUnread = Array.from(unreadCounts.values()).reduce((sum, count) => sum + count, 0);
-      setunreadcount(totalUnread);
     };
 
     const handleChildRemoved = (snapshot) => {
-      if (!snapshot || !snapshot.key) return;
-      unreadCounts.delete(snapshot.key);
-      totalUnread = Array.from(unreadCounts.values()).reduce((sum, count) => sum + count, 0);
-      setunreadcount(totalUnread);
+      try {
+        if (!snapshot || !snapshot.key) return;
+        unreadCounts.delete(snapshot.key);
+        totalUnread = Array.from(unreadCounts.values()).reduce((sum, count) => sum + count, 0);
+        setunreadcount(totalUnread);
+      } catch (error) {
+        console.error('❌ Firebase handleChildRemoved error:', error);
+        // Don't crash - continue gracefully
+      }
     };
 
     // Initial load: fetch only unreadCount fields for each chat (lighter than full data)
@@ -222,7 +232,7 @@ export const ChatStack = ({ selectedTheme, setChatFocused, modalVisibleChatinfo,
     title: '', // Hide title
     headerTitleAlign: 'left',
     headerTitleStyle: {
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
       fontSize: 24,
     },
     headerTitleContainerStyle: {

@@ -238,15 +238,15 @@ const OnboardingScreen = ({ onFinish, selectedTheme }) => {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   slide: { width: width, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, flex: 1, marginBottom: 30 },
-  title: { fontSize: 24, fontFamily: 'Lato-Bold', marginBottom: 10, textAlign: 'center', lineHeight: 30 },
-  text: { fontSize: 12, textAlign: 'center', paddingHorizontal: 20, fontFamily: 'Lato-Regular' },
-  welcomeText: { fontSize: 18, fontFamily: 'Lato-Bold', marginBottom: 10, textAlign: 'center' },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 10, textAlign: 'center', lineHeight: 30 },
+  text: { fontSize: 12, textAlign: 'center', paddingHorizontal: 20, fontWeight: 'normal' },
+  welcomeText: { fontSize: 18, fontWeight: 'bold', marginBottom: 10, textAlign: 'center' },
   button: { backgroundColor: config.colors.hasBlockGreen, paddingVertical: 12, paddingHorizontal: 20, borderRadius: 12, marginBottom: 10, width: '90%', alignItems: 'center', borderColor: config.colors.hasBlockGreen, borderWidth: 2, },
-  buttonText: { color: '#fff', fontSize: 14, textAlign: 'center', fontFamily: 'Lato-Bold' },
+  buttonText: { color: '#fff', fontSize: 14, textAlign: 'center', fontWeight: 'bold' },
   buttonOutline: { borderColor: config.colors.hasBlockGreen, borderWidth: 2, paddingVertical: 12, paddingHorizontal: 20, borderRadius: 12, width: '90%', alignItems: 'center', marginBottom: 10 },
-  buttonTextOutline: { color: config.colors.hasBlockGreen, fontSize: 14, textAlign: 'center', fontFamily: 'Lato-Bold' },
+  buttonTextOutline: { color: config.colors.hasBlockGreen, fontSize: 14, textAlign: 'center', fontWeight: 'bold' },
   skipButton: { position: 'absolute', top: 40, right: 20, zIndex: 10 },
-  skipButtonText: { fontSize: 16, fontFamily: 'Lato-Bold' },
+  skipButtonText: { fontSize: 16, fontWeight: 'bold' },
   image: { width: 50, height: 50, margin: 10, borderRadius: 10 },
   bottomContainer: {
     position: 'absolute',
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
   benefitText: {
     fontSize: 16,
     color: '#fff',
-    fontFamily: 'Lato-Bold'
+    fontWeight: 'bold'
   },
   sliderContainer: {
     paddingVertical: 5
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 22,
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
     marginVertical: 15,
     alignSelf: 'center'
   },
@@ -338,7 +338,7 @@ const styles = StyleSheet.create({
   },
   languageText: {
     fontSize: 16,
-    fontFamily: 'Lato-Bold'
+    fontWeight: 'bold'
   }
 
 });

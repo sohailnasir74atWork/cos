@@ -452,17 +452,17 @@ const styles = StyleSheet.create({
   infoText: {
     marginTop: 8,
     fontSize: 14,
-    fontFamily: "Lato-Regular",
+    
     textAlign: "center",
   },
   screenTitle: {
     fontSize: 20,
-    fontFamily: "Lato-Bold",
+    fontWeight: 'bold',
     marginBottom: 2,
   },
   screenSubtitle: {
     fontSize: 13,
-    fontFamily: "Lato-Regular",
+    
     marginBottom: 12,
   },
   sectionCard: {
@@ -473,7 +473,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 16,
-    fontFamily: "Lato-Bold",
+    fontWeight: 'bold',
     marginBottom: 8,
   },
 
@@ -486,16 +486,16 @@ const styles = StyleSheet.create({
   },
   pollQuestion: {
     fontSize: 14,
-    fontFamily: "Lato-Bold",
+    fontWeight: 'bold',
   },
   pollMeta: {
     fontSize: 11,
-    fontFamily: "Lato-Regular",
+    
     marginTop: 2,
   },
   pollWinner: {
     fontSize: 12,
-    fontFamily: "Lato-Bold",
+    fontWeight: 'bold',
     marginTop: 4,
   },
   optionRow: {
@@ -503,11 +503,11 @@ const styles = StyleSheet.create({
   },
   optionLabel: {
     fontSize: 13,
-    fontFamily: "Lato-Bold",
+    fontWeight: 'bold',
   },
   optionMeta: {
     fontSize: 11,
-    fontFamily: "Lato-Regular",
+    
   },
 
   // Quick suggestions
@@ -525,12 +525,12 @@ const styles = StyleSheet.create({
   },
   countBadgeText: {
     fontSize: 12,
-    fontFamily: "Lato-Bold",
+    fontWeight: 'bold',
   },
   quickText: {
     flex: 1,
     fontSize: 13,
-    fontFamily: "Lato-Regular",
+    
   },
 
   // Custom feedback
@@ -542,12 +542,12 @@ const styles = StyleSheet.create({
   },
   customMeta: {
     fontSize: 11,
-    fontFamily: "Lato-Regular",
+    
     marginBottom: 2,
   },
   customText: {
     fontSize: 13,
-    fontFamily: "Lato-Regular",
+    
   },
 });
 

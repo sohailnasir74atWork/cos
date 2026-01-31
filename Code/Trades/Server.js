@@ -350,7 +350,7 @@ const getStyles = (isDarkMode) =>
     StyleSheet.create({
         header: {
             fontSize: 18,
-            fontFamily: 'Lato-Bold',
+            fontWeight: 'bold',
             marginVertical: 12,
             color: isDarkMode ? 'white' : 'black',
 
@@ -380,7 +380,7 @@ const getStyles = (isDarkMode) =>
         },
         title: {
             fontSize: 16,
-            fontFamily: 'Lato-Bold',
+            fontWeight: 'bold',
             color: isDarkMode ? 'black' : 'black',
 
         },
@@ -389,13 +389,13 @@ const getStyles = (isDarkMode) =>
             color: '#007bff',
             color: isDarkMode ? 'lightblue' : '#007bff',
             textDecorationLine: 'underline',
-            fontFamily: 'Lato-Regular',
+            
         },
         message: {
             fontSize: 13,
             color: '#333',
             marginTop: 4,
-            fontFamily: 'Lato-Regular',
+            
             color: isDarkMode ? 'white' : 'black',
 
         },
@@ -406,7 +406,7 @@ const getStyles = (isDarkMode) =>
         },
         voteText: {
             paddingHorizontal: 4,
-            fontFamily: 'Lato-Regular',
+            
             color: isDarkMode ? 'white' : 'black',
 
         },
@@ -438,7 +438,7 @@ const getStyles = (isDarkMode) =>
         },
         modalHeader: {
             fontSize: 18,
-            fontFamily: 'Lato-Bold',
+            fontWeight: 'bold',
             marginBottom: 12,
             color: isDarkMode ? 'white' : 'black',
         },
@@ -448,7 +448,7 @@ const getStyles = (isDarkMode) =>
             padding: 10,
             marginBottom: 12,
             borderRadius: 8,
-            fontFamily: 'Lato-Regular',
+            
             color: isDarkMode ? 'white' : 'black',
 
         },
@@ -460,7 +460,7 @@ const getStyles = (isDarkMode) =>
         },
         submitText: {
             color: '#fff',
-            fontFamily: 'Lato-Bold',
+            fontWeight: 'bold',
             //   color: isDarkMode ? 'white' : 'black',
 
         },
@@ -480,7 +480,7 @@ const getStyles = (isDarkMode) =>
             marginRight: 8,
         },
         username: {
-            fontFamily: 'Lato-Bold',
+            fontWeight: 'bold',
             color: isDarkMode ? 'white' : 'black',
 
         },
@@ -488,7 +488,7 @@ const getStyles = (isDarkMode) =>
             fontSize: 9,
             //   alignSelf: 'center',
             margin: 'auto',
-            fontFamily: 'Lato-Regular',
+            
             color: isDarkMode ? 'black' : 'black',
             textAlign: 'center',
             paddingTop: 3

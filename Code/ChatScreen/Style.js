@@ -53,7 +53,7 @@ export const getStyles = (isDarkMode) =>
     },
     senderNameText: {
       fontSize: 11,
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
       color: 'grey',
     },
     messageTextBox: {
@@ -74,7 +74,7 @@ export const getStyles = (isDarkMode) =>
       paddingVertical: 5,
       paddingHorizontal: 10,
       borderRadius: 10,
-      fontFamily: 'Lato-Regular',
+      
       lineHeight:14,
 
 
@@ -87,7 +87,7 @@ export const getStyles = (isDarkMode) =>
       // lineHeight: 20,
       borderRadius: 10,
       paddingBottom: 5,
-      fontFamily: 'Lato-Regular',
+      
       paddingRight:20,
       lineHeight:14,
    
@@ -97,14 +97,14 @@ export const getStyles = (isDarkMode) =>
     myMessageTextOnly: {
       fontSize: 12,
       color: isDarkMode ? 'white' : 'black',
-      fontFamily: 'Lato-Regular',
+      
       lineHeight: 14,
       textAlign: 'left',
     },
     otherMessageTextOnly: {
       fontSize: 12,
       color: isDarkMode ? 'white' : 'black',
-      fontFamily: 'Lato-Regular',
+      
       lineHeight: 14,
       textAlign: 'left',
     },
@@ -135,7 +135,7 @@ export const getStyles = (isDarkMode) =>
     // sendButtonText: {
     //   color: '#fff',
     //   fontSize: 16,
-    //   fontFamily: 'Lato-Bold',
+    //   fontWeight: 'bold',
     // },
     loggedOutMessage: {
       flex: 1,
@@ -156,14 +156,14 @@ export const getStyles = (isDarkMode) =>
     platformText: {
       color: 'white',
       fontSize: 6,
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
     },
    
     admin: {
       // alignSelf: 'flex-start',
       color: 'white',
       // fontSize: 10,
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
       // color: config.colors.primary,
       fontSize: 9,
     },
@@ -177,7 +177,7 @@ export const getStyles = (isDarkMode) =>
     verified: {
       color: 'white',
       fontSize: 9,
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
       // lineHeight:10,
 
       
@@ -201,7 +201,7 @@ export const getStyles = (isDarkMode) =>
     },
     loginText: {
       color: config.colors.hasBlockGreen,
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
       textAlign: 'center',
       lineHeight: 24
 
@@ -261,7 +261,7 @@ export const getStyles = (isDarkMode) =>
     },
     replySenderText: {
       fontSize: 12,
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
       color: isDarkMode ? '#FFF' : '#000',
     },
     profileImage: {
@@ -285,7 +285,7 @@ export const getStyles = (isDarkMode) =>
       // backgroundColor:'red',
       backgroundColor:'red',
       lineHeight:14,
-      fontFamily:'Lato-Bold'
+      fontWeight: 'bold'
 
     },
     adminActions: {
@@ -415,7 +415,7 @@ names:{
 },
 priceText: {
   fontSize: 10,
-  fontFamily: 'Lato-Regular',
+  
   color: '#007BFF',
   // width: '40%',
   textAlign: 'center', // Centers text within its own width
@@ -429,7 +429,7 @@ priceText: {
 priceTextProfit: {
   fontSize: 10,
   lineHeight:14,
-  fontFamily: 'Lato-Regular',
+  
   // color: '#007BFF',
   // width: '40%',
   textAlign: 'center', // Centers text within its own width
@@ -452,7 +452,7 @@ tagcount: {
 },
 tagcounttext: {
   color: 'white',
-  fontFamily: 'Lato-Bold',
+  fontWeight: 'bold',
   fontSize: 10
 },
 

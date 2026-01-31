@@ -212,7 +212,7 @@ const getStyles = (isDarkMode) => StyleSheet.create({
     marginTop: 12,
     fontSize: 14,
     color: isDarkMode ? '#fff' : '#000',
-    fontFamily: 'Lato-Regular',
+    
   },
   errorContainer: {
     flex: 1,
@@ -224,13 +224,13 @@ const getStyles = (isDarkMode) => StyleSheet.create({
   errorText: {
     marginTop: 16,
     fontSize: 16,
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
     color: isDarkMode ? '#fff' : '#000',
   },
   errorSubtext: {
     marginTop: 8,
     fontSize: 12,
-    fontFamily: 'Lato-Regular',
+    
     color: isDarkMode ? '#999' : '#666',
     textAlign: 'center',
   },
@@ -244,14 +244,14 @@ const getStyles = (isDarkMode) => StyleSheet.create({
     marginTop: 12,
     fontSize: 14,
     color: isDarkMode ? '#999' : '#666',
-    fontFamily: 'Lato-Regular',
+    
   },
   groupContainer: {
     marginBottom: 32,
   },
   groupTitle: {
     fontSize: 20,
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
     color: isDarkMode ? '#fff' : '#000',
     marginBottom: 16,
     textAlign: 'center',
@@ -297,7 +297,7 @@ const getStyles = (isDarkMode) => StyleSheet.create({
   },
   serverLabel: {
     fontSize: 14,
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
     color: isDarkMode ? '#fff' : '#000',
     flex: 1,
   },

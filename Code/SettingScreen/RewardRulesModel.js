@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 20,
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
   },
   scrollContainer: {
     width: '100%',
@@ -88,11 +88,11 @@ const styles = StyleSheet.create({
   modalText: {
     fontSize: 14,
     textAlign: 'left',
-    fontFamily: 'Lato-Regular',
+    
     lineHeight: 24,
   },
   highlightedText: {
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
     color: config.colors.primary,
   },
   closeButton: {
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   },
   closeButtonText: {
     fontSize: 16,
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
   },
 });
 

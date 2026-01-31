@@ -1157,7 +1157,7 @@ const HomeScreen = ({ selectedTheme }) => {
                     const isLastRow = index >= hasItems.length - 3;
                     return (
                       <TouchableOpacity
-                        key={index}
+                        key={`has-${item?.name || 'empty'}-${index}`}
                         style={[
                           styles.addItemBlockNew,
                           isLastColumn && { borderRightWidth: 0 },
@@ -1192,7 +1192,7 @@ const HomeScreen = ({ selectedTheme }) => {
                     const isLastRow = index >= wantsItems.length - 3;
                     return (
                       <TouchableOpacity
-                        key={index}
+                        key={`want-${item?.name || 'empty'}-${index}`}
                         style={[
                           styles.addItemBlockNew,
                           isLastColumn && { borderRightWidth: 0 },
@@ -1548,7 +1548,7 @@ const getStyles = (isDarkMode, isGG) =>
     offerLabel: {
       fontSize: 12,
       color: isDarkMode ? '#888' : '#666',
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
       paddingBottom: 5,
     },
     dividerText: {
@@ -1579,7 +1579,7 @@ const getStyles = (isDarkMode, isGG) =>
     },
     lastUpdatedText: {
       fontSize: 12,
-      fontFamily: 'Lato-Regular',
+
     },
     summaryBox: {
       width: '48%',
@@ -1602,7 +1602,7 @@ const getStyles = (isDarkMode, isGG) =>
       color: 'white',
       textAlign: 'center',
       marginTop: 5,
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
     },
     itemRow: {
       flexDirection: 'row',
@@ -1631,7 +1631,7 @@ const getStyles = (isDarkMode, isGG) =>
     itemText: {
       color: isDarkMode ? 'white' : 'black',
       textAlign: 'center',
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
       fontSize: 12
     },
     removeButton: {
@@ -1797,7 +1797,7 @@ const getStyles = (isDarkMode, isGG) =>
     closeButtonText: {
       color: 'white',
       textAlign: 'center',
-      fontFamily: 'Lato-Regular',
+
       fontSize: 12
     },
     itemImageOverlay: {
@@ -1843,13 +1843,13 @@ const getStyles = (isDarkMode, isGG) =>
       fontSize: 12,
       marginBottom: 4,
       color: isDarkMode ? 'white' : 'black',
-      fontFamily: 'Lato-Regular'
+
     },
     modalMessagefooter: {
       fontSize: 10,
       marginBottom: 10,
       color: isDarkMode ? 'grey' : 'grey',
-      fontFamily: 'Lato-Regular'
+
     },
     input: {
       width: '100%',
@@ -1860,7 +1860,7 @@ const getStyles = (isDarkMode, isGG) =>
       paddingHorizontal: 10,
       marginBottom: 20,
       color: isDarkMode ? 'white' : 'black',
-      fontFamily: 'Lato-Ragular'
+      fontWeight: 'normal'
     },
     buttonContainer: {
       flexDirection: 'row',
@@ -1883,13 +1883,13 @@ const getStyles = (isDarkMode, isGG) =>
     buttonText: {
       color: 'white',
       fontSize: 14,
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
     },
 
     text: {
       color: "white",
       fontSize: 12,
-      fontFamily: "Lato-Regular",
+
       lineHeight: 12
     },
 
@@ -2130,13 +2130,13 @@ const getStyles = (isDarkMode, isGG) =>
     removeAdsTitle: {
       color: '#1f2933',
       fontSize: 12,
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
     },
 
     removeAdsSubtitle: {
       color: '#374151',
       fontSize: 10,
-      fontFamily: 'Lato-Regular',
+
       opacity: 0.9,
     },
 

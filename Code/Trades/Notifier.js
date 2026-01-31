@@ -178,51 +178,75 @@ const NotifierDrawer = () => {
 
     // ✅ Child listeners - only download changed items
     const handleBuyChildAdded = (snap) => {
-      if (!snap || !snap.key) return;
-      const itemName = typeof snap.val() === 'string' ? snap.val() : (snap.val()?.name || snap.val()?.Name || '');
-      if (itemName) {
-        buyItems[snap.key] = itemName;
-        setSavedItems(prev => ({ ...prev, buy: { ...buyItems } }));
+      try {
+        if (!snap || !snap.key) return;
+        const itemName = typeof snap.val() === 'string' ? snap.val() : (snap.val()?.name || snap.val()?.Name || '');
+        if (itemName) {
+          buyItems[snap.key] = itemName;
+          setSavedItems(prev => ({ ...prev, buy: { ...buyItems } }));
+        }
+      } catch (error) {
+        console.error('❌ Firebase handleBuyChildAdded error:', error);
       }
     };
 
     const handleBuyChildChanged = (snap) => {
-      if (!snap || !snap.key) return;
-      const itemName = typeof snap.val() === 'string' ? snap.val() : (snap.val()?.name || snap.val()?.Name || '');
-      if (itemName) {
-        buyItems[snap.key] = itemName;
-        setSavedItems(prev => ({ ...prev, buy: { ...buyItems } }));
+      try {
+        if (!snap || !snap.key) return;
+        const itemName = typeof snap.val() === 'string' ? snap.val() : (snap.val()?.name || snap.val()?.Name || '');
+        if (itemName) {
+          buyItems[snap.key] = itemName;
+          setSavedItems(prev => ({ ...prev, buy: { ...buyItems } }));
+        }
+      } catch (error) {
+        console.error('❌ Firebase handleBuyChildChanged error:', error);
       }
     };
 
     const handleBuyChildRemoved = (snap) => {
-      if (!snap || !snap.key) return;
-      delete buyItems[snap.key];
-      setSavedItems(prev => ({ ...prev, buy: { ...buyItems } }));
+      try {
+        if (!snap || !snap.key) return;
+        delete buyItems[snap.key];
+        setSavedItems(prev => ({ ...prev, buy: { ...buyItems } }));
+      } catch (error) {
+        console.error('❌ Firebase handleBuyChildRemoved error:', error);
+      }
     };
 
     const handleSaleChildAdded = (snap) => {
-      if (!snap || !snap.key) return;
-      const itemName = typeof snap.val() === 'string' ? snap.val() : (snap.val()?.name || snap.val()?.Name || '');
-      if (itemName) {
-        saleItems[snap.key] = itemName;
-        setSavedItems(prev => ({ ...prev, sale: { ...saleItems } }));
+      try {
+        if (!snap || !snap.key) return;
+        const itemName = typeof snap.val() === 'string' ? snap.val() : (snap.val()?.name || snap.val()?.Name || '');
+        if (itemName) {
+          saleItems[snap.key] = itemName;
+          setSavedItems(prev => ({ ...prev, sale: { ...saleItems } }));
+        }
+      } catch (error) {
+        console.error('❌ Firebase handleSaleChildAdded error:', error);
       }
     };
 
     const handleSaleChildChanged = (snap) => {
-      if (!snap || !snap.key) return;
-      const itemName = typeof snap.val() === 'string' ? snap.val() : (snap.val()?.name || snap.val()?.Name || '');
-      if (itemName) {
-        saleItems[snap.key] = itemName;
-        setSavedItems(prev => ({ ...prev, sale: { ...saleItems } }));
+      try {
+        if (!snap || !snap.key) return;
+        const itemName = typeof snap.val() === 'string' ? snap.val() : (snap.val()?.name || snap.val()?.Name || '');
+        if (itemName) {
+          saleItems[snap.key] = itemName;
+          setSavedItems(prev => ({ ...prev, sale: { ...saleItems } }));
+        }
+      } catch (error) {
+        console.error('❌ Firebase handleSaleChildChanged error:', error);
       }
     };
 
     const handleSaleChildRemoved = (snap) => {
-      if (!snap || !snap.key) return;
-      delete saleItems[snap.key];
-      setSavedItems(prev => ({ ...prev, sale: { ...saleItems } }));
+      try {
+        if (!snap || !snap.key) return;
+        delete saleItems[snap.key];
+        setSavedItems(prev => ({ ...prev, sale: { ...saleItems } }));
+      } catch (error) {
+        console.error('❌ Firebase handleSaleChildRemoved error:', error);
+      }
     };
 
     // Attach listeners
@@ -322,7 +346,7 @@ const NotifierDrawer = () => {
           source={{ uri: getImageUrl(item) }}
           style={styles.itemImage}
         />
-        <Text style={[styles.itemText, { fontFamily: 'Lato-Regular', color: isDarkMode ? '#fff' : '#000' }]}>{itemName}</Text>
+        <Text style={[styles.itemText, { color: isDarkMode ? '#fff' : '#000' }]}>{itemName}</Text>
       </TouchableOpacity>
     );
   };
@@ -336,7 +360,7 @@ const NotifierDrawer = () => {
     return (
       <View style={styles.savedItem} key={key}>
         <Image source={{ uri: imageUrl }} style={styles.itemImageSelected} />
-        <Text style={[styles.itemText, { fontFamily: 'Lato-Regular', color: isDarkMode ? '#fff' : '#000', marginLeft: 5 }]}>{itemName}</Text>
+        <Text style={[styles.itemText, { color: isDarkMode ? '#fff' : '#000', marginLeft: 5 }]}>{itemName}</Text>
         <TouchableOpacity onPress={() => handleRemove(key)}>
           <Icon name="close-circle" size={20} color="red" style={styles.removeText} />
         </TouchableOpacity>
@@ -346,7 +370,7 @@ const NotifierDrawer = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: isDarkMode ? '#121212' : '#fff' }]}>
-      {/* <Text style={[styles.infoText, { fontFamily: 'Lato-Regular', color: isDarkMode ? '#aaa' : '#666' }]}>
+      {/* <Text style={[styles.infoText, {  color: isDarkMode ? '#aaa' : '#666' }]}>
         Select items you want to buy or sell — we’ll notify you when someone is offering them or looking for them in a trade.
 </Text> */}
 
@@ -358,21 +382,21 @@ const NotifierDrawer = () => {
         <TouchableOpacity
           style={[styles.toggleButton, mode === 'buy' && styles.active]}
           onPress={() => setMode('buy')}>
-          <Text style={{ fontFamily: 'Lato-Bold', color: '#fff', fontSize: 13 }}>Notify Me When Offered</Text>
+          <Text style={{ fontWeight: 'bold', color: '#fff', fontSize: 13 }}>Notify Me When Offered</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.toggleButton, mode === 'sale' && styles.active]}
           onPress={() => setMode('sale')}>
-          <Text style={{ fontFamily: 'Lato-Bold', color: '#fff', fontSize: 13 }}>Notify Me When Wanted</Text>
+          <Text style={{ fontWeight: 'bold', color: '#fff', fontSize: 13 }}>Notify Me When Wanted</Text>
         </TouchableOpacity>
       </View>
 
-      <Text style={[styles.sectionTitle, { fontFamily: 'Lato-Bold', color: isDarkMode ? '#fff' : '#000' }]}>{subtitleText}</Text>
+      <Text style={[styles.sectionTitle, { fontWeight: 'bold', color: isDarkMode ? '#fff' : '#000' }]}>{subtitleText}</Text>
 
       <View style={{ flexWrap: 'wrap', flexDirection: 'row', gap: 8 }}>
         {Object.keys(savedItems[mode] || {}).length > 0
           ? Object.entries(savedItems[mode]).map(renderSavedItem)
-          : <Text style={[styles.placeholderText, { fontFamily: 'Lato-Regular', color: isDarkMode ? '#aaa' : '#888' }]}>
+          : <Text style={[styles.placeholderText, { color: isDarkMode ? '#aaa' : '#888' }]}>
             No items selected.
           </Text>}
       </View>
@@ -380,7 +404,7 @@ const NotifierDrawer = () => {
 
       <Modal visible={isDrawerVisible} animationType="slide">
         <View style={[styles.drawerContainer, { backgroundColor: isDarkMode ? '#1e1e1e' : '#fff' }]}>
-          <Text style={[styles.sectionTitle, { fontFamily: 'Lato-Bold', color: isDarkMode ? '#fff' : '#000' }]}>Select Items to Notify</Text>
+          <Text style={[styles.sectionTitle, { fontWeight: 'bold', color: isDarkMode ? '#fff' : '#000' }]}>Select Items to Notify</Text>
 
           {/* Search Input */}
           <View style={styles.searchContainer}>
@@ -420,7 +444,7 @@ const NotifierDrawer = () => {
             setIsDrawerVisible(false);
             setSearchText(''); // Reset search when closing modal
           }} style={styles.closeButton}>
-            <Text style={{ fontFamily: 'Lato-Bold', color: '#fff' }}>Close</Text>
+            <Text style={{ fontWeight: 'bold', color: '#fff' }}>Close</Text>
           </TouchableOpacity>
         </View>
       </Modal>
@@ -429,8 +453,8 @@ const NotifierDrawer = () => {
 };
 
 const styles = StyleSheet.create({
-  textRegular: { fontFamily: 'Lato-Regular' },
-  textBold: { fontFamily: 'Lato-Bold' },
+  textRegular: { fontWeight: 'normal' },
+  textBold: { fontWeight: 'bold' },
 
   container: { flex: 1, padding: 12 },
   drawerContainer: { flex: 1, padding: 12 },
@@ -439,7 +463,7 @@ const styles = StyleSheet.create({
   active: { backgroundColor: config.colors.primary },
 
   sectionTitle: {
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
     fontSize: 13,
     marginVertical: 8,
   },
@@ -458,25 +482,25 @@ const styles = StyleSheet.create({
   itemImage: { width: 50, height: 50, borderRadius: 8 },
   itemImageSelected: { width: 25, height: 25, borderRadius: 8 },
   itemText: {
-    fontFamily: 'Lato-Regular',
+
     fontSize: 12,
     // marginTop: 4,
   },
   savedItem: { alignItems: 'center', justifyContent: 'center', marginRight: 5, borderWidth: 1, borderRadius: 8, padding: 5, flexDirection: 'row' },
 
   removeText: {
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
     color: 'red',
     marginHorizontal: 4
     // marginTop: 4,
   },
   placeholderText: {
-    fontFamily: 'Lato-Regular',
+
     padding: 20,
     fontSize: 14,
   },
   infoText: {
-    fontFamily: 'Lato-Regular',
+
     //   textAlign: 'center',
     fontSize: 13,
     marginBottom: 6,
@@ -514,7 +538,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 14,
-    fontFamily: 'Lato-Regular',
+
     paddingVertical: 4,
   },
   clearButton: {
@@ -528,7 +552,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 14,
-    fontFamily: 'Lato-Regular',
+
     textAlign: 'center',
   },
 });

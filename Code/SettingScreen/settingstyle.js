@@ -41,26 +41,26 @@ export const getStyles = (isDarkMode) =>
       },
       userName: {
         fontSize: 18,
-        fontFamily:'Lato-Bold',
+        fontWeight: 'bold',
         color: isDarkMode ? '#fff' : '#000',
         lineHeight:24
 
       },
       userNameLogout: {
         fontSize: 18,
-        fontFamily:'Lato-Bold',
+        fontWeight: 'bold',
         color: config.colors.secondary,
         lineHeight:24
       },
       reward: {
         fontSize: 14,
         color: isDarkMode ? '#ccc' : '#666',
-        fontFamily:'Lato-Regular'
+        
       },
       rewardLogout: {
         fontSize: 12,
         color: isDarkMode ? '#ccc' : '#666',
-        fontFamily:'Lato-Regular',
+        
         overflow:'hidden',
         width:250,
         flexWrap:'wrap'
@@ -84,7 +84,7 @@ export const getStyles = (isDarkMode) =>
         fontSize: 14,
         marginLeft: 10,
         color: isDarkMode ? '#fff' : '#000',
-        fontFamily:'Lato-Regular',
+        
         lineHeight:24
       },
       overlay: {
@@ -103,7 +103,7 @@ export const getStyles = (isDarkMode) =>
       drawerTitle: {
         fontSize: 18,
         marginBottom: 15,
-        fontFamily:'Lato-Bold'
+        fontWeight: 'bold'
 
       },
      
@@ -145,22 +145,22 @@ export const getStyles = (isDarkMode) =>
       },
       drawerSubtitle:{
         color: isDarkMode ? '#fff' : '#000',
-        fontFamily:'Lato-Bold',
+        fontWeight: 'bold',
         marginBottom:5
       },
       drawerSubtitleUser:{
         color: isDarkMode ? '#fff' : '#000',
-        fontFamily:'Lato-Bold',
+        fontWeight: 'bold',
         // marginBottom:10
       },
       subtitle:{
         color: isDarkMode ? '#fff' : '#000',
-        fontFamily:'Lato-Bold',
+        fontWeight: 'bold',
         marginVertical:10
       },
       rewardDescription:{
         color: isDarkMode ? '#fff' : '#000',
-        fontFamily:'Lato-Regular',
+        
         fontSize:12
 
       },
@@ -169,13 +169,13 @@ export const getStyles = (isDarkMode) =>
         lineHeight:16,
         marginLeft: 10,
         color:config.colors.wantBlockRed,
-        fontFamily:'Lato-Regular'
+        
       },
       optionTextDelete:{
         fontSize: 16,
         marginLeft: 10,
         color:!isDarkMode ? '#5A1F1F' : '#FFE5E5',
-        fontFamily:'Lato-Regular'
+        
 
       },
       optionDelete: {
@@ -184,7 +184,7 @@ export const getStyles = (isDarkMode) =>
         padding: 15,
         borderBottomColor: isDarkMode ? '#333333' : '#cccccc',
         backgroundColor: isDarkMode ? '#5A1F1F' : '#FFE5E5',
-        fontFamily:'Lato-Regular'
+        
 
       },
       containertheme:{
@@ -200,7 +200,7 @@ export const getStyles = (isDarkMode) =>
         alignItems: 'center',
         justifyContent: 'center',
         color:'white',
-        fontFamily:'Lato-Regular',
+        
         borderRadius:50,
 
 
@@ -210,14 +210,14 @@ export const getStyles = (isDarkMode) =>
         backgroundColor: config.colors.hasBlockGreen, // Highlight selected box
       },
       // text:{
-      //   fontFamily:'Lato-Regular',
+      //   
       //   fontSize:12,
       //   color: isDarkMode ? '#fff' : '#000',
 
       // },
       selectedText:{
         color:'white',
-        fontFamily:'Lato-Regular',
+        
         fontSize:10,
       },
       subscriptionContainer: {
@@ -234,7 +234,7 @@ export const getStyles = (isDarkMode) =>
       subscriptionText: {
         color: config.colors.hasBlockGreen,
         fontSize: 16,
-        fontFamily: 'Lato-Bold',
+        fontWeight: 'bold',
       },
       manageButton: {
         backgroundColor: config.colors.hasBlockGreen,
@@ -245,7 +245,7 @@ export const getStyles = (isDarkMode) =>
       manageButtonText: {
         color: 'white',
         fontSize: 14,
-        fontFamily: 'Lato-Bold',
+        fontWeight: 'bold',
       },
       menuTrigger:{
         paddingRight:10
@@ -259,13 +259,13 @@ export const getStyles = (isDarkMode) =>
         padding:10
       },
       text: {
-        fontFamily:'Lato-Regular',
+        
         fontSize:12,
         color: isDarkMode ? '#fff' : '#000',
         paddingHorizontal:5
       },
       textlink: {
-        fontFamily:'Lato-Regular',
+        
         fontSize:12,
         color: isDarkMode ? '#fff' : '#000',
         paddingHorizontal:5,
@@ -302,7 +302,7 @@ export const getStyles = (isDarkMode) =>
       
       petsTitle: {
         fontSize: 14,
-        fontFamily: 'Lato-Bold',
+        fontWeight: 'bold',
         color: isDarkMode ? '#e5e7eb' : '#111827',
       },
       
@@ -449,7 +449,7 @@ export const getStyles = (isDarkMode) =>
       },
       loadMoreText: {
         fontSize: 14,
-        fontFamily: 'Lato-Bold',
+        fontWeight: 'bold',
         color: '#fff',
       },
     });

@@ -277,10 +277,10 @@ const styles = StyleSheet.create({
   },
   tabText: {
     fontSize: 12,
-    fontFamily: "Lato-Regular",
+    
   },
   tabTextActive: {
-    fontFamily: "Lato-Bold",
+    fontWeight: 'bold',
   },
   indicator: {
     position: "absolute",

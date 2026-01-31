@@ -118,7 +118,7 @@ const CreateGroupModal = ({ visible, onClose, selectedUsers = [], editGroupId = 
   // Initialize edit data when modal opens in edit mode (only once per group)
   React.useEffect(() => {
     if (!visible) return;
-    
+
     if (isEditMode && editGroupId) {
       // Only initialize if we haven't initialized for this group yet
       if (initializedEditGroupIdRef.current !== editGroupId) {
@@ -168,24 +168,50 @@ const CreateGroupModal = ({ visible, onClose, selectedUsers = [], editGroupId = 
   }, []);
 
   // Handle image picker
-  const handlePickImage = useCallback(() => {
-    launchImageLibrary(
-      {
+  const handlePickImage = useCallback(async () => {
+    try {
+      const result = await launchImageLibrary({
         mediaType: 'photo',
         selectionLimit: 1,
         quality: 0.8,
-      },
-      async (response) => {
-        if (response.didCancel || response.errorCode) {
-          return;
-        }
+        maxWidth: 1920,
+        maxHeight: 1920,
+      });
 
-        const asset = response.assets?.[0];
-        if (asset?.uri) {
+      if (result.didCancel) return;
+      if (result.errorCode) {
+        console.error('❌ ImagePicker error:', result.errorMessage);
+        return;
+      }
+
+      const asset = result.assets?.[0];
+      if (asset?.uri) {
+        // Compress image before setting
+        try {
+          // Check size first
+          const MAX_SIZE_BYTES = 1024 * 1024; // 1 MB
+          const filePath = asset.uri.replace('file://', '');
+          const fileInfo = await RNFS.stat(filePath);
+
+          if (fileInfo.size > MAX_SIZE_BYTES) {
+            Alert.alert(
+              'Image Too Large',
+              'Please select an image smaller than 1MB.'
+            );
+            return;
+          }
+
+          setGroupAvatarUri(asset.uri);
+        } catch (err) {
+          // If stat fails, just use the uri
+          console.warn('Error checking image size:', err);
           setGroupAvatarUri(asset.uri);
         }
       }
-    );
+    } catch (error) {
+      console.error('❌ Image picker crash:', error);
+      Alert.alert('Error', 'Failed to select image. Please try again.');
+    }
   }, []);
 
   // Filter out current user and get selected users
@@ -550,10 +576,10 @@ const CreateGroupModal = ({ visible, onClose, selectedUsers = [], editGroupId = 
               <TouchableOpacity
                 style={[
                   styles.createButton,
-                (creating || (!isEditMode && (totalMembers < 2 || totalMembers > MAX_GROUP_MEMBERS || !groupName.trim() || !groupDescription.trim())) || (isEditMode && !groupName.trim())) &&
+                  (creating || (!isEditMode && (totalMembers < 2 || totalMembers > MAX_GROUP_MEMBERS || !groupName.trim() || !groupDescription.trim())) || (isEditMode && !groupName.trim())) &&
                   styles.createButtonDisabled,
-              ]}
-              onPress={handleSubmit}
+                ]}
+                onPress={handleSubmit}
                 disabled={creating || uploadingAvatar || (!isEditMode && (totalMembers < 2 || totalMembers > MAX_GROUP_MEMBERS || !groupName.trim() || !groupDescription.trim())) || (isEditMode && !groupName.trim())}
               >
                 {(creating || uploadingAvatar) ? (
@@ -601,7 +627,7 @@ const getStyles = (isDark) =>
     },
     headerTitle: {
       fontSize: 20,
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
       color: isDark ? '#fff' : '#000',
     },
     placeholder: {
@@ -657,7 +683,7 @@ const getStyles = (isDark) =>
     },
     label: {
       fontSize: 14,
-      fontFamily: 'Lato-SemiBold',
+      fontWeight: '600',
       color: isDark ? '#fff' : '#000',
       marginBottom: 8,
     },
@@ -665,14 +691,14 @@ const getStyles = (isDark) =>
       borderRadius: 12,
       padding: 12,
       fontSize: 16,
-      fontFamily: 'Lato-Regular',
+
     },
     memberCountContainer: {
       marginBottom: 12,
     },
     memberCountText: {
       fontSize: 14,
-      fontFamily: 'Lato-SemiBold',
+      fontWeight: '600',
       color: isDark ? '#9ca3af' : '#6b7280',
     },
     maxReachedText: {
@@ -700,7 +726,7 @@ const getStyles = (isDark) =>
     memberName: {
       flex: 1,
       fontSize: 16,
-      fontFamily: 'Lato-Regular',
+
       color: isDark ? '#fff' : '#000',
     },
     removeButton: {
@@ -712,7 +738,7 @@ const getStyles = (isDark) =>
     },
     emptyText: {
       fontSize: 14,
-      fontFamily: 'Lato-Regular',
+
       color: isDark ? '#666' : '#999',
     },
     footer: {
@@ -735,7 +761,7 @@ const getStyles = (isDark) =>
     },
     createButtonText: {
       fontSize: 16,
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
       color: '#fff',
     },
   });

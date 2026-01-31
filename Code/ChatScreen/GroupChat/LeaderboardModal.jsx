@@ -343,7 +343,7 @@ const getStyles = (isDarkMode) => StyleSheet.create({
   },
   headerTitle: {
     fontSize: 20,
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
     color: isDarkMode ? '#fff' : '#000',
   },
   closeButton: {
@@ -359,7 +359,7 @@ const getStyles = (isDarkMode) => StyleSheet.create({
     marginTop: 12,
     fontSize: 14,
     color: isDarkMode ? '#999' : '#666',
-    fontFamily: 'Lato-Regular',
+    
   },
   emptyContainer: {
     flex: 1,
@@ -371,7 +371,7 @@ const getStyles = (isDarkMode) => StyleSheet.create({
     marginTop: 12,
     fontSize: 16,
     color: isDarkMode ? '#999' : '#666',
-    fontFamily: 'Lato-Regular',
+    
   },
   listContent: {
     padding: 8,
@@ -396,7 +396,7 @@ const getStyles = (isDarkMode) => StyleSheet.create({
   rankText: {
     color: '#fff',
     fontSize: 14,
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
   },
   avatar: {
     width: 50,
@@ -411,7 +411,7 @@ const getStyles = (isDarkMode) => StyleSheet.create({
   },
   userName: {
     fontSize: 16,
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
     color: isDarkMode ? '#fff' : '#000',
     marginBottom: 4,
   },
@@ -422,7 +422,7 @@ const getStyles = (isDarkMode) => StyleSheet.create({
   ratingText: {
     fontSize: 12,
     color: isDarkMode ? '#999' : '#666',
-    fontFamily: 'Lato-Regular',
+    
     marginLeft: 4,
   },
   cacheInfo: {
@@ -430,7 +430,7 @@ const getStyles = (isDarkMode) => StyleSheet.create({
     color: isDarkMode ? '#666' : '#999',
     textAlign: 'center',
     padding: 8,
-    fontFamily: 'Lato-Regular',
+    
   },
 });
 

@@ -56,7 +56,7 @@ const AdminHeader = ({
         // This part is a URL, make it clickable and underlined
         return (
           <Text
-            key={index}
+            key={`admin-link-${index}`}
             style={[styles.pinnedText, { textDecorationLine: 'underline', color: 'blue' }]}
             onPress={() => {
               Linking.openURL(part).catch((error) => {
@@ -69,7 +69,7 @@ const AdminHeader = ({
           </Text>
         );
       }
-      return <Text key={index} style={styles.pinnedText}>{part}</Text>;
+      return <Text key={`admin-text-${index}`} style={styles.pinnedText}>{part}</Text>;
     });
   }, [styles.pinnedText]);
 
@@ -277,7 +277,7 @@ export const getStyles = (isDarkMode) =>
       borderBottomColor: 'lightgrey',
     },
     stackHeader: {
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
       fontSize: 24,
       lineHeight: 24,
       color: isDarkMode ? 'white' : 'black',
@@ -305,12 +305,12 @@ export const getStyles = (isDarkMode) =>
     pinnedTextheader: {
       fontSize: 12,
       paddingRight: 20,
-      fontFamily: 'Lato-Regular',
+
       color: config.getPrimaryColor(isDarkMode),
     },
     pinnedText: {
       fontSize: 12,
-      fontFamily: 'Lato-Regular',
+
       color: isDarkMode ? 'white' : 'black'
     },
     pinIcon: {
@@ -333,7 +333,7 @@ export const getStyles = (isDarkMode) =>
     },
     modalTitle: {
       fontSize: 20,
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
       marginBottom: 20,
       color: isDarkMode ? 'white' : 'black',
     },
@@ -347,7 +347,7 @@ export const getStyles = (isDarkMode) =>
     closeButtonText: {
       color: '#fff',
       fontSize: 16,
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
     },
     iconContainer: {
       position: 'relative',
@@ -371,7 +371,7 @@ export const getStyles = (isDarkMode) =>
     badgeText: {
       color: '#fff',
       fontSize: 8,
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
     },
   });
 

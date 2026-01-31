@@ -231,7 +231,7 @@ const EditProfileDrawerContent = ({
     >
       {/* Minimalist Header */}
       {/* <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-        <Text style={{ fontSize: 18, fontFamily: 'Lato-Bold', color: isDarkMode ? '#fff' : '#000' }}>
+        <Text style={{ fontSize: 18, fontWeight: 'bold', color: isDarkMode ? '#fff' : '#000' }}>
           Edit Profile
         </Text>
         <View style={{
@@ -244,7 +244,7 @@ const EditProfileDrawerContent = ({
 
       {/* Display Name - Minimal Design */}
       <View style={{ marginBottom: 10 }}>
-        <Text style={{ fontSize: 11, fontFamily: 'Lato-Bold', color: isDarkMode ? '#9ca3af' : '#6b7280', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+        <Text style={{ fontSize: 11, fontWeight: 'bold', color: isDarkMode ? '#9ca3af' : '#6b7280', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.5 }}>
           Display Name
         </Text>
         <TextInput
@@ -265,7 +265,7 @@ const EditProfileDrawerContent = ({
 
       {/* Profile Picture - Clean Section */}
       <View style={{ marginBottom: 10 }}>
-        <Text style={{ fontSize: 11, fontFamily: 'Lato-Bold', color: isDarkMode ? '#9ca3af' : '#6b7280', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+        <Text style={{ fontSize: 11, fontWeight: 'bold', color: isDarkMode ? '#9ca3af' : '#6b7280', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.5 }}>
           Profile Picture
         </Text>
 
@@ -293,7 +293,7 @@ const EditProfileDrawerContent = ({
                 color={config.colors.primary}
                 style={{ marginRight: 6 }}
               />
-              <Text style={{ color: config.colors.primary, fontSize: 13, fontFamily: 'Lato-Bold' }}>
+              <Text style={{ color: config.colors.primary, fontSize: 13, fontWeight: 'bold' }}>
                 Upload Photo
               </Text>
             </>
@@ -354,13 +354,13 @@ const EditProfileDrawerContent = ({
       {/* Bio - Clean Design */}
       <View style={{ marginBottom: 12 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-          <Text style={{ fontSize: 11, fontFamily: 'Lato-Bold', color: isDarkMode ? '#9ca3af' : '#6b7280', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+          <Text style={{ fontSize: 11, fontWeight: 'bold', color: isDarkMode ? '#9ca3af' : '#6b7280', textTransform: 'uppercase', letterSpacing: 0.5 }}>
             Bio
           </Text>
           <Text style={{
             fontSize: 10,
             color: bio.length > 120 ? '#EF4444' : (isDarkMode ? '#6b7280' : '#9ca3af'),
-            fontFamily: 'Lato-Bold',
+            fontWeight: 'bold',
           }}>
             {bio.length}/120
           </Text>
@@ -408,7 +408,7 @@ const EditProfileDrawerContent = ({
             <Icon name="time-outline" size={16} color="#F59E0B" style={{ marginRight: 6 }} />
             <Text style={{
               fontSize: 12,
-              fontFamily: 'Lato-Bold',
+              fontWeight: 'bold',
               color: isDarkMode ? '#FCD34D' : '#92400E'
             }}>
               Edit Cooldown Active
@@ -416,7 +416,7 @@ const EditProfileDrawerContent = ({
           </View>
           <Text style={{
             fontSize: 11,
-            fontFamily: 'Lato-Regular',
+
             color: isDarkMode ? '#FCD34D' : '#92400E',
             lineHeight: 16,
           }}>
@@ -443,7 +443,7 @@ const EditProfileDrawerContent = ({
         disabled={shouldDisableSave}
         activeOpacity={0.8}
       >
-        <Text style={{ color: '#fff', fontSize: 15, fontFamily: 'Lato-Bold' }}>
+        <Text style={{ color: '#fff', fontSize: 15, fontWeight: 'bold' }}>
           {shouldDisableSave
             ? `Edit Available in ${cooldownStatus.daysRemaining} Day${cooldownStatus.daysRemaining === 1 ? '' : 's'}`
             : "Save Changes"}
@@ -552,7 +552,7 @@ export default function SettingsScreen({ selectedTheme }) {
             <Text
               style={{
                 fontSize: 12,
-                fontFamily: "Lato-Bold",
+                fontWeight: 'bold',
                 color: isActive ? "#fff" : (isDarkMode ? "#ddd" : "#333"),
               }}
             >
@@ -631,37 +631,48 @@ export default function SettingsScreen({ selectedTheme }) {
         selectionLimit: 1,
       });
 
+      // ✅ Check if user cancelled or no assets
+      if (result.didCancel) return;
+      if (result.errorCode) {
+        console.error('❌ Image picker error:', result.errorMessage);
+        Alert.alert('Error', 'Failed to select image. Please try again.');
+        return;
+      }
       if (!result.assets?.length) return;
 
       const asset = result.assets[0];
-
       setUploadingAvatar(true);
 
-      // 🔹 Compress to small DP-friendly size
-      const compressedUri = await CompressorImage.compress(asset.uri, {
-        maxWidth: 300,
-        quality: 0.7,
-      });
+      let finalUri = asset.uri;
 
-      const filePath = compressedUri.replace('file://', '');
-      const stat = await RNFS.stat(filePath);
+      // 🔹 Smart Compression: Only compress if > 1MB
+      try {
+        const filePath = asset.uri.replace('file://', '');
+        const stat = await RNFS.stat(filePath);
+        const MAX_SIZE_BYTES = 1024 * 1024; // 1 MB
 
-      // 🔹 Reject heavy images
-      if (stat.size > MAX_AVATAR_SIZE_BYTES) {
-        Alert.alert(
-          'Image too large',
-          'Please choose a smaller image (max ~500 KB) or crop it before uploading.'
-        );
-        setUploadingAvatar(false);
-        return;
+        if (stat.size > MAX_SIZE_BYTES) {
+          // console.log('Image > 1MB, compressing...');
+          // Using strict compression to ensure it drops below 1MB and is good for avatar
+          finalUri = await CompressorImage.compress(asset.uri, {
+            maxWidth: 1024, // Reasonable size for avatar
+            quality: 0.7,
+            returnableOutputType: 'uri',
+          });
+        }
+      } catch (err) {
+        console.warn('Smart compression check failed, using original:', err);
       }
+
+      // Read the (potentially compressed) file
+      const finalFilePath = finalUri.replace('file://', '');
 
       const userId = user?.id ?? 'anon';
       const filename = `${Date.now()}-${Math.floor(Math.random() * 1e6)}.jpg`;
       const remotePath = `avatars/${encodeURIComponent(userId)}/${encodeURIComponent(filename)}`;
       const uploadUrl = `https://${BUNNY_STORAGE_HOST}/${BUNNY_STORAGE_ZONE}/${remotePath}`;
 
-      const base64 = await RNFS.readFile(filePath, 'base64');
+      const base64 = await RNFS.readFile(finalFilePath, 'base64');
       const binary = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
 
       const res = await fetch(uploadUrl, {
@@ -687,7 +698,7 @@ export default function SettingsScreen({ selectedTheme }) {
       // ✅ Set as current selected profile image
       setSelectedImage(publicUrl);
     } catch (e) {
-      console.warn('[Avatar upload]', e?.message || e);
+      console.error('❌ Image picker crash:', e?.message || e);
       Alert.alert('Upload failed', 'Something went wrong. Please try again.');
     } finally {
       setUploadingAvatar(false);
@@ -2061,7 +2072,7 @@ export default function SettingsScreen({ selectedTheme }) {
           {trade.hasItems && trade.hasItems.length > 0 && (
             <Text style={{
               fontSize: 8,
-              fontFamily: 'Lato-Bold',
+              fontWeight: 'bold',
               color: 'white',
               textAlign: 'center',
               alignSelf: 'center',
@@ -2084,7 +2095,7 @@ export default function SettingsScreen({ selectedTheme }) {
                     return (
                       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Icon name="arrow-up-outline" size={12} color="green" />
-                        <Text style={{ fontSize: 8, fontFamily: 'Lato-Bold', color: 'green', textAlign: 'center', alignSelf: 'center', marginHorizontal: 'auto', paddingHorizontal: 4, paddingVertical: 2, borderRadius: 6 }}>
+                        <Text style={{ fontSize: 8, fontWeight: 'bold', color: 'green', textAlign: 'center', alignSelf: 'center', marginHorizontal: 'auto', paddingHorizontal: 4, paddingVertical: 2, borderRadius: 6 }}>
                           {formatTradeValue(hasValue - wantsValue)}
                         </Text>
                       </View>
@@ -2093,13 +2104,13 @@ export default function SettingsScreen({ selectedTheme }) {
                     return (
                       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Icon name="arrow-down-outline" size={12} color={config.colors.hasBlockGreen} />
-                        <Text style={{ fontSize: 8, fontFamily: 'Lato-Bold', color: config.colors.hasBlockGreen, textAlign: 'center', alignSelf: 'center', marginHorizontal: 'auto', paddingHorizontal: 4, paddingVertical: 2, borderRadius: 6 }}>
+                        <Text style={{ fontSize: 8, fontWeight: 'bold', color: config.colors.hasBlockGreen, textAlign: 'center', alignSelf: 'center', marginHorizontal: 'auto', paddingHorizontal: 4, paddingVertical: 2, borderRadius: 6 }}>
                           {formatTradeValue(wantsValue - hasValue)}
                         </Text>
                       </View>
                     );
                   } else {
-                    return <Text style={{ fontSize: 8, fontFamily: 'Lato-Bold', color: config.colors.primary, textAlign: 'center' }}>-</Text>;
+                    return <Text style={{ fontSize: 8, fontWeight: 'bold', color: config.colors.primary, textAlign: 'center' }}>-</Text>;
                   }
                 })()}
               </>
@@ -2108,7 +2119,7 @@ export default function SettingsScreen({ selectedTheme }) {
           {trade.wantsItems && trade.wantsItems.length > 0 && (
             <Text style={{
               fontSize: 8,
-              fontFamily: 'Lato-Bold',
+              fontWeight: 'bold',
               color: 'white',
               textAlign: 'center',
               alignSelf: 'center',
@@ -2704,7 +2715,7 @@ export default function SettingsScreen({ selectedTheme }) {
               <Text
                 style={{
                   fontSize: 14,
-                  fontFamily: 'Lato-Bold',
+                  fontWeight: 'bold',
                   marginBottom: 6,
                   color: isDarkMode ? '#e5e7eb' : '#111827',
                 }}
@@ -2927,7 +2938,7 @@ export default function SettingsScreen({ selectedTheme }) {
 
           {/* My Trades Section - Below Reviews */}
           <View style={styles.reviewsSection}>
-            <Text style={{ fontSize: 14, fontFamily: 'Lato-Bold', color: isDarkMode ? '#e5e7eb' : '#111827', marginBottom: 12 }}>
+            <Text style={{ fontSize: 14, fontWeight: 'bold', color: isDarkMode ? '#e5e7eb' : '#111827', marginBottom: 12 }}>
               My Trades
             </Text>
 
@@ -2960,7 +2971,7 @@ export default function SettingsScreen({ selectedTheme }) {
 
           {/* Reviews Section - Two Small Modern Buttons */}
           <View style={styles.reviewsSection}>
-            <Text style={{ fontSize: 14, fontFamily: 'Lato-Bold', color: isDarkMode ? '#e5e7eb' : '#111827', marginBottom: 12 }}>
+            <Text style={{ fontSize: 14, fontWeight: 'bold', color: isDarkMode ? '#e5e7eb' : '#111827', marginBottom: 12 }}>
               Reviews
             </Text>
 

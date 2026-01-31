@@ -46,7 +46,7 @@ const ChatHeaderContent = ({
       if (part && (part.startsWith('http://') || part.startsWith('https://'))) {
         return (
           <Text
-            key={index}
+            key={`link-${index}`}
             style={[styles.pinnedText, { textDecorationLine: 'underline', color: 'blue' }]}
             onPress={() => {
               Linking.openURL(part).catch((error) => {
@@ -59,7 +59,7 @@ const ChatHeaderContent = ({
           </Text>
         );
       }
-      return <Text key={index} style={styles.pinnedText}>{part}</Text>;
+      return <Text key={`text-${index}`} style={styles.pinnedText}>{part}</Text>;
     });
   }, []);
 
@@ -171,7 +171,7 @@ const ChatHeaderContent = ({
 const getStyles = (isDarkMode) => StyleSheet.create({
   pinnedText: {
     fontSize: 12,
-    fontFamily: 'Lato-Regular',
+
     color: isDarkMode ? '#fff' : '#000',
   },
   modalContent: {
@@ -182,7 +182,7 @@ const getStyles = (isDarkMode) => StyleSheet.create({
   },
   modalTitle: {
     fontSize: 20,
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
     marginBottom: 20,
     color: isDarkMode ? '#fff' : '#000',
   },
@@ -206,7 +206,7 @@ const getStyles = (isDarkMode) => StyleSheet.create({
   pinnedTextheader: {
     fontSize: 12,
     paddingRight: 20,
-    fontFamily: 'Lato-Regular',
+
     color: config.getPrimaryColor(isDarkMode),
   },
   pinIcon: {
@@ -229,7 +229,7 @@ const getStyles = (isDarkMode) => StyleSheet.create({
   closeButtonText: {
     color: '#fff',
     fontSize: 16,
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
   },
 });
 

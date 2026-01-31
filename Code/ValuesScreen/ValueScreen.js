@@ -898,7 +898,7 @@ export const getStyles = (isDarkMode) => StyleSheet.create({
   },
   modalTitle: {
     fontSize: 18,
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
     marginBottom: 10,
   },
   input: {
@@ -966,7 +966,7 @@ export const getStyles = (isDarkMode) => StyleSheet.create({
   filterText: {
     color: "white",
     fontSize: 14,
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
     marginRight: 5,
   },
   // filterOptionText: {
@@ -975,7 +975,7 @@ export const getStyles = (isDarkMode) => StyleSheet.create({
   //   color: "#333",
   // },
   selectedOption: {
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
     color: "#34C759",
   },
 
@@ -1031,13 +1031,13 @@ export const getStyles = (isDarkMode) => StyleSheet.create({
   },
   adTitle: {
     fontSize: 18,
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
     color: isDarkMode ? '#bbb' : '#333',
     // marginBottom: 5, // Adds space below the title
   },
   tryNowText: {
     fontSize: 14,
-    fontFamily: 'Lato-Regular',
+    
     color: '#6A5ACD', // Adds a distinct color for the "Try Now" text
     // marginTop: 5, // Adds space between the title and the "Try Now" text
   },
@@ -1051,7 +1051,7 @@ export const getStyles = (isDarkMode) => StyleSheet.create({
   downloadButtonText: {
     color: 'white',
     fontSize: 14,
-    fontFamily: 'Lato-Bold',
+    fontWeight: 'bold',
   },
   selectedPetsSection: {
     paddingHorizontal: 8,

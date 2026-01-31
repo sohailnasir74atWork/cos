@@ -29,7 +29,7 @@ const TimerScreen = ({ selectedTheme }) => {
   const [mirageStock, setmirageStock] = useState([]);
   const [prenormalStock, setPreNormalStock] = useState([]);
   const [premirageStock, setPremirageStock] = useState([]);
-  
+
   // const platform = Platform.OS.toLowerCase();
 
 
@@ -486,12 +486,12 @@ const getStyles = (isDarkMode, user) =>
     container: {
       flex: 1, paddingHorizontal: 10, backgroundColor: isDarkMode ? '#121212' : '#f2f2f7',
     },
-    description: { fontSize: 14, lineHeight: 18, marginVertical: 10, fontFamily: 'Lato-Regular', color: 'white' },
+    description: { fontSize: 14, lineHeight: 18, marginVertical: 10, color: 'white' },
     headerContainer: { flexDirection: 'row', justifyContent: 'space-between', marginVertical: 10, paddingHorizontal: 10 },
     headerContainerpre: { flexDirection: 'row', justifyContent: 'space-between', marginVertical: 10, paddingHorizontal: 10, opacity: .3 },
 
-    timer: { fontSize: 16, fontFamily: 'Lato-Bold' },
-    time: { fontSize: 16, fontFamily: 'Lato-Bold' },
+    timer: { fontSize: 16, fontWeight: 'bold' },
+    time: { fontSize: 16, fontWeight: 'bold' },
     itemContainer: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -507,7 +507,7 @@ const getStyles = (isDarkMode, user) =>
     },
 
     icon: { width: 50, height: 50, borderRadius: 5, marginRight: 10 },
-    name: { fontSize: 16, flex: 1, fontFamily: 'Lato-Bold' },
+    name: { fontSize: 16, flex: 1, fontWeight: 'bold' },
     price: { fontSize: 14, backgroundColor: config.colors.hasBlockGreen, padding: 5, borderRadius: 5, color: 'white' },
     robux: { fontSize: 14, backgroundColor: config.colors.hasBlockGreen, padding: 5, borderRadius: 5, color: 'white', marginLeft: 10 },
     stockContainer: {
@@ -547,7 +547,7 @@ const getStyles = (isDarkMode, user) =>
       overflow: 'hidden', // Prevents text from overflowing outside the container
       flexWrap: 'wrap', // This ensures the text wraps when it exceeds maxWidth
     },
-    title: { fontSize: 14, fontFamily: 'Lato-Bold', color: isDarkMode ? 'white' : 'black' },
+    title: { fontSize: 14, fontWeight: 'bold', color: isDarkMode ? 'white' : 'black' },
     rightSide: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -619,10 +619,10 @@ const getStyles = (isDarkMode, user) =>
     pre: {
       color: 'white',
       alignSelf: 'center',
-      fontFamily: 'Lato-Bold'
+      fontWeight: 'bold'
     },
     footer: {
-      fontFamily: 'Lato-Regular',
+
       fontSize: 8,
       lineHeight: 12,
       // width: 100, // Ensures the text stays within this width
@@ -632,7 +632,7 @@ const getStyles = (isDarkMode, user) =>
     }
     ,
     loadingText: {
-      fontFamily: 'Lato-Bold',
+      fontWeight: 'bold',
       fontSize: 14,
       alignSelf: 'center',
       color: config.colors.hasBlockGreen

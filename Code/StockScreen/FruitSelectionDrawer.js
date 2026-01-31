@@ -19,7 +19,7 @@ const FruitSelectionDrawer = ({ visible, onClose, onSelect, data, selectedTheme 
   const [selectedItems, setSelectedItems] = useState([]);
   const { theme } = useGlobalState()
   const isDarkMode = theme === 'dark';
-  
+
 
 
   // Clear search text and reset selected items when the modal opens
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 10,
   },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  title: { fontSize: 18, fontFamily: 'Lato-Bold' },
+  title: { fontSize: 18, fontWeight: 'bold' },
   itemBlock: {
     width: '32%',
     height: 110,
