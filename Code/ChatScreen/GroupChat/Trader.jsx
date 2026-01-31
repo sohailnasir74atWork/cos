@@ -24,6 +24,7 @@ import { useLocalState } from '../../LocalGlobelStats';
 import database, { onValue, ref, remove, query, orderByKey, limitToLast, endAt, onChildAdded, off, get, child, push } from '@react-native-firebase/database';
 
 
+
 import BannerAdComponent from '../../Ads/bannerAds';
 import { logoutUser } from '../../Firebase/UserLogics';
 import { showMessage } from 'react-native-flash-message';
@@ -42,7 +43,7 @@ const ChatScreen = ({ selectedTheme, bannedUsers, modalVisibleChatinfo, setChatF
   const [replyTo, setReplyTo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [pinnedMessages, setPinnedMessages] = useState([]);
+
   const [lastLoadedKey, setLastLoadedKey] = useState(null);
   const [isSigninDrawerVisible, setIsSigninDrawerVisible] = useState(false);
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
@@ -136,7 +137,7 @@ const ChatScreen = ({ selectedTheme, bannedUsers, modalVisibleChatinfo, setChatF
   }, [selectedUser, selectedTheme, closeProfileDrawer]);
 
   const chatRef = useMemo(() => ref(appdatabase, 'chat_new'), []);
-  const pinnedMessagesRef = useMemo(() => ref(appdatabase, 'pin_messages'), []);
+
 
   // const isAdmin = user?.admin || false;
   // const isOwner = user?.owner || false;
@@ -240,52 +241,7 @@ const ChatScreen = ({ selectedTheme, bannedUsers, modalVisibleChatinfo, setChatF
     },
     [chatRef, lastLoadedKey, validateMessage, bannedUsers, appdatabase]
   );
-  useEffect(() => {
-    if (!pinnedMessagesRef) return;
 
-    const fetchPinnedMessages = async () => {
-      try {
-        const snapshot = await get(pinnedMessagesRef);
-        const pinnedMessagesData = snapshot.val() || {};
-
-        // ✅ Safety check and transform data into an array
-        const pinnedMessagesArray = Object.entries(pinnedMessagesData)
-          .map(([key, value]) => {
-            if (!key || !value || typeof value !== 'object') return null;
-            return {
-              firebaseKey: key,
-              ...value,
-            };
-          })
-          .filter(Boolean);
-
-        setPinnedMessages(pinnedMessagesArray);
-      } catch (error) {
-        console.error('Error loading pinned messages:', error);
-      }
-    };
-
-    fetchPinnedMessages();  // Fetch pinned messages initially
-
-    // Listen to real-time updates on pinned messages
-    const unsubscribeAdded = onChildAdded(pinnedMessagesRef, (snapshot) => {
-      if (!snapshot || !snapshot.key) return;
-      const data = snapshot.val();
-      if (!data || typeof data !== 'object') return;
-      const newPinnedMessage = { firebaseKey: snapshot.key, ...data };
-      setPinnedMessages((prev) => {
-        // ✅ Prevent duplicates
-        const exists = prev.some(msg => msg.firebaseKey === snapshot.key);
-        return exists ? prev : [...prev, newPinnedMessage];
-      });
-    });
-
-    return () => {
-      if (pinnedMessagesRef) {
-        unsubscribeAdded();
-      }
-    };
-  }, []);
 
   useEffect(() => {
     const platform = Platform.OS; // "ios" or "android"
@@ -371,53 +327,7 @@ const ChatScreen = ({ selectedTheme, bannedUsers, modalVisibleChatinfo, setChatF
 
 
 
-  const handlePinMessage = async (message) => {
-    try {
-      const pinnedMessage = { ...message, pinnedAt: Date.now() };
-      const newRef = await push(pinnedMessagesRef, pinnedMessage);
 
-      // Use the Firebase key for tracking the message
-      setPinnedMessages((prev) => [
-        ...prev,
-        { firebaseKey: newRef.key, ...pinnedMessage },
-      ]);
-    } catch (error) {
-      console.error('Error pinning message:', error);
-      Alert.alert("Error", 'Could not pin the message. Please try again.');
-    }
-  };
-
-
-
-  const unpinSingleMessage = async (firebaseKey) => {
-    try {
-      const messageRef = child(pinnedMessagesRef, firebaseKey);
-      await remove(messageRef);  // Remove from Firebase
-
-      // Update local state by filtering out the removed message
-      setPinnedMessages((prev) => {
-        const updatedMessages = prev.filter((msg) => msg.firebaseKey !== firebaseKey);
-        return updatedMessages;
-      });
-    } catch (error) {
-      console.error('Error unpinning message:', error);
-      Alert.alert("Error", 'Could not unpin the message. Please try again.');
-    }
-  };
-
-
-
-
-
-  const clearAllPinnedMessages = async () => {
-    try {
-      await remove(pinnedMessagesRef);
-      setPinnedMessages([]);
-    } catch (error) {
-      console.error('Error clearing pinned messages:', error);
-      Alert.alert("Error", 'Could not clear pinned messages. Please try again.');
-    }
-  };
 
   const handleLoginSuccess = () => {
     setIsSigninDrawerVisible(false);
@@ -581,7 +491,7 @@ const ChatScreen = ({ selectedTheme, bannedUsers, modalVisibleChatinfo, setChatF
 
       await chatRef.push({
         text: trimmedInput || null, // allow fruits-only messages
-        timestamp: database.ServerValue.TIMESTAMP,
+        timestamp: Date.now(),
         sender: user.displayName || 'Anonymous',
         senderId: user.id,
         avatar:
@@ -591,20 +501,17 @@ const ChatScreen = ({ selectedTheme, bannedUsers, modalVisibleChatinfo, setChatF
           ? { id: replyToArg.id, text: replyToArg.text }
           : null,
         reportCount: 0,
-        containsLink,
         isPro: !!localState?.isPro,
         isAdmin: !!isAdmin,
+        isModerator: !!user?.isModerator, // ✅ Add Moderator status
         strikeCount: strikeInfo?.strikeCount ?? null,
-        currentUserEmail,
+        currentUserEmail: currentUserEmail || null,
         fruits: hasFruits ? fruits : [],
         gif: hasEmoji ? emojiUrl : null,
-        flage: user.flage ? user.flage : null,
         OS: Platform.OS, // ✅ Store platform (Android/iOS) - only visible to admins
         robloxUsername: user?.robloxUsername || null,
         robloxUsernameVerified: user?.robloxUsernameVerified || false,
         robloxUserId: user?.robloxUserId || null, // ✅ Store userId for profile link
-        hasRecentGameWin: hasRecentWin,
-        lastGameWinAt: user?.lastGameWinAt || null,
       });
 
       // ✅ Store last sent message to prevent duplicates (session-based, no Firebase cost)
@@ -634,8 +541,8 @@ const ChatScreen = ({ selectedTheme, bannedUsers, modalVisibleChatinfo, setChatF
 
         <View style={styles.container}>
           <ChatHeaderContent
-            pinnedMessages={pinnedMessages}
-            onUnpinMessage={unpinSingleMessage}
+            // pinnedMessages={pinnedMessages}
+            // onUnpinMessage={unpinSingleMessage}
             selectedTheme={selectedTheme}
             modalVisibleChatinfo={modalVisibleChatinfo}
             setModalVisibleChatinfo={setModalVisibleChatinfo}
@@ -653,7 +560,7 @@ const ChatScreen = ({ selectedTheme, bannedUsers, modalVisibleChatinfo, setChatF
                 user={user}
                 flatListRef={flatListRef}
                 isDarkMode={theme === 'dark'}
-                onPinMessage={handlePinMessage}
+                // onPinMessage={handlePinMessage}
                 onDeleteMessage={(messageId) => {
                   const messageRef = child(chatRef, messageId.replace('chat_new-', ''));
                   remove(messageRef);

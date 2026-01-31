@@ -1234,7 +1234,7 @@ export default function SettingsScreen({ selectedTheme }) {
   const handleSaveChanges = async () => {
     triggerHapticFeedback('impactLight');
     const MAX_NAME_LENGTH = 15;
-    const PROFILE_EDIT_COOLDOWN_DAYS = 30;
+    const PROFILE_EDIT_COOLDOWN_DAYS = 10;
 
     if (!user?.id) return;
 
@@ -1789,7 +1789,6 @@ export default function SettingsScreen({ selectedTheme }) {
     const isProfit = tradeRatio > 1;
     const neutral = tradeRatio === 1;
     const formattedTime = trade.timestamp ? dayjs(trade.timestamp.toDate()).fromNow() : "Unknown";
-    const isGG = trade.isSharkMode === 'GG';
 
     const groupedHasItems = groupTradeItems(trade.hasItems || []);
     const groupedWantsItems = groupTradeItems(trade.wantsItems || []);
@@ -1797,13 +1796,6 @@ export default function SettingsScreen({ selectedTheme }) {
     // Helper to get adoptme image URL (matching Trades.jsx getImageUrl)
     const getTradeItemImageUrl = (item) => {
       if (!item || !item.name) return '';
-
-      // Check for GG (Adopt Me) items
-      if (isGG) {
-        const baseImgUrl = localState.imgurlGG || 'https://adoptmevalues.gg';
-        const encoded = encodeURIComponent(item.name);
-        return `${baseImgUrl.replace(/"/g, '')}/items/${encoded}.webp`;
-      }
 
       // FOR NON-GG (CoS) TRADES: Return item.image directly
       // Do NOT check for baseImgUrl here, as CoS uses full URLs
@@ -1873,21 +1865,7 @@ export default function SettingsScreen({ selectedTheme }) {
                   </Text>
                 </View>
               )}
-              {/* Shark/Frost/GG Badge */}
-              {trade.isSharkMode !== undefined && (
-                <View style={{
-                  backgroundColor: trade.isSharkMode == 'GG' ? '#5c4c49' : trade.isSharkMode === true ? config.colors.secondary : config.colors.hasBlockGreen,
-                  paddingVertical: 1,
-                  paddingHorizontal: 6,
-                  borderRadius: 6,
-                  flexShrink: 0,
-                  flexGrow: 0,
-                }}>
-                  <Text style={{ color: 'white', fontWeight: '600', fontSize: 8, textAlign: 'center' }}>
-                    {trade.isSharkMode == 'GG' ? 'GG Values' : trade.isSharkMode === true ? 'Shark' : 'Frost'}
-                  </Text>
-                </View>
-              )}
+
             </View>
             {(groupedHasItems.length > 0 && groupedWantsItems.length > 0) && (
               <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
@@ -2149,7 +2127,7 @@ export default function SettingsScreen({ selectedTheme }) {
         )}
       </View>
     );
-  }, [isDarkMode, deletingTradeId, handleDeleteTrade, localState.isGG, localState.imgurl, localState.imgurlGG, parsedValuesData, firestoreDB]);
+  }, [isDarkMode, deletingTradeId, handleDeleteTrade, localState.imgurl, parsedValuesData, firestoreDB]);
 
   // Load more "gave" reviews in modal - keeps loading until all are fetched
   const loadMoreGaveModalReviews = useCallback(async () => {
@@ -3061,65 +3039,7 @@ export default function SettingsScreen({ selectedTheme }) {
             </View>
 
 
-            {/* <View style={styles.optionLast} onPress={() => {
-            HANDLEH(); triggerHapticFeedback('impactLight');
-          }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
-              <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Icon name="contrast-outline" size={18} color={'white'} style={{ backgroundColor: '#4A90E2', padding: 5, borderRadius: 5 }} />
-                <Text style={styles.optionText}>Active Values</Text>
-              </TouchableOpacity>
-              <View style={styles.containertheme}>
-                <TouchableOpacity
-                  style={[styles.box, !localState.isGG && styles.selectedBox]}
-                  onPress={() => { updateLocalState('isGG', false); handleRefresh(reload) }}
-                >
-                  <Text style={[styles.text, !localState.isGG && styles.selectedText]}>
-                  Elvebredd Values
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={[styles.box, localState.isGG && styles.selectedBox]}
-                  onPress={() => { updateLocalState('isGG', true); handleRefresh(reload) }}
-                >
-                  <Text style={[styles.text, localState.isGG && styles.selectedText]}>
-                    GG Values
-                  </Text>
-                </TouchableOpacity>
-              </View>
-
-            </View>
-          </View> */}
           </View>
-
-          {/* <Text style={styles.subtitle}>{t('settings.language_settings')}</Text>
-        <View style={styles.cardContainer}>
-          <View style={[styles.optionLast, { flexDirection: 'row', justifyContent: 'space-between' }]}>
-            <View style={{ flexDirection: 'row', }}>
-          <Icon name="language-outline" size={18} color={'white'} style={{backgroundColor:'purple', padding:5, borderRadius:5}}/>
-
-            <Text style={styles.optionText}>{t('settings.select_language')}</Text></View>
-
-            <Menu>
-              <MenuTrigger style={styles.menuTrigger}>
-                <Text style={styles.optionText}>
-                  {languageOptions.find(l => l.code === language)?.flag} {language.toUpperCase()} ▼
-                </Text>
-              </MenuTrigger>
-
-              <MenuOptions style={styles.options}>
-                {languageOptions.map((lang) => (
-                  <MenuOption key={lang.code} onSelect={()=>handleSelect(lang.code)} style={styles.option_menu}>
-                    <Text>
-                      {lang.flag} {lang.label}
-                    </Text>
-                  </MenuOption>
-                ))}
-              </MenuOptions>
-            </Menu>
-          </View>
-        </View> */}
 
 
           <Text style={styles.subtitle}>Pro Subscription</Text>

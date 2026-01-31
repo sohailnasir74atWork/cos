@@ -901,15 +901,8 @@ const TradeList = ({ route }) => {
 
   const styles = useMemo(() => getStyles(isDarkMode), [isDarkMode]);
 
-  const getImageUrl = (item, isGG, baseImgUrl, baseImgUrlGG) => {
-
+  const getImageUrl = (item) => {
     if (!item || !item.name) return '';
-
-    if (isGG) {
-      const encoded = encodeURIComponent(item.name);
-      return `${baseImgUrlGG.replace(/"/g, '')}/items/${encoded}.webp`;
-    }
-
     return item.image || '';
   };
 
@@ -1014,7 +1007,7 @@ const TradeList = ({ route }) => {
       // ✅ Removed navigation ad - exit ads are shown when leaving chat instead
       callbackfunction();
     };
-    const GG = item.isSharkMode === 'GG'
+
     return (
       <View style={[styles.tradeItem, item.isFeatured && { backgroundColor: isDarkMode ? '#34495E' : 'rgba(245, 222, 179, 0.6)' }]}>
         {item.isFeatured && <View style={styles.tag}></View>}
@@ -1091,17 +1084,11 @@ const TradeList = ({ route }) => {
               </View>
             )}
             {/* Shark/Frost/GG Badge */}
-            <View style={[styles.dealContainer, { backgroundColor: item.isSharkMode == 'GG' ? '#5c4c49' : item.isSharkMode === true ? config.colors.secondary : config.colors.hasBlockGreen }]}>
-              <Text style={styles.dealText}>
 
-                {item.isSharkMode == 'GG' ? 'GG Values' : 'CoS Values'}
-              </Text>
-
-            </View>
             <FontAwesome
               name='message'
               size={18}
-              color={config.getIconColor(isDarkMode)}
+              color={config.colors.primary}
               onPress={() => handleOpenProfile(item)}
               solid={false}
             />
@@ -1129,7 +1116,7 @@ const TradeList = ({ route }) => {
                       <>
                         <View style={styles.itemBadgesContainer}></View>
                         <Image
-                          source={{ uri: getImageUrl(tradeItem, GG, localState.imgurl, localState.imgurlGG) }}
+                          source={{ uri: getImageUrl(tradeItem) }}
                           style={styles.gridItemImage}
                         />
                         <Text style={styles.itemName} numberOfLines={1}>
@@ -1165,7 +1152,7 @@ const TradeList = ({ route }) => {
                       <>
                         <View style={styles.itemBadgesContainer}></View>
                         <Image
-                          source={{ uri: getImageUrl(tradeItem, GG, localState.imgurl, localState.imgurlGG) }}
+                          source={{ uri: getImageUrl(tradeItem) }}
                           style={styles.gridItemImage}
                         />
                         <Text style={styles.itemName} numberOfLines={1}>

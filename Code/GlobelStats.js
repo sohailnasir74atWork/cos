@@ -183,7 +183,6 @@ export const GlobalStateProvider = ({ children }) => {
       createdAt: null
     });
   }, []); // No dependencies, so it never re-creates
-
   // ✅ Memoize handleUserLogin
   const handleUserLogin = useCallback(async (loggedInUser) => {
     if (!loggedInUser) {
@@ -209,8 +208,14 @@ export const GlobalStateProvider = ({ children }) => {
         userData = {
           ...existing,
           id: userId,
-          createdAt: existing.createdAt || Date.now()   // fallback if missing
+          createdAt: existing.createdAt || Date.now(),
+          email: existing.email || loggedInUser.email // ✅ Ensure email is present
         };
+
+        // ✅ Backfill email if missing in DB
+        if (!existing.email && loggedInUser.email) {
+          update(userRef, { email: loggedInUser.email }).catch(err => console.log('Error updating email:', err));
+        }
 
       } else {
         // 🆕 NEW USER → Set createdAt once
@@ -548,8 +553,7 @@ export const GlobalStateProvider = ({ children }) => {
           await updateLocalState('data', JSON.stringify(dataMap));
           await updateLocalState('lastActivity', new Date().toISOString());
 
-          // Reset GG data as it's not used in CoS
-          await updateLocalState('ggData', JSON.stringify({}));
+
 
         } catch (err) {
           // console.warn('⚠️ API fetch failed, using cached data:', err.message);

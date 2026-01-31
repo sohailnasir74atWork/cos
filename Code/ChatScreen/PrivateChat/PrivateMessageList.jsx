@@ -233,187 +233,205 @@ const PrivateMessageList = ({
         />
 
         {/* Message Content */}
+        <View style={{ flexDirection: 'column', width: '100%' }}>
 
-        <Menu>
-          {/* Images - Support multiple images */}
-          {(item.imageUrls || item.imageUrl) && (() => {
-            // Support both array (imageUrls) and single (imageUrl) for backward compatibility
-            const imageArray = Array.isArray(item.imageUrls) && item.imageUrls.length > 0
-              ? item.imageUrls
-              : (item.imageUrl ? [item.imageUrl] : []);
+          <Menu style={{ flex: 1, alignItems: isMyMessage ? 'flex-end' : 'flex-start' }}>
 
-            if (imageArray.length === 0) return null;
+            {/* Images - Support multiple images */}
+            {(item.imageUrls || item.imageUrl) && (() => {
+              // Support both array (imageUrls) and single (imageUrl) for backward compatibility
+              const imageArray = Array.isArray(item.imageUrls) && item.imageUrls.length > 0
+                ? item.imageUrls
+                : (item.imageUrl ? [item.imageUrl] : []);
 
-            return (
-              <View style={{ marginBottom: 4, flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
-                {imageArray.map((imageUri, imgIndex) => {
-                  // Fixed size approach: larger for single, smaller for multiple
-                  const imageSize = imageArray.length === 1 ? 250 : imageArray.length === 2 ? 150 : 110;
+              if (imageArray.length === 0) return null;
 
-                  return (
-                    <TouchableOpacity
-                      key={`img-${imgIndex}`}
-                      activeOpacity={0.8}
-                      onPress={() =>
-                        navigation.navigate('ImageViewerScreenChat', {
-                          images: imageArray,
-                          initialIndex: imgIndex,
-                        })
-                      }
-                    >
-                      <Image
-                        source={{ uri: imageUri }}
-                        style={{
-                          width: imageSize,
-                          height: imageSize,
-                          borderRadius: 8,
-                          resizeMode: 'cover',
-                        }}
-                      />
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            );
-          })()}
-          <MenuTrigger
-            onLongPress={() => triggerHapticFeedback('impactMedium')}
-            customStyles={{ triggerTouchable: { activeOpacity: 1 } }}
-          >
-            {/* Optional image message */}
+              return (
+                <View style={{ flex: 1, marginBottom: 4, flexDirection: 'row', flexWrap: 'wrap', gap: 4, justifyContent: isMyMessage ? 'flex-end' : 'flex-start' }}>
+                  {imageArray.map((imageUri, imgIndex) => {
+                    // Fixed size approach: larger for single, smaller for multiple
+                    const imageSize = imageArray.length === 1 ? 250 : imageArray.length === 2 ? 150 : 110;
 
+                    return (
+                      <TouchableOpacity
+                        key={`img-${imgIndex}`}
+                        activeOpacity={0.8}
+                        onPress={() =>
+                          navigation.navigate('ImageViewerScreenChat', {
+                            images: imageArray,
+                            initialIndex: imgIndex,
+                          })
+                        }
+                      >
+                        <Image
+                          source={{ uri: imageUri }}
+                          style={{
+                            width: imageSize,
+                            height: imageSize,
+                            borderRadius: 8,
+                            resizeMode: 'cover',
+                          }}
+                        />
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              );
+            })()}
+            <MenuTrigger
+              onLongPress={() => triggerHapticFeedback('impactMedium')}
+              customStyles={{ triggerTouchable: { activeOpacity: 1 } }}
+              style={isMyMessage ? styles.myMessageText : styles.otherMessageText}
+            >
+              {/* Optional image message */}
+              <View style={[styles.nameRow, { marginBottom: 4, justifyContent: 'flex-start' }]}>
+                {!!item.isAdmin && (
+                  <View style={styles.adminContainer}>
+                    <Text style={[styles.userNameAdmin, { color: 'white' }]}>Admin</Text>
+                  </View>
+                )}
 
-            {/* 🐾 Fruits list (your selected pets) */}
-            {/* 🐾 Fruits list (your selected pets) */}
-            {hasFruits && (
-              <View
-                style={[
-                  fruitStyles.fruitsWrapper,
-                ]}
-              >
-                {fruits.map((fruit, index) => {
-                  const valueType = (fruit.valueType || 'd').toLowerCase(); // 'd' | 'n' | 'm'
-
-                  let valueBadgeStyle = fruitStyles.badgeDefault;
-                  if (valueType === 'n') valueBadgeStyle = fruitStyles.badgeNeon;
-                  if (valueType === 'm') valueBadgeStyle = fruitStyles.badgeMega;
-
-                  return (
-                    <View
-                      key={`${fruit.id || fruit.name}-${index}`}
-                      style={fruitStyles.fruitCard}
-                    >
-                      <Image
-                        source={{ uri: fruit.imageUrl }}
-                        style={fruitStyles.fruitImage}
-                      />
-
-                      <View style={fruitStyles.fruitInfo}>
-                        <Text
-                          style={[fruitStyles.fruitName, { color: fruitColors.name }]}
-                          numberOfLines={1}
-                        >
-                          {`${fruit.name || fruit.Name}  `}
-                        </Text>
-
-                        <Text
-                          style={[fruitStyles.fruitValue, { color: fruitColors.value }]}
-                        >
-                          · Value: {Number(fruit.value || 0).toLocaleString()}
-                          {/* {fruit.category
-                ? `  ·  ${String(fruit.category).toUpperCase()}  `
-                : ''} */}{' '}
-                        </Text>
-
-                        <View style={fruitStyles.badgeRow}>
-                          {/* D / N / M badge */}
-                          <View style={[fruitStyles.badge, valueBadgeStyle]}>
-                            <Text style={fruitStyles.badgeText}>
-                              {valueType.toUpperCase()}
-                            </Text>
-                          </View>
-
-                          {/* Fly badge */}
-                          {fruit.isFly && (
-                            <View style={[fruitStyles.badge, fruitStyles.badgeFly]}>
-                              <Text style={fruitStyles.badgeText}>F</Text>
-                            </View>
-                          )}
-
-                          {/* Ride badge */}
-                          {fruit.isRide && (
-                            <View style={[fruitStyles.badge, fruitStyles.badgeRide]}>
-                              <Text style={fruitStyles.badgeText}>R</Text>
-                            </View>
-                          )}
-                        </View>
-                      </View>
-                    </View>
-                  );
-                })}
-
-                {/* ✅ Total row – only if more than one fruit */}
-                {fruits.length > 1 && (
-                  <View
-                    style={[
-                      fruitStyles.totalRow,
-                      { borderTopColor: fruitColors.divider },
-                    ]}
-                  >
-                    <Text
-                      style={[fruitStyles.totalLabel, { color: fruitColors.totalLabel }]}
-                    >
-                      Total:
-                    </Text>
-                    <Text
-                      style={[fruitStyles.totalValue, { color: fruitColors.totalValue }]}
-                    >
-                      {totalFruitValue.toLocaleString()}
-                    </Text>
+                {!!item.isModerator && !item.isAdmin && (
+                  <View style={[styles.adminContainer, { backgroundColor: '#8B5CF6' }]}>
+                    <Text style={[styles.userNameAdmin, { color: 'white' }]}>Mod</Text>
                   </View>
                 )}
               </View>
-            )}
 
 
-            {/* Normal text (can be empty if only fruits) */}
-            {!!item.text && (
-              <Text
-                style={isMyMessage ? styles.myMessageText : styles.otherMessageText}
-              >
-                {item.text}
-              </Text>
-            )}
-          </MenuTrigger>
+              {/* 🐾 Fruits list (your selected pets) */}
+              {/* 🐾 Fruits list (your selected pets) */}
+              {hasFruits && (
+                <View
+                  style={[
+                    fruitStyles.fruitsWrapper,
+                  ]}
+                >
+                  {fruits.map((fruit, index) => {
+                    const valueType = (fruit.valueType || 'd').toLowerCase(); // 'd' | 'n' | 'm'
 
-          {/* existing menu options stay the same */}
-          <MenuOptions
-            customStyles={{
-              optionsContainer: styles.menuoptions,
-              optionWrapper: styles.menuOption,
-              optionText: styles.menuOptionText,
-            }}
-          >
-            <MenuOption onSelect={() => handleCopy(item)}>
-              <Text style={styles.menuOptionText}>Copy</Text>
-            </MenuOption>
-            <MenuOption onSelect={() => handleTranslate(item)}>
-              <Text style={styles.menuOptionText}>Translate</Text>
-            </MenuOption>
-            {!isMyMessage && (
-              <MenuOption onSelect={() => handleReport(item)}>
-                <Text style={styles.menuOptionText}>Report</Text>
+                    let valueBadgeStyle = fruitStyles.badgeDefault;
+                    if (valueType === 'n') valueBadgeStyle = fruitStyles.badgeNeon;
+                    if (valueType === 'm') valueBadgeStyle = fruitStyles.badgeMega;
+
+                    return (
+                      <View
+                        key={`${fruit.id || fruit.name}-${index}`}
+                        style={fruitStyles.fruitCard}
+                      >
+                        <Image
+                          source={{ uri: fruit.imageUrl }}
+                          style={fruitStyles.fruitImage}
+                        />
+
+                        <View style={fruitStyles.fruitInfo}>
+                          <Text
+                            style={[fruitStyles.fruitName, { color: fruitColors.name }]}
+                            numberOfLines={1}
+                          >
+                            {`${fruit.name || fruit.Name}  `}
+                          </Text>
+
+                          <Text
+                            style={[fruitStyles.fruitValue, { color: fruitColors.value }]}
+                          >
+                            · Value: {Number(fruit.value || 0).toLocaleString()}
+                            {/* {fruit.category
+                ? `  ·  ${String(fruit.category).toUpperCase()}  `
+                : ''} */}{' '}
+                          </Text>
+
+                          <View style={fruitStyles.badgeRow}>
+                            {/* D / N / M badge */}
+                            <View style={[fruitStyles.badge, valueBadgeStyle]}>
+                              <Text style={fruitStyles.badgeText}>
+                                {valueType.toUpperCase()}
+                              </Text>
+                            </View>
+
+                            {/* Fly badge */}
+                            {fruit.isFly && (
+                              <View style={[fruitStyles.badge, fruitStyles.badgeFly]}>
+                                <Text style={fruitStyles.badgeText}>F</Text>
+                              </View>
+                            )}
+
+                            {/* Ride badge */}
+                            {fruit.isRide && (
+                              <View style={[fruitStyles.badge, fruitStyles.badgeRide]}>
+                                <Text style={fruitStyles.badgeText}>R</Text>
+                              </View>
+                            )}
+                          </View>
+                        </View>
+                      </View>
+                    );
+                  })}
+
+                  {/* ✅ Total row – only if more than one fruit */}
+                  {fruits.length > 1 && (
+                    <View
+                      style={[
+                        fruitStyles.totalRow,
+                        { borderTopColor: fruitColors.divider },
+                      ]}
+                    >
+                      <Text
+                        style={[fruitStyles.totalLabel, { color: fruitColors.totalLabel }]}
+                      >
+                        Total:
+                      </Text>
+                      <Text
+                        style={[fruitStyles.totalValue, { color: fruitColors.totalValue }]}
+                      >
+                        {totalFruitValue.toLocaleString()}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              )}
+
+
+              {/* Normal text (can be empty if only fruits) */}
+              {!!item.text && (
+                <Text
+                  style={{ color: isDarkMode ? 'white' : 'black' }}
+
+                >
+                  {item.text}
+                </Text>
+              )}
+            </MenuTrigger>
+
+            {/* existing menu options stay the same */}
+            <MenuOptions
+              customStyles={{
+                optionsContainer: styles.menuoptions,
+                optionWrapper: styles.menuOption,
+                optionText: styles.menuOptionText,
+              }}
+            >
+              <MenuOption onSelect={() => handleCopy(item)}>
+                <Text style={styles.menuOptionText}>Copy</Text>
               </MenuOption>
-            )}
-          </MenuOptions>
-        </Menu>
+              <MenuOption onSelect={() => handleTranslate(item)}>
+                <Text style={styles.menuOptionText}>Translate</Text>
+              </MenuOption>
+              {!isMyMessage && (
+                <MenuOption onSelect={() => handleReport(item)}>
+                  <Text style={styles.menuOptionText}>Report</Text>
+                </MenuOption>
+              )}
+            </MenuOptions>
+          </Menu>
 
-        <Text style={styles.timestamp}>
-          {item.timestamp ? new Date(item.timestamp).toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-          }) : ''}
-        </Text>
+          <Text style={styles.timestamp}>
+            {item.timestamp ? new Date(item.timestamp).toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+            }) : ''}
+          </Text>
+        </View>
       </View>
     );
   }, [userId, selectedUser, user, styles, fruitColors, handleCopy, handleTranslate, handleReport, onReply, navigation]);
@@ -428,7 +446,7 @@ const PrivateMessageList = ({
       {loading && messages.length === 0 ? (
         <ActivityIndicator size="large" color="#1E88E5" style={styles.loader} />
       ) : (
-        <View style={{ paddingBottom: 140 }}>
+        <View style={{ paddingBottom: 100 }}>
           <>
             <ScamSafetyBox setShowRatingModal={setShowRatingModal} canRate={canRate} hasRated={hasRated} />
 

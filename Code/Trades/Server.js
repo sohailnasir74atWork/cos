@@ -389,13 +389,13 @@ const getStyles = (isDarkMode) =>
             color: '#007bff',
             color: isDarkMode ? 'lightblue' : '#007bff',
             textDecorationLine: 'underline',
-            
+
         },
         message: {
             fontSize: 13,
             color: '#333',
             marginTop: 4,
-            
+
             color: isDarkMode ? 'white' : 'black',
 
         },
@@ -406,7 +406,7 @@ const getStyles = (isDarkMode) =>
         },
         voteText: {
             paddingHorizontal: 4,
-            
+
             color: isDarkMode ? 'white' : 'black',
 
         },
@@ -448,7 +448,7 @@ const getStyles = (isDarkMode) =>
             padding: 10,
             marginBottom: 12,
             borderRadius: 8,
-            
+
             color: isDarkMode ? 'white' : 'black',
 
         },
@@ -488,7 +488,7 @@ const getStyles = (isDarkMode) =>
             fontSize: 9,
             //   alignSelf: 'center',
             margin: 'auto',
-            
+
             color: isDarkMode ? 'black' : 'black',
             textAlign: 'center',
             paddingTop: 3

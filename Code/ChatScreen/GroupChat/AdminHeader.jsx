@@ -103,7 +103,7 @@ const AdminHeader = ({
                 <Icon
                   name="people-outline"
                   size={24}
-                  color={config.getPrimaryColor(isDarkMode)}
+                  color={config.colors.primary}
                 />
               </TouchableOpacity>
 
@@ -134,7 +134,7 @@ const AdminHeader = ({
           {user?.id && (
             <Menu>
               <MenuTrigger>
-                <Icon name="ellipsis-vertical-outline" size={24} color={config.getPrimaryColor(isDarkMode)} />
+                <Icon name="ellipsis-vertical-outline" size={24} color={config.colors.primary} />
               </MenuTrigger>
               <MenuOptions
                 customStyles={{
@@ -150,7 +150,7 @@ const AdminHeader = ({
 
                 <MenuOption onSelect={() => navigation?.navigate('BlockedUsers')}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', padding: 10 }}>
-                    <Icon name="ban-outline" size={20} color={config.getPrimaryColor(isDarkMode)} style={{ marginRight: 10 }} />
+                    <Icon name="ban-outline" size={20} color={config.colors.primary} style={{ marginRight: 10 }} />
                     <Text style={{ fontSize: 16, color: config.colors.text || '#000' }}>
                       {t("chat.blocked_users")}
                     </Text>
@@ -168,7 +168,7 @@ const AdminHeader = ({
         </Text>
         <TouchableOpacity onPress={() => { setModalVisibleChatinfo(true); triggerHapticFeedback('impactLight'); }}>
 
-          <Icon name="information-circle-outline" size={20} color={config.getPrimaryColor(isDarkMode)} style={{ marginRight: 10 }} />
+          <Icon name="information-circle-outline" size={20} color={config.colors.primary} style={{ marginRight: 10 }} />
           {/* <Text style={{ fontSize: 16, color: config.colors.text || '#000' }}>
                       {t("chat.chat_rules")}
                     </Text> */}
@@ -193,7 +193,7 @@ const AdminHeader = ({
                   <Text style={styles.pinnedText}>{displayText}</Text>
                 </View>
                 <TouchableOpacity onPress={() => setPinMessageOpen(true)} style={{ justifyContent: 'center' }}>
-                  <Icon name="chevron-forward-outline" size={20} color={config.getPrimaryColor(isDarkMode)} style={styles.pinIcon} />
+                  <Icon name="chevron-forward-outline" size={20} color={config.colors.primary} style={styles.pinIcon} />
                 </TouchableOpacity>
               </View>
             );
@@ -226,7 +226,7 @@ const AdminHeader = ({
                             onUnpinMessage(msg.firebaseKey);
                           }
                         }}
-                        style={{ backgroundColor: config.getPrimaryColor(isDarkMode), marginVertical: 3 }}
+                        style={{ backgroundColor: config.colors.primary, marginVertical: 3 }}
                       >
                         <Text style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 5, color: 'white' }}>Delete</Text>
                       </TouchableOpacity>
@@ -306,7 +306,7 @@ export const getStyles = (isDarkMode) =>
       fontSize: 12,
       paddingRight: 20,
 
-      color: config.getPrimaryColor(isDarkMode),
+      color: config.colors.primary,
     },
     pinnedText: {
       fontSize: 12,

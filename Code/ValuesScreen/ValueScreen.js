@@ -312,12 +312,7 @@ const ValueScreen = React.memo(({ selectedTheme, fromChat, selectedFruits, setSe
 
   // Optimize the search and filter logic
 
-  // useEffect(() => {
-  //   if (localState.isGG) {
-  //     const types = new Set(parsedValuesData.map(i => (i.type || '').toUpperCase()));
-  //     // console.log("🧪 GG Types:", Array.from(types));
-  //   }
-  // }, [parsedValuesData]);
+
 
 
   // Optimize the getItemValue function
@@ -399,10 +394,7 @@ const ValueScreen = React.memo(({ selectedTheme, fromChat, selectedFruits, setSe
 
       // image url for this item
       const imageUrl = getImageUrl(
-        item,
-        localState.isGG,
-        localState.imgurl,
-        localState.imgurlGG
+        item
       );
 
       const handlePress = () => {
@@ -444,9 +436,7 @@ const ValueScreen = React.memo(({ selectedTheme, fromChat, selectedFruits, setSe
     [
       getItemValue,
       styles,
-      localState.isGG,
       localState.imgurl,
-      localState.imgurlGG,
       fromChat,
       fromSetting,
       owned,
@@ -1037,7 +1027,7 @@ export const getStyles = (isDarkMode) => StyleSheet.create({
   },
   tryNowText: {
     fontSize: 14,
-    
+
     color: '#6A5ACD', // Adds a distinct color for the "Try Now" text
     // marginTop: 5, // Adds space between the title and the "Try Now" text
   },

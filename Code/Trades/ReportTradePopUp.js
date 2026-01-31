@@ -34,7 +34,7 @@ const ReportTradePopup = ({ visible, trade, onClose }) => {
 
     setLoading(true);
 
-    
+
     const reportsRef = ref(appdatabase, "tradeReports"); // New node for trade reports
     const reportData = {
       tradeId: trade.id,

@@ -118,7 +118,7 @@ export const TradeStack = ({ selectedTheme }) => {
                 <Icon
                   name="notifications"
                   size={24}
-                  color={config.getIconColor(isDarkMode)}
+                  color={config.colors.primary}
                   onPress={() => navigation.navigate('Trade Notifier')}
                   style={{ marginRight: 15 }}
                 />
@@ -126,7 +126,7 @@ export const TradeStack = ({ selectedTheme }) => {
                 <Icon
                   name="information-circle-outline"
                   size={24}
-                  color={config.getIconColor(isDarkMode)}
+                  color={config.colors.primary}
                   onPress={() => setModalVisible(true)}
                 />
               </View>

@@ -307,7 +307,7 @@ const getStyles = (isDarkMode) =>
     searchInput: {
       flex: 1,
       fontSize: 14,
-      
+
       color: isDarkMode ? '#fff' : '#000',
     },
     clearButton: {
@@ -368,7 +368,7 @@ const getStyles = (isDarkMode) =>
     },
     groupDescription: {
       fontSize: 11,
-      
+
       color: isDarkMode ? '#9CA3AF' : '#6B7280',
       marginBottom: 4,
       lineHeight: 14,
@@ -380,7 +380,7 @@ const getStyles = (isDarkMode) =>
     },
     creatorName: {
       fontSize: 10,
-      
+
       color: isDarkMode ? '#9CA3AF' : '#6B7280',
     },
     metaSeparator: {
@@ -389,7 +389,7 @@ const getStyles = (isDarkMode) =>
     },
     memberCount: {
       fontSize: 10,
-      
+
       color: isDarkMode ? '#9CA3AF' : '#6B7280',
     },
     actionContainer: {
@@ -414,7 +414,7 @@ const getStyles = (isDarkMode) =>
     },
     statusText: {
       fontSize: 10,
-      
+
       color: isDarkMode ? '#9CA3AF' : '#6B7280',
       textAlign: 'center',
     },
@@ -432,7 +432,7 @@ const getStyles = (isDarkMode) =>
     },
     emptyText: {
       fontSize: 14,
-      
+
       color: isDarkMode ? '#9CA3AF' : '#6B7280',
       textAlign: 'center',
     },

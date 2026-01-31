@@ -16,6 +16,7 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useGlobalState } from '../../GlobelStats';
 import { createGroup, updateGroupName, updateGroupDescription, updateGroupAvatar } from '../utils/groupUtils';
+import { checkBanStatus } from '../utils';
 import { showSuccessMessage, showErrorMessage } from '../../Helper/MessageHelper';
 import { useHaptic } from '../../Helper/HepticFeedBack';
 import { useNavigation } from '@react-navigation/native';
@@ -228,6 +229,13 @@ const CreateGroupModal = ({ visible, onClose, selectedUsers = [], editGroupId = 
   const handleSubmit = async () => {
     if (!user?.id || !firestoreDB || !appdatabase) {
       showErrorMessage('Error', 'Missing required data');
+      return;
+    }
+
+    // 🔒 Check Ban Status
+    const banStatus = await checkBanStatus(user?.email);
+    if (banStatus.isBanned) {
+      showErrorMessage('Banned', banStatus.message);
       return;
     }
 

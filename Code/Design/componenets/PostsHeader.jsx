@@ -26,14 +26,14 @@ const PostsHeader = ({
     <View>
       <Menu>
         <MenuTrigger style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginRight: 16, paddingHorizontal: 10 }}>
-          <Text style={{ color: config.getPrimaryColor(isDarkMode), fontSize: 10, fontWeight: '900', marginRight: 4 }}>
+          <Text style={{ color: config.colors.primary, fontSize: 10, fontWeight: '900', marginRight: 4 }}>
             {selectedTag || ''}
           </Text>
           <FontAwesome
             name="filter"
             size={20}
             style={{ padding: 6 }}
-            color={filterMyPosts || selectedTag ? config.getPrimaryColor(isDarkMode) : isDarkMode ? '#ccc' : '#444'}
+            color={filterMyPosts || selectedTag ? config.colors.primary : isDarkMode ? '#ccc' : '#444'}
           />
         </MenuTrigger>
         <MenuOptions customStyles={{ optionsContainer: { width: 200 } }}>
@@ -54,10 +54,10 @@ const PostsHeader = ({
             }}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 8, paddingHorizontal: 10 }}>
-              <Text style={{ fontSize: 14, color: !filterMyPosts && !selectedTag ? config.getPrimaryColor(isDarkMode) : '#333', fontWeight: !filterMyPosts && !selectedTag ? 'bold' : 'normal' }}>
+              <Text style={{ fontSize: 14, color: !filterMyPosts && !selectedTag ? config.colors.primary : '#333', fontWeight: !filterMyPosts && !selectedTag ? 'bold' : 'normal' }}>
                 All Posts
               </Text>
-              {!filterMyPosts && !selectedTag && <FontAwesome name="check" size={14} color={config.getPrimaryColor(isDarkMode)} />}
+              {!filterMyPosts && !selectedTag && <FontAwesome name="check" size={14} color={config.colors.primary} />}
             </View>
           </MenuOption>
 
@@ -78,10 +78,10 @@ const PostsHeader = ({
             }}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 8, paddingHorizontal: 10 }}>
-              <Text style={{ fontSize: 14, color: filterMyPosts ? config.getPrimaryColor(isDarkMode) : '#333', fontWeight: filterMyPosts ? 'bold' : 'normal' }}>
+              <Text style={{ fontSize: 14, color: filterMyPosts ? config.colors.primary : '#333', fontWeight: filterMyPosts ? 'bold' : 'normal' }}>
                 My Posts
               </Text>
-              {filterMyPosts && <FontAwesome name="check" size={14} color={config.getPrimaryColor(isDarkMode)} />}
+              {filterMyPosts && <FontAwesome name="check" size={14} color={config.colors.primary} />}
             </View>
           </MenuOption>
 
@@ -110,11 +110,11 @@ const PostsHeader = ({
               }}
             >
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 8, paddingHorizontal: 10 }}>
-                <Text style={{ fontSize: 14, color: selectedTag === tag ? config.getPrimaryColor(isDarkMode) : '#333', fontWeight: selectedTag === tag ? 'bold' : 'normal' }}>
+                <Text style={{ fontSize: 14, color: selectedTag === tag ? config.colors.primary : '#333', fontWeight: selectedTag === tag ? 'bold' : 'normal' }}>
                   {tag}
                 </Text>
                 {selectedTag === tag && (
-                  <FontAwesome name="check" size={14} color={config.getPrimaryColor(isDarkMode)} />
+                  <FontAwesome name="check" size={14} color={config.colors.primary} />
                 )}
               </View>
             </MenuOption>

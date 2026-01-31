@@ -183,7 +183,9 @@ export const createNewUser = (
   fcmToken: null,
   lastactivity: null,
   online: false,
+  online: false,
   isPro: false,
+  email: loggedInUser.email || null,
 });
 
 export const resetUserState = (setUser) => {

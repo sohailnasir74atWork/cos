@@ -36,7 +36,7 @@ const NotifierDrawer = () => {
   }
   const parsedValuesData = useMemo(() => {
     try {
-      const rawData = localState.isGG ? localState.ggData : localState.data;
+      const rawData = localState.data;
       if (!rawData) return [];
       const parsed = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
       return typeof parsed === 'object' && parsed !== null ? Object.values(parsed) : [];
@@ -44,7 +44,7 @@ const NotifierDrawer = () => {
       console.error("Error parsing data:", error);
       return [];
     }
-  }, [localState.isGG, localState.data, localState.ggData]);
+  }, [localState.data]);
 
   // ✅ Filter items based on search text
   const filteredItems = useMemo(() => {
@@ -63,12 +63,6 @@ const NotifierDrawer = () => {
     const itemName = itemNameOverride || item?.name || item?.Name || '';
     if (!itemName) return '';
 
-    // ✅ Generate image URL client-side based on item name
-    if (localState.isGG) {
-      const encoded = encodeURIComponent(itemName);
-      return `${localState.imgurlGG?.replace(/"/g, '')}/items/${encoded}.webp`;
-    }
-
     // ✅ For non-GG mode (CoS), use full URL from item object directly
     if (item?.image) {
       return item.image;
@@ -85,7 +79,7 @@ const NotifierDrawer = () => {
     }
 
     return '';
-  }, [localState.isGG, localState.imgurlGG, parsedValuesData]);
+  }, [parsedValuesData]);
 
   // const showMessage = (msg) => {
   //   if (Platform.OS === 'android') ToastAndroid.show(msg, ToastAndroid.SHORT);

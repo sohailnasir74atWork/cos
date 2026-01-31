@@ -36,7 +36,7 @@ const MessagesList = ({
   handleLoadMore,
   user,
   isDarkMode,
-  onPinMessage,
+
   onDeleteMessage,
   onReply,
   // isAdmin,
@@ -47,12 +47,12 @@ const MessagesList = ({
   makeadmin,
   removeAdmin,
   unbanUser,
-  onUnpinMessage,
+
   // isOwner,
   toggleDrawer,
   setMessages,
   onDeleteAllMessage,
-  handlePinMessage,
+
 
 }) => {
   // ✅ Memoize styles
@@ -426,6 +426,12 @@ const MessagesList = ({
                           </View>
                         )}
 
+                        {!!item.isModerator && !item.isAdmin && (
+                          <View style={[styles.adminContainer, { backgroundColor: '#8B5CF6' }]}>
+                            <Text style={[styles.userNameAdmin, { color: 'white' }]}>Mod</Text>
+                          </View>
+                        )}
+
                         {item?.robloxUsernameVerified && (
                           <Image
                             source={require('../../../assets/verification.png')}
@@ -664,15 +670,7 @@ const MessagesList = ({
                     <MenuOption onSelect={() => onDeleteAllMessage(item?.senderId)} style={styles.deleteButton}>
                       <Text style={styles.adminTextAction}>Delete All</Text>
                     </MenuOption>
-                    <MenuOption onSelect={() => banUserwithEmail(item.currentUserEmail, isAdmin, item.senderId)} style={styles.deleteButton}>
-                      <Text style={styles.adminTextAction}>Block</Text>
-                    </MenuOption>
-                    <MenuOption onSelect={() => unbanUserWithEmail(item.currentUserEmail, isAdmin)} style={styles.deleteButton}>
-                      <Text style={styles.adminTextAction}>Unblock</Text>
-                    </MenuOption>
-                    <MenuOption onSelect={() => onPinMessage(item)} style={styles.deleteButton}>
-                      <Text style={styles.adminTextAction}>Pin Message</Text>
-                    </MenuOption>
+
 
                     {/* {isAdmin && (
                     <MenuOption onSelect={() => makeadmin(item.senderId)} style={styles.deleteButton}>
@@ -692,7 +690,7 @@ const MessagesList = ({
         )}
       </View>
     );
-  }, [messages, highlightedMessageId, user?.id, styles, getReplyPreview, handleCopy, handleTranslate, handleReport, handleLongPress, handleProfileClick, scrollToMessage, isAdmin, fruitColors, onReply, onDeleteMessage, onDeleteAllMessage, onPinMessage, banUserwithEmail, unbanUserWithEmail]);
+  }, [messages, highlightedMessageId, user?.id, styles, getReplyPreview, handleCopy, handleTranslate, handleReport, handleLongPress, handleProfileClick, scrollToMessage, isAdmin, fruitColors, onReply, onDeleteMessage, onDeleteAllMessage, banUserwithEmail, unbanUserWithEmail]);
 
   return (
     <>

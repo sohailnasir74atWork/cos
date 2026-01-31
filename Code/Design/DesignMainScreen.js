@@ -485,7 +485,7 @@ const DesignFeedScreen = ({ route }) => {
         }}
         ListFooterComponent={
           loadingMore && !initialLoading ? (
-            <ActivityIndicator size="small" color={config.getPrimaryColor(isDarkMode)} />
+            <ActivityIndicator size="small" color={config.colors.primary} />
           ) : null
         }
         ListEmptyComponent={
@@ -511,7 +511,7 @@ const DesignFeedScreen = ({ route }) => {
       <TouchableOpacity style={styles.fab} onPress={() =>
         user?.id ? setModalVisible(true) : setSigninDrawerVisible(true)
       }>
-        <FontAwesome name="circle-plus" size={44} color={config.getPrimaryColor(isDarkMode)} />
+        <FontAwesome name="circle-plus" size={44} color={config.colors.primary} />
       </TouchableOpacity>
 
       <UploadModal
@@ -562,7 +562,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   latoText: {
-    
+
   },
   latoBold: {
     fontWeight: 'bold',

@@ -9,6 +9,8 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
+  Platform,
+  ScrollView,
 } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { Image as CompressorImage } from 'react-native-compressor';
@@ -17,10 +19,12 @@ import { useGlobalState } from '../../GlobelStats';
 import { useLocalState } from '../../LocalGlobelStats';
 import InterstitialAdManager from '../../Ads/IntAd';
 import ConditionalKeyboardWrapper from '../../Helper/keyboardAvoidingContainer';
-import { onValue, ref } from '@react-native-firebase/database';
+// import { onValue, ref } from '@react-native-firebase/database';
 import { showMessage } from 'react-native-flash-message';
 import RNFS from 'react-native-fs';
 import { validateContent } from '../../Helper/ContentModeration';
+import { checkBanStatus } from '../../ChatScreen/utils';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 
 const CLOUD_NAME = 'djtqw0jb5';
@@ -39,8 +43,6 @@ const UploadModal = ({ visible, onClose, onUpload, user }) => {
   const [loading, setLoading] = useState(false);
   const [selectedTags, setSelectedTags] = useState(['Discussion']);
   const { currentUserEmail, appdatabase } = useGlobalState();
-  const [strikeInfo, setStrikeInfo] = useState(null)
-  // const [budget, setBudget] = useState('');
   const { theme } = useGlobalState();
   const isDark = theme === 'dark';
   const { localState } = useLocalState()
@@ -51,20 +53,6 @@ const UploadModal = ({ visible, onClose, onUpload, user }) => {
   const toggleTag = useCallback((tag) => {
     setSelectedTags([tag]);
   }, []);
-
-  useEffect(() => {
-    if (!currentUserEmail) return;
-
-    const encodedEmail = currentUserEmail.replace(/\./g, '(dot)');
-    const banRef = ref(appdatabase, `banned_users_by_email_post/${encodedEmail}`);
-
-    const unsubscribe = onValue(banRef, (snapshot) => {
-      const banData = snapshot.val();
-      setStrikeInfo(banData || null);
-    });
-
-    return () => unsubscribe();
-  }, [currentUserEmail]);
 
   // ✅ Reset loading state when modal closes
   useEffect(() => {
@@ -99,41 +87,27 @@ const UploadModal = ({ visible, onClose, onUpload, user }) => {
 
         for (const asset of result.assets) {
           try {
-            // Check file size before compression
-            if (asset?.uri) {
-              const filePath = asset.uri.replace('file://', '');
-              const fileInfo = await RNFS.stat(filePath);
-              const fileSize = fileInfo.size || 0;
-
-              if (fileSize > MAX_SIZE_BYTES) {
-                rejectedCount.push(asset.fileName || 'image');
-                continue;
-              }
-            }
-
-            // Compress the image
+            // ✅ Always compress to ensure < 1MB and good quality
             const uri = await CompressorImage.compress(asset.uri, {
-              maxWidth: 400,
-              quality: 1,
+              maxWidth: 1024, // Good resolution
+              quality: 0.7,   // Good compression
+              returnableOutputType: 'uri',
             });
             compressed.push(uri);
           } catch (error) {
             console.error('Compression failed:', error);
-            // If compression fails, still try to check if we can use original
-            // But skip if we can't determine size
+            // If compression fails, try adding original if it's small enough
             if (asset?.uri) {
               try {
                 const filePath = asset.uri.replace('file://', '');
                 const fileInfo = await RNFS.stat(filePath);
-                const fileSize = fileInfo.size || 0;
-                if (fileSize <= MAX_SIZE_BYTES) {
+                if (fileInfo.size <= MAX_SIZE_BYTES) {
                   compressed.push(asset.uri);
                 } else {
                   rejectedCount.push(asset.fileName || 'image');
                 }
-              } catch (statError) {
-                console.warn('Could not check file size:', statError);
-                // If we can't check, skip it to be safe
+              } catch (e) {
+                // ignore
               }
             }
           }
@@ -241,13 +215,20 @@ const UploadModal = ({ visible, onClose, onUpload, user }) => {
   }, [imageUris, user?.id]);
 
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     // ✅ Guard: Prevent multiple simultaneous submissions
     if (loading) return;
 
     if (!user?.id) return;
     if (!currentUserEmail) {
       Alert.alert('Missing Email', 'Could not detect your account email. Please re-login.');
+      return;
+    }
+
+    // 🔒 Check Ban Status
+    const banStatus = await checkBanStatus(currentUserEmail);
+    if (banStatus.isBanned) {
+      Alert.alert('Banned', banStatus.message);
       return;
     }
 
@@ -276,37 +257,6 @@ const UploadModal = ({ visible, onClose, onUpload, user }) => {
         duration: 3000,
       });
       return;
-    }
-
-    if (strikeInfo) {
-      const { strikeCount, bannedUntil } = strikeInfo;
-      // console.log('strick')
-      const now = Date.now();
-
-      if (bannedUntil === 'permanent') {
-        showMessage({
-          message: '⛔ Permanently Banned',
-          description: 'You are permanently banned from sending messages.',
-          type: 'danger',
-        });
-        return;
-      }
-
-      if (typeof bannedUntil === 'number' && now < bannedUntil) {
-        const totalMinutes = Math.ceil((bannedUntil - now) / 60000);
-        const hours = Math.floor(totalMinutes / 60);
-        const minutes = totalMinutes % 60;
-        const timeLeftText = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
-
-        showMessage({
-          message: `⚠️ Strike ${strikeCount}`,
-          description: `You are banned from chatting for ${timeLeftText} more minute(s).`,
-          type: 'warning',
-          duration: 5000,
-
-        });
-        return;
-      }
     }
 
     // ✅ Set loading immediately to prevent duplicate submissions
@@ -366,174 +316,259 @@ const UploadModal = ({ visible, onClose, onUpload, user }) => {
       }, 500);
     });
 
-  }, [loading, user?.id, desc, imageUris, selectedTags, uploadToBunny, onUpload, onClose, localState.isPro, currentUserEmail, lastPostTime, strikeInfo]);
+  }, [loading, user?.id, desc, imageUris, selectedTags, uploadToBunny, onUpload, onClose, localState.isPro, currentUserEmail, lastPostTime]);
 
 
   const themedStyles = getStyles(isDark);
 
   return (
-    <Modal visible={visible} transparent animationType="slide">
-      <View style={{ flexDirection: 'row', flex: 1 }}>
-
-        <ConditionalKeyboardWrapper>
-          <TouchableOpacity activeOpacity={1} onPress={onClose} style={themedStyles.modalBackground}>
-            <TouchableOpacity
-              activeOpacity={1}
-              style={themedStyles.modalContent}
-              onPress={(e) => e.stopPropagation()}
-            >
-              <TextInput
-                style={themedStyles.input}
-                placeholder="Write a description..."
-                placeholderTextColor={isDark ? '#999' : '#666'}
-                value={desc}
-                onChangeText={setDesc}
-                multiline
-              />
-
-              <View style={themedStyles.tagSelector}>
-                {['Scam Alert', 'Looking for Trade', 'Discussion', 'Real or Fake', 'Need Help', 'Misc'].map((tag) => (
-                  <TouchableOpacity
-                    key={tag}
-                    style={[
-                      themedStyles.tagButton,
-                      selectedTags.includes(tag) && themedStyles.tagButtonSelected,
-                    ]}
-                    onPress={() => toggleTag(tag)}
-                  >
-                    <Text
-                      style={{
-                        color: selectedTags.includes(tag) ? '#fff' : isDark ? '#eee' : '#333',
-                        fontSize: 12,
-                        fontWeight: 'bold',
-                      }}
-                    >
-                      {tag}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-
-              </View>
-
-              {/* <TextInput
-            style={themedStyles.input}
-            placeholder="Optional: Budget (e.g. 500 Bucks)"
-            placeholderTextColor={isDark ? '#999' : '#666'}
-            value={budget}
-            onChangeText={setBudget}
-          /> */}
-
-              <TouchableOpacity style={themedStyles.imagePicker} onPress={pickAndCompress}>
-                {imageUris.length > 0 ? (
-                  <View style={themedStyles.imageGrid}>
-                    {imageUris.map((uri, idx) => (
-                      <Image key={idx} source={{ uri }} style={themedStyles.previewImage} />
-                    ))}
-                  </View>
-                ) : (
-                  <Text style={{ color: isDark ? '#aaa' : '#333' }}>Upload up to 4 images</Text>
-                )}
-              </TouchableOpacity>
-
-              <TouchableOpacity style={themedStyles.uploadBtn} onPress={handleSubmit} disabled={loading}>
-                {loading ? <ActivityIndicator color="#fff" /> : <Text style={themedStyles.btnText}>Submit</Text>}
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={onClose} style={themedStyles.cancelBtn}>
-                <Text style={themedStyles.btnText}>Cancel</Text>
-              </TouchableOpacity>
-            </TouchableOpacity>
+    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
+      <View style={themedStyles.fullScreenContainer}>
+        {/* Header - Fixed at top */}
+        <View style={themedStyles.header}>
+          <Text style={themedStyles.headerTitle}>Create Post</Text>
+          <TouchableOpacity onPress={onClose} style={themedStyles.closeButton}>
+            <Icon name="close" size={24} color={isDark ? '#fff' : '#000'} />
           </TouchableOpacity>
+        </View>
+
+        <ConditionalKeyboardWrapper style={{ flex: 1 }}>
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{ paddingBottom: 100 }}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            {/* Description Input */}
+            <Text style={themedStyles.sectionLabel}>DESCRIPTION</Text>
+            <TextInput
+              style={themedStyles.input}
+              placeholder="What's on your mind?..."
+              placeholderTextColor={isDark ? '#888' : '#aaa'}
+              value={desc}
+              onChangeText={setDesc}
+              multiline
+              textAlignVertical="top"
+            />
+
+            {/* Tags */}
+            <Text style={themedStyles.sectionLabel}>SELECT TOPIC</Text>
+            <View style={themedStyles.tagSelector}>
+              {['Scam Alert', 'Looking for Trade', 'Discussion', 'Real or Fake', 'Need Help', 'Misc'].map((tag) => (
+                <TouchableOpacity
+                  key={tag}
+                  style={[
+                    themedStyles.tagButton,
+                    selectedTags.includes(tag) && themedStyles.tagButtonSelected,
+                  ]}
+                  onPress={() => toggleTag(tag)}
+                  activeOpacity={0.7}
+                >
+                  <Text
+                    style={{
+                      color: selectedTags.includes(tag) ? '#fff' : isDark ? '#ddd' : '#555',
+                      fontSize: 12,
+                      fontWeight: '600',
+                    }}
+                  >
+                    {tag}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {/* Image Picker */}
+            <Text style={themedStyles.sectionLabel}>PHOTOS (MAX 4)</Text>
+            <TouchableOpacity
+              style={[themedStyles.imagePicker, imageUris.length > 0 && { justifyContent: 'flex-start', padding: 10 }]}
+              onPress={pickAndCompress}
+              activeOpacity={0.7}
+            >
+              {imageUris.length > 0 ? (
+                <View style={themedStyles.imageGrid}>
+                  {imageUris.map((uri, idx) => (
+                    <View key={idx} style={themedStyles.imagePreviewContainer}>
+                      <Image source={{ uri }} style={themedStyles.previewImage} />
+                      <View style={themedStyles.imageCountBadge}>
+                        <Text style={themedStyles.imageCountText}>{idx + 1}</Text>
+                      </View>
+                    </View>
+                  ))}
+                  {imageUris.length < MAX_IMAGES && (
+                    <View style={themedStyles.addMoreButton}>
+                      <Icon name="add" size={24} color={isDark ? '#555' : '#aaa'} />
+                    </View>
+                  )}
+                </View>
+              ) : (
+                <View style={{ alignItems: 'center' }}>
+                  <Icon name="images-outline" size={32} color={config.colors.primary} style={{ marginBottom: 8 }} />
+                  <Text style={{ color: isDark ? '#aaa' : '#666', fontSize: 13 }}>Tap to select photos</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          </ScrollView>
+
+          {/* Submit Button - Fixed at bottom */}
+          <View style={themedStyles.footer}>
+            <TouchableOpacity
+              style={[themedStyles.uploadBtn, loading && { opacity: 0.7 }]}
+              onPress={handleSubmit}
+              disabled={loading}
+              activeOpacity={0.8}
+            >
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={themedStyles.btnText}>Post Now</Text>
+                  <Icon name="arrow-forward" size={18} color="#fff" style={{ marginLeft: 6 }} />
+                </View>
+              )}
+            </TouchableOpacity>
+          </View>
         </ConditionalKeyboardWrapper>
       </View>
-
-
     </Modal>
   );
 };
 
 const getStyles = (isDark) =>
   StyleSheet.create({
-    modalBackground: {
+    fullScreenContainer: {
       flex: 1,
-      backgroundColor: 'rgba(0, 0, 0, 0.7)',
-      justifyContent: 'center',
-      alignItems: 'center',
+      backgroundColor: isDark ? '#1a1a1a' : '#ffffff',
+      padding: 24,
+      paddingTop: Platform.OS === 'ios' ? 60 : 24, // Safe area space
     },
-    modalContent: {
-      backgroundColor: isDark ? '#222' : '#fff',
-      padding: 20,
-      borderRadius: 10,
-      // width: '90%',
-      marginHorizontal: 10
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 20,
+    },
+    headerTitle: {
+      fontSize: 22,
+      fontWeight: '800', // Extra bold
+      color: isDark ? '#fff' : '#000',
+      letterSpacing: 0.5,
+    },
+    closeButton: {
+      padding: 4,
+      backgroundColor: isDark ? '#333' : '#f0f0f0',
+      borderRadius: 50,
+    },
+    sectionLabel: {
+      fontSize: 11,
+      fontWeight: '700',
+      color: isDark ? '#888' : '#888',
+      marginBottom: 8,
+      marginLeft: 4,
+      letterSpacing: 1,
     },
     input: {
-      borderWidth: 1,
-      borderColor: isDark ? '#555' : '#ccc',
-      padding: 10,
-      borderRadius: 6,
-      marginBottom: 10,
-      color: isDark ? '#eee' : '#000',
-
+      backgroundColor: isDark ? '#2a2a2a' : '#f9f9f9',
+      borderRadius: 16,
+      padding: 16,
+      color: isDark ? '#fff' : '#000',
+      fontSize: 15,
+      minHeight: 100, // Taller area
+      marginBottom: 20,
     },
     tagSelector: {
       flexDirection: 'row',
-      marginBottom: 10,
+      marginBottom: 20,
       flexWrap: 'wrap',
       gap: 8,
     },
     tagButton: {
-      paddingHorizontal: 12,
-      paddingVertical: 4,
-      borderRadius: 20,
+      paddingHorizontal: 14,
+      paddingVertical: 8,
+      borderRadius: 12,
+      backgroundColor: isDark ? '#2a2a2a' : '#f2f2f7',
       borderWidth: 1,
-      borderColor: '#ccc',
-      backgroundColor: isDark ? '#333' : '#f0f0f0',
-      marginRight: 10,
+      borderColor: 'transparent',
     },
     tagButtonSelected: {
       backgroundColor: config.colors.primary,
       borderColor: config.colors.primary,
+      // Add shadow to selected
+      shadowColor: config.colors.primary,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
+      elevation: 4,
     },
     imagePicker: {
+      backgroundColor: isDark ? '#2a2a2a' : '#f9f9f9',
+      borderRadius: 16,
+      height: 120, // Taller
       alignItems: 'center',
       justifyContent: 'center',
-      height: 100,
+      marginBottom: 24,
       borderWidth: 1,
-      borderColor: isDark ? '#555' : '#ccc',
-      borderRadius: 6,
-      marginBottom: 10,
-      padding: 10,
+      borderColor: isDark ? '#333' : '#f0f0f0',
+      borderStyle: 'dashed', // Dashed border for dropzone feel
     },
     imageGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      gap: 6,
+      gap: 10,
+      width: '100%',
+    },
+    imagePreviewContainer: {
+      position: 'relative',
     },
     previewImage: {
-      width: 50,
-      height: 50,
-      borderRadius: 3,
-      marginRight: 3,
-      marginBottom: 3,
+      width: 60,
+      height: 60,
+      borderRadius: 12,
+    },
+    imageCountBadge: {
+      position: 'absolute',
+      right: -4,
+      top: -4,
+      backgroundColor: config.colors.primary,
+      width: 18,
+      height: 18,
+      borderRadius: 9,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: 1.5,
+      borderColor: '#fff',
+    },
+    imageCountText: {
+      fontSize: 9,
+      fontWeight: 'bold',
+      color: '#fff',
+    },
+    addMoreButton: {
+      width: 60,
+      height: 60,
+      borderRadius: 12,
+      backgroundColor: isDark ? '#333' : '#eee',
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     uploadBtn: {
-      backgroundColor: config.colors.secondary,
-      padding: 12,
+      backgroundColor: config.colors.secondary, // Or primary? User used secondary in old code. I'll stick to secondary or switch to primary if secondary is weak. Secondary is likely Green/Red/etc. Let's use config.colors.primary for main action usually, but user code said secondary. I'll keep secondary to respect theme scheme, but ensure it pops.
+      height: 56,
+      borderRadius: 16,
       alignItems: 'center',
-      borderRadius: 6,
-    },
-    cancelBtn: {
-      marginTop: 10,
-      padding: 10,
-      backgroundColor: '#FF3B30',
-      borderRadius: 6,
-      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'row',
+      // Shadow
+      shadowColor: config.colors.secondary,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.4,
+      shadowRadius: 10,
+      elevation: 5,
     },
     btnText: {
       color: '#fff',
-      fontWeight: '600',
-      fontWeight: 'bold',
+      fontSize: 16,
+      fontWeight: '800',
+      letterSpacing: 0.5,
     },
   });
 

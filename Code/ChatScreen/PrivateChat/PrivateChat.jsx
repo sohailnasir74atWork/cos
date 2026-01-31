@@ -41,7 +41,7 @@ const PAGE_SIZE = 10; // ✅ Pagination: load 10 messages per batch
 const PrivateChatScreen = ({ route, bannedUsers, isDrawerVisible, setIsDrawerVisible }) => {
   const { selectedUser, selectedTheme, item } = route.params || {};
 
-  const { user, theme, appdatabase, updateLocalStateAndDatabase, firestoreDB } = useGlobalState();
+  const { user, theme, appdatabase, updateLocalStateAndDatabase, firestoreDB, isAdmin } = useGlobalState();
   const [trade, setTrade] = useState(null)
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -533,6 +533,8 @@ const PrivateChatScreen = ({ route, bannedUsers, isDrawerVisible, setIsDrawerVis
       text: trimmedText,
       senderId: myUserId,
       timestamp,
+      isAdmin: !!isAdmin, // ✅ Add Admin status
+      isModerator: !!user?.isModerator, // ✅ Add Moderator status
       // flage: user.flage ? user.flage : null,
     };
 

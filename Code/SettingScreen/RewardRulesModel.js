@@ -9,10 +9,10 @@ const RewardRulesModal = ({ visible, onClose }) => {
   const isDarkMode = theme === 'dark';
 
   return (
-    <Modal transparent  animationType="fade" visible={visible} onRequestClose={onClose}>
+    <Modal transparent animationType="fade" visible={visible} onRequestClose={onClose}>
       <View style={styles.modalBackground}>
         <View style={[styles.modalContainer, { backgroundColor: isDarkMode ? '#222' : 'white' }]}>
-          
+
           {/* Header with Close Button */}
           <View style={styles.modalHeader}>
             <Text style={[styles.modalTitle, { color: isDarkMode ? 'white' : 'black' }]}>
@@ -47,7 +47,7 @@ const RewardRulesModal = ({ visible, onClose }) => {
               Got It!
             </Text>
           </TouchableOpacity>
-          
+
         </View>
       </View>
     </Modal>
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   modalText: {
     fontSize: 14,
     textAlign: 'left',
-    
+
     lineHeight: 24,
   },
   highlightedText: {

@@ -44,7 +44,7 @@ const GroupsGuideModal = ({ visible, onClose }) => {
           >
             <View style={styles.section}>
               <View style={styles.iconContainer}>
-                <Icon name="people" size={24} color={config.getPrimaryColor(isDarkMode)} />
+                <Icon name="people" size={24} color={config.colors.primary} />
               </View>
               <Text style={[styles.sectionTitle, { color: isDarkMode ? '#fff' : '#000' }]}>
                 How to Create a Group
@@ -63,7 +63,7 @@ const GroupsGuideModal = ({ visible, onClose }) => {
 
             <View style={styles.section}>
               <View style={styles.iconContainer}>
-                <Icon name="information-circle" size={24} color={config.getPrimaryColor(isDarkMode)} />
+                <Icon name="information-circle" size={24} color={config.colors.primary} />
               </View>
               <Text style={[styles.sectionTitle, { color: isDarkMode ? '#fff' : '#000' }]}>
                 Important Rules
@@ -83,7 +83,7 @@ const GroupsGuideModal = ({ visible, onClose }) => {
 
             <View style={styles.section}>
               <View style={styles.iconContainer}>
-                <Icon name="chatbubbles" size={24} color={config.getPrimaryColor(isDarkMode)} />
+                <Icon name="chatbubbles" size={24} color={config.colors.primary} />
               </View>
               <Text style={[styles.sectionTitle, { color: isDarkMode ? '#fff' : '#000' }]}>
                 Group Features
@@ -99,7 +99,7 @@ const GroupsGuideModal = ({ visible, onClose }) => {
 
           {/* Close Button */}
           <TouchableOpacity
-            style={[styles.gotItButton, { backgroundColor: config.getPrimaryColor(isDarkMode) }]}
+            style={[styles.gotItButton, { backgroundColor: config.colors.primary }]}
             onPress={onClose}
           >
             <Text style={styles.gotItButtonText}>Got It!</Text>
@@ -163,12 +163,12 @@ const getStyles = (isDarkMode) =>
     },
     sectionText: {
       fontSize: 14,
-      
+
       lineHeight: 22,
     },
     boldText: {
       fontWeight: 'bold',
-      color: config.getPrimaryColor(isDarkMode),
+      color: config.colors.primary,
     },
     divider: {
       height: 1,

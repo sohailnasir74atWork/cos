@@ -36,8 +36,10 @@ import {
   serverTimestamp,
 } from '@react-native-firebase/firestore';
 import { ref, get } from '@react-native-firebase/database';
+import auth from '@react-native-firebase/auth';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { banUserwithEmail, unbanUserWithEmail, checkBanStatus, makeModerator, removeModerator } from '../utils';
 
 dayjs.extend(relativeTime);
 
@@ -125,7 +127,7 @@ const ProfileBottomDrawer = ({
   bannedUsers,
   fromPvtChat,
 }) => {
-  const { theme, firestoreDB, appdatabase } = useGlobalState();
+  const { theme, firestoreDB, appdatabase, isAdmin, user } = useGlobalState();
   const { updateLocalState, localState } = useLocalState();
 
   const { triggerHapticFeedback } = useHaptic();
@@ -175,16 +177,16 @@ const ProfileBottomDrawer = ({
 
   // ✅ State for fetched user data (roblox username, verified status, etc.)
   const [userData, setUserData] = useState(null);
+  // ✅ State for ban status (fetched dynamically)
+  const [isBanned, setIsBanned] = useState(false);
 
   // ✅ Fetch user data from Firebase if roblox data is missing
   useEffect(() => {
     if (!selectedUserId || !appdatabase) return;
 
     // Only fetch if robloxUsername is not already in selectedUser
-    if (selectedUser?.robloxUsername || selectedUser?.robloxUserId) {
-      setUserData(null); // Clear fetched data if already in selectedUser
-      return;
-    }
+    // BUT we also need to fetch isModerator now, so we might need to fetch anyway if that's missing
+    // So we'll adjust the condition to always fetch if we need fresh data for admin actions or roblox info
 
     let isMounted = true;
 
@@ -192,13 +194,18 @@ const ProfileBottomDrawer = ({
       try {
         // ✅ OPTIMIZED: Fetch only specific fields instead of full user object
         const [robloxUsernameSnap, robloxUserIdSnap, robloxUsernameVerifiedSnap,
-          isProSnap, lastGameWinAtSnap] = await Promise.all([
+          isProSnap, lastGameWinAtSnap, isModeratorSnap, isAdminSnap] = await Promise.all([
             get(ref(appdatabase, `users/${selectedUserId}/robloxUsername`)).catch(() => null),
             get(ref(appdatabase, `users/${selectedUserId}/robloxUserId`)).catch(() => null),
             get(ref(appdatabase, `users/${selectedUserId}/robloxUsernameVerified`)).catch(() => null),
             get(ref(appdatabase, `users/${selectedUserId}/isPro`)).catch(() => null),
             get(ref(appdatabase, `users/${selectedUserId}/lastGameWinAt`)).catch(() => null),
+            get(ref(appdatabase, `users/${selectedUserId}/isModerator`)).catch(() => null),
+            get(ref(appdatabase, `users/${selectedUserId}/admin`)).catch(() => null),
           ]);
+
+        // Fetch ban status
+        const banStatus = await checkBanStatus(selectedUser?.email || '');
 
         if (!isMounted) return;
 
@@ -209,7 +216,12 @@ const ProfileBottomDrawer = ({
           robloxUsernameVerified: robloxUsernameVerifiedSnap?.exists() ? robloxUsernameVerifiedSnap.val() : false,
           isPro: isProSnap?.exists() ? isProSnap.val() : false,
           lastGameWinAt: lastGameWinAtSnap?.exists() ? lastGameWinAtSnap.val() : null,
+          isModerator: isModeratorSnap?.exists() ? isModeratorSnap.val() : false,
+          isAdmin: isAdminSnap?.exists() ? isAdminSnap.val() : false,
         });
+
+        setIsBanned(banStatus.isBanned);
+
       } catch (error) {
         console.error('Error fetching user data in BottomDrawer:', error);
         if (isMounted) setUserData(null);
@@ -221,7 +233,7 @@ const ProfileBottomDrawer = ({
     return () => {
       isMounted = false;
     };
-  }, [selectedUserId, selectedUser?.robloxUsername, selectedUser?.robloxUserId, appdatabase]);
+  }, [selectedUserId, selectedUser?.email, appdatabase]);
 
   // ✅ Merge selectedUser with fetched userData
   const mergedUser = useMemo(() => {
@@ -234,6 +246,8 @@ const ProfileBottomDrawer = ({
         ? selectedUser.robloxUsernameVerified
         : userData.robloxUsernameVerified,
       isPro: selectedUser?.isPro !== undefined ? selectedUser.isPro : userData.isPro,
+      isModerator: userData.isModerator, // prioritize fetched data
+      isAdmin: userData.isAdmin,
     };
   }, [selectedUser, userData]);
 
@@ -399,6 +413,170 @@ const ProfileBottomDrawer = ({
   // Start chat
   const handleStartChat = () => {
     if (startChat) startChat();
+  };
+
+  // ─────────────────────────────────────────────
+  // Ban / Unban Logic (Admin)
+  const handleBanUser = async () => {
+    let targetEmail = null; // Start null to force fetch
+
+    // 1️⃣ Try Auth (if banning self) to satisfy "use auth" request
+    const currentUser = auth().currentUser;
+    if (currentUser && currentUser.uid === selectedUserId) {
+      targetEmail = currentUser.email;
+    }
+    console.log('targetEmail', targetEmail);
+    // 2️⃣ Try Firebase Realtime Database (Truth for others)
+    if (!targetEmail) {
+      try {
+        const userRef = ref(appdatabase, `users/${selectedUserId}`);
+        const userSnap = await get(userRef);
+
+        if (userSnap.exists()) {
+          const userData = userSnap.val();
+          console.log(`[BottomDrawer] Fetched user data for ${selectedUserId}:`, JSON.stringify(userData));
+
+          if (userData.email) {
+            targetEmail = userData.email;
+          } else if (userData.userEmail) { // Potential alternate key
+            targetEmail = userData.userEmail;
+          }
+        } else {
+          console.log(`[BottomDrawer] User snapshot does not exist for ${selectedUserId}`);
+        }
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+      }
+    }
+
+    // 3️⃣ Fallback to prop
+    if (!targetEmail && selectedUser?.email) {
+      targetEmail = selectedUser.email;
+    }
+
+    if (!targetEmail) {
+      Alert.alert("Error", "User email not found. Cannot ban user without email.");
+      return;
+    }
+
+    // 4️⃣ Hierarchy Check
+    const targetIsAdmin = mergedUser?.isAdmin || false;
+    const targetIsMod = mergedUser?.isModerator || false;
+
+    // Moderators cannot ban Admins or other Moderators
+    if (!isAdmin && (targetIsAdmin || targetIsMod)) {
+      Alert.alert("Permission Denied", "Moderators cannot ban Admins or other Moderators.");
+      return;
+    }
+
+    Alert.alert(
+      'Ban User',
+      `Are you sure you want to ban ${userName}? This will apply a strike.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Ban",
+          style: "destructive",
+          onPress: async () => {
+            // ✅ Pass actual isAdmin flag!
+            const success = await banUserwithEmail(targetEmail, isAdmin, selectedUser.id || selectedUser.senderId, mergedUser, user);
+            if (success) setIsBanned(true);
+          }
+        }
+      ]
+    );
+  };
+
+  const handleUnbanUser = async () => {
+    let targetEmail = null;
+
+    // 1️⃣ Try Auth (if unbanning self)
+    const currentUser = auth().currentUser;
+    if (currentUser && currentUser.uid === selectedUserId) {
+      targetEmail = currentUser.email;
+    }
+
+    // 2️⃣ Try Firebase Realtime Database
+    if (!targetEmail) {
+      try {
+        const userRef = ref(appdatabase, `users/${selectedUserId}`);
+        const userSnap = await get(userRef);
+
+        if (userSnap.exists()) {
+          const userData = userSnap.val();
+          console.log(`[BottomDrawer] Fetched user data for unban ${selectedUserId}:`, JSON.stringify(userData));
+
+          if (userData.email) {
+            targetEmail = userData.email;
+          } else if (userData.userEmail) {
+            targetEmail = userData.userEmail;
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching user data for unban:", err);
+      }
+    }
+
+    // 3️⃣ Fallback to prop
+    if (!targetEmail && selectedUser?.email) {
+      targetEmail = selectedUser.email;
+    }
+
+    if (!targetEmail) {
+      Alert.alert("Error", "User email not found. Cannot unban user without email.");
+      return;
+    }
+
+    Alert.alert(
+      'Unban User',
+      `Are you sure you want to unban ${userName}?`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Unban",
+          onPress: async () => {
+            const success = await unbanUserWithEmail(targetEmail, true);
+            if (success) setIsBanned(false);
+          }
+        }
+      ]
+    );
+  };
+
+  const handlePromoteModerator = () => {
+    Alert.alert(
+      'Promote to Moderator',
+      `Are you sure you want to make ${userName} a moderator?`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Promote", onPress: async () => {
+            const success = await makeModerator(selectedUserId);
+            if (success) {
+              setUserData(prev => ({ ...prev, isModerator: true }));
+            }
+          }
+        }
+      ]
+    );
+  };
+
+  const handleDemoteModerator = () => {
+    Alert.alert(
+      'Remove Moderator',
+      `Are you sure you want to remove moderator privileges from ${userName}?`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Remove", style: "destructive", onPress: async () => {
+            const success = await removeModerator(selectedUserId);
+            if (success) {
+              setUserData(prev => ({ ...prev, isModerator: false }));
+            }
+          }
+        }
+      ]
+    );
   };
 
   // Reset when drawer closes
@@ -919,7 +1097,7 @@ const ProfileBottomDrawer = ({
   // ✅ Parse values data for image lookup
   const parsedValuesData = useMemo(() => {
     try {
-      const rawData = localState.isGG ? localState.ggData : localState.data;
+      const rawData = localState.data;
       if (!rawData) return [];
 
       const parsed = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
@@ -928,7 +1106,7 @@ const ProfileBottomDrawer = ({
       console.error("❌ Error parsing data:", error);
       return [];
     }
-  }, [localState.isGG, localState.data, localState.ggData]);
+  }, [localState.data]);
 
   // ✅ Render trade item
   const renderTradeItem = useCallback((trade) => {
@@ -937,7 +1115,6 @@ const ProfileBottomDrawer = ({
     const isProfit = tradeRatio > 1;
     const neutral = tradeRatio === 1;
     const formattedTime = trade.timestamp ? dayjs(trade.timestamp.toDate()).fromNow() : "Unknown";
-    const isGG = trade.isSharkMode === 'GG';
 
     const groupedHasItems = groupTradeItems(trade.hasItems || []);
     const groupedWantsItems = groupTradeItems(trade.wantsItems || []);
@@ -948,12 +1125,6 @@ const ProfileBottomDrawer = ({
       if (!item || !item.name) return '';
 
       // Check for GG (Adopt Me) items
-      if (isGG) {
-        const baseImgUrl = localState.imgurlGG || 'https://adoptmevalues.gg';
-        const encoded = encodeURIComponent(item.name);
-        return `${baseImgUrl.replace(/"/g, '')}/items/${encoded}.webp`;
-      }
-
       // FOR NON-GG (CoS) TRADES: Return item.image directly
       // Do NOT check for baseImgUrl here, as CoS uses full URLs
       return item.image ? item.image.trim() : '';
@@ -1008,7 +1179,7 @@ const ProfileBottomDrawer = ({
                 <View style={{
                   backgroundColor: trade.status === 'w' ? '#10B981' : // Green for win
                     trade.status === 'f' ? config.colors.secondary : // Blue for fair
-                      config.getPrimaryColor(isDarkMode), // Pink/red for lose
+                      config.colors.primary, // Pink/red for lose
                   paddingVertical: 1,
                   paddingHorizontal: 6,
                   borderRadius: 6,
@@ -1021,21 +1192,7 @@ const ProfileBottomDrawer = ({
                   </Text>
                 </View>
               )}
-              {/* Shark/Frost/GG Badge */}
-              {trade.isSharkMode !== undefined && (
-                <View style={{
-                  backgroundColor: trade.isSharkMode == 'GG' ? '#5c4c49' : trade.isSharkMode === true ? config.colors.secondary : config.colors.hasBlockGreen,
-                  paddingVertical: 1,
-                  paddingHorizontal: 6,
-                  borderRadius: 6,
-                  flexShrink: 0,
-                  flexGrow: 0,
-                }}>
-                  <Text style={{ color: 'white', fontWeight: '600', fontSize: 8, textAlign: 'center' }}>
-                    {trade.isSharkMode == 'GG' ? 'GG Values' : trade.isSharkMode === true ? 'Shark' : 'Frost'}
-                  </Text>
-                </View>
-              )}
+
             </View>
             {(groupedHasItems.length > 0 && groupedWantsItems.length > 0) && (
               <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
@@ -1197,7 +1354,7 @@ const ProfileBottomDrawer = ({
                       </View>
                     );
                   } else {
-                    return <Text style={{ fontSize: 8, fontWeight: 'bold', color: config.getPrimaryColor(isDarkMode), textAlign: 'center' }}>-</Text>;
+                    return <Text style={{ fontSize: 8, fontWeight: 'bold', color: config.colors.primary, textAlign: 'center' }}>-</Text>;
                   }
                 })()}
               </>
@@ -1236,7 +1393,7 @@ const ProfileBottomDrawer = ({
         )}
       </View>
     );
-  }, [isDarkMode, localState.isGG, localState.imgurl, localState.imgurlGG, parsedValuesData]);
+  }, [isDarkMode, localState.imgurl, parsedValuesData]);
 
   // ─────────────────────────────────────────────
   return (
@@ -1343,7 +1500,7 @@ const ProfileBottomDrawer = ({
                         paddingHorizontal: 6,
                         paddingVertical: 2,
                         borderRadius: 4,
-                        marginBottom: 4,
+                        marginVertical: 4,
                       }}>
                         <Text style={{
                           color: '#FFFFFF',
@@ -1406,7 +1563,7 @@ const ProfileBottomDrawer = ({
                   {loadingRating ? (
                     <ActivityIndicator
                       size="small"
-                      color={config.getPrimaryColor(isDarkMode)}
+                      color={config.colors.primary}
                     />
                   ) : ratingSummary ? (
                     <>
@@ -1572,7 +1729,7 @@ const ProfileBottomDrawer = ({
                 {loadingPets ? (
                   <ActivityIndicator
                     size="small"
-                    color={config.getPrimaryColor(isDarkMode)}
+                    color={config.colors.primary}
                   />
                 ) : (
                   <>
@@ -1692,7 +1849,7 @@ const ProfileBottomDrawer = ({
                 {loadingReviews && reviews.length === 0 ? (
                   <ActivityIndicator
                     size="small"
-                    color={config.getPrimaryColor(isDarkMode)}
+                    color={config.colors.primary}
                   />
                 ) : reviews.length === 0 ? (
                   <Text
@@ -1811,7 +1968,7 @@ const ProfileBottomDrawer = ({
                     {loadingReviews && hasMoreReviews && (
                       <ActivityIndicator
                         size="small"
-                        color={config.getPrimaryColor(isDarkMode)}
+                        color={config.colors.primary}
                         style={{ marginTop: 6, alignSelf: 'center' }}
                       />
                     )}
@@ -1844,7 +2001,7 @@ const ProfileBottomDrawer = ({
                 {loadingTrades && trades.length === 0 ? (
                   <ActivityIndicator
                     size="small"
-                    color={config.getPrimaryColor(isDarkMode)}
+                    color={config.colors.primary}
                   />
                 ) : trades.length === 0 ? (
                   <Text
@@ -1886,7 +2043,7 @@ const ProfileBottomDrawer = ({
                     {loadingTrades && hasMoreTrades && (
                       <ActivityIndicator
                         size="small"
-                        color={config.getPrimaryColor(isDarkMode)}
+                        color={config.colors.primary}
                         style={{ marginTop: 6, alignSelf: 'center' }}
                       />
                     )}
@@ -1935,6 +2092,45 @@ const ProfileBottomDrawer = ({
                 </Text>
               </TouchableOpacity>
             )}
+
+            {/* Admin / Moderator Actions */}
+            {(isAdmin || (user?.isModerator)) && (
+              <View style={{ marginTop: 10, borderTopWidth: 1, borderTopColor: isDarkMode ? '#334155' : '#e5e7eb', paddingTop: 10 }}>
+                <Text style={{ fontSize: 12, fontWeight: 'bold', color: isDarkMode ? '#94a3b8' : '#64748b', marginBottom: 8, textAlign: 'center' }}>
+                  {isAdmin ? "Admin Actions" : "Moderator Actions"}
+                </Text>
+
+                <View style={{ marginTop: 8 }}>
+                  {/* Ban/Unban Button - Available to Admins & Moderators */}
+                  <TouchableOpacity
+                    style={[styles.saveButton, { backgroundColor: isBanned ? '#10B981' : '#EF4444', marginBottom: 8 }]}
+                    onPress={isBanned ? handleUnbanUser : handleBanUser}
+                  >
+                    <Text style={styles.saveButtonText}>{isBanned ? "Unban User" : "Ban User"}</Text>
+                  </TouchableOpacity>
+
+                  {/* Mod Promotion Buttons - ADMIN ONLY */}
+                  {isAdmin && (
+                    !mergedUser?.isModerator ? (
+                      <TouchableOpacity
+                        style={[styles.saveButton, { backgroundColor: '#8B5CF6', marginBottom: 8 }]}
+                        onPress={handlePromoteModerator}
+                      >
+                        <Text style={styles.saveButtonText}>Make Mod</Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity
+                        style={[styles.saveButton, { backgroundColor: '#F59E0B', marginBottom: 8 }]}
+                        onPress={handleDemoteModerator}
+                      >
+                        <Text style={styles.saveButtonText}>Remove Mod</Text>
+                      </TouchableOpacity>
+                    )
+                  )}
+                </View>
+              </View>
+            )}
+
 
             {/* Start chat button */}
             {!fromPvtChat && (

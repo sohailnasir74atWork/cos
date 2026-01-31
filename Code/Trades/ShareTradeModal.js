@@ -33,16 +33,17 @@ const ShareTradeModal = ({ visible, onClose, hasItems, wantsItems, hasTotal, wan
     const tradeStatus = useMemo(() => getTradeStatus(hasTotal, wantsTotal), [hasTotal, wantsTotal]);
     const profitLoss = wantsTotal - hasTotal;
     const isProfit = profitLoss >= 0;
-    const getImageUrl = (item, isGG, baseImgUrl, baseImgUrlGG) => {
+    const formatNumber = (num) => {
+        if (!num) return '0';
+        if (num >= 1000000000) return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B';
+        if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+        if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+        return num.toLocaleString();
+    };
 
-        if (!item || !item.name) return '';
-
-        if (isGG) {
-            const encoded = encodeURIComponent(item.name);
-            //   console.log(`${baseImgUrlGG.replace(/"/g, '')}/items/${encoded}.webp`)
-            return `${baseImgUrlGG.replace(/"/g, '')}/items/${encoded}.webp`;
-        }
-
+    const getImageUrl = (item, baseImgUrl) => {
+        if (!item) return '';
+        if (item.image && item.image.startsWith('http')) return item.image;
         if (!item.image || !baseImgUrl) return '';
         return `${baseImgUrl.replace(/"/g, '').replace(/\/$/, '')}/${item.image.replace(/^\//, '')}`;
     };
@@ -175,7 +176,7 @@ const ShareTradeModal = ({ visible, onClose, hasItems, wantsItems, hasTotal, wan
         return (
             <View style={styles.gridItem}>
                 <Image
-                    source={{ uri: getImageUrl(item, localState.isGG, localState.imgurl, localState.imgurlGG) }}
+                    source={{ uri: getImageUrl(item, localState.imgurl) }}
 
                     style={styles.gridItemImage}
                 />
@@ -240,7 +241,7 @@ const ShareTradeModal = ({ visible, onClose, hasItems, wantsItems, hasTotal, wan
                             <View style={styles.summaryContainer}>
                                 <View style={styles.summaryInner}>
                                     <View style={styles.topSection}>
-                                        <Text style={styles.bigNumber}>{hasTotal?.toLocaleString()}</Text>
+                                        <Text style={styles.bigNumber}>{formatNumber(hasTotal)}</Text>
                                         <View style={styles.statusContainer}>
                                             <Text style={[
                                                 styles.statusText,
@@ -255,7 +256,7 @@ const ShareTradeModal = ({ visible, onClose, hasItems, wantsItems, hasTotal, wan
                                                 tradeStatus === 'lose' ? styles.statusActive : styles.statusInactive
                                             ]}>LOSE</Text>
                                         </View>
-                                        <Text style={styles.bigNumber}>{wantsTotal?.toLocaleString()}</Text>
+                                        <Text style={styles.bigNumber}>{formatNumber(wantsTotal)}</Text>
                                     </View>
                                     <View style={styles.progressContainer}>
                                         <View style={styles.progressBar}>
@@ -278,7 +279,7 @@ const ShareTradeModal = ({ visible, onClose, hasItems, wantsItems, hasTotal, wan
                                     styles.profitLossNumber,
                                     { color: isProfit ? config.colors.hasBlockGreen : config.colors.wantBlockRed }
                                 ]}>
-                                    {Math.abs(profitLoss).toLocaleString()}
+                                    {formatNumber(Math.abs(profitLoss))}
                                 </Text>
                             </View>
                         )}

@@ -115,7 +115,7 @@ const CommunityChatHeader = ({
             <Icon
               name="chatbox-outline"
               size={24}
-              color={config.getIconColor(isDarkMode)}
+              color={config.colors.primary}
             />
             {unreadcount > 0 && (
               <View style={{ position: 'absolute', top: 4, right: 4, backgroundColor: 'red', borderRadius: 8, minWidth: 16, height: 16, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 4 }}>
@@ -140,7 +140,7 @@ const CommunityChatHeader = ({
             <Icon
               name="people-circle-outline"
               size={24}
-              color={config.getIconColor(isDarkMode)}
+              color={config.colors.primary}
             />
             {/* Show "!" if there are pending invitations or join requests (prioritized), otherwise show unread count */}
             {(pendingGroupInvitationsCount > 0 || pendingJoinRequestsCount > 0 || groupUnreadCount > 0) && (
@@ -165,7 +165,7 @@ const CommunityChatHeader = ({
             <Icon
               name="trophy-outline"
               size={24}
-              color={config.getIconColor(isDarkMode)}
+              color={config.colors.primary}
             />
           </TouchableOpacity>
         </>
@@ -174,7 +174,7 @@ const CommunityChatHeader = ({
         <Menu>
           <MenuTrigger>
             <View style={{ padding: 8 }}>
-              <Icon name="ellipsis-vertical-outline" size={24} color={config.getIconColor(isDarkMode)} />
+              <Icon name="ellipsis-vertical-outline" size={24} color={config.colors.primary} />
             </View>
           </MenuTrigger>
           <MenuOptions
@@ -195,7 +195,7 @@ const CommunityChatHeader = ({
               triggerHapticFeedback('impactLight');
             }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', padding: 10 }}>
-                <Icon name="people-outline" size={20} color={config.getIconColor(isDarkMode)} style={{ marginRight: 10 }} />
+                <Icon name="people-outline" size={20} color={config.colors.primary} style={{ marginRight: 10 }} />
                 <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
                   <Text style={{ fontSize: 16, color: config.colors.text || '#000' }}>
                     Online Users
@@ -205,7 +205,7 @@ const CommunityChatHeader = ({
             </MenuOption>
             <MenuOption onSelect={() => navigation?.navigate('BlockedUsers')}>
               <View style={{ flexDirection: 'row', alignItems: 'center', padding: 10 }}>
-                <Icon name="ban-outline" size={20} color={config.getIconColor(isDarkMode)} style={{ marginRight: 10 }} />
+                <Icon name="ban-outline" size={20} color={config.colors.primary} style={{ marginRight: 10 }} />
                 <Text style={{ fontSize: 16, color: config.colors.text || '#000' }}>
                   Blocked Users
                 </Text>

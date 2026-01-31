@@ -33,7 +33,7 @@ const LeaderboardModal = ({
   const { theme, user, appdatabase, firestoreDB } = useGlobalState();
   const { localState, updateLocalState } = useLocalState();
   const navigation = useNavigation();
-  
+
   const { triggerHapticFeedback } = useHaptic();
   const isDarkMode = theme === 'dark';
 
@@ -359,7 +359,7 @@ const getStyles = (isDarkMode) => StyleSheet.create({
     marginTop: 12,
     fontSize: 14,
     color: isDarkMode ? '#999' : '#666',
-    
+
   },
   emptyContainer: {
     flex: 1,
@@ -371,7 +371,7 @@ const getStyles = (isDarkMode) => StyleSheet.create({
     marginTop: 12,
     fontSize: 16,
     color: isDarkMode ? '#999' : '#666',
-    
+
   },
   listContent: {
     padding: 8,
@@ -422,7 +422,7 @@ const getStyles = (isDarkMode) => StyleSheet.create({
   ratingText: {
     fontSize: 12,
     color: isDarkMode ? '#999' : '#666',
-    
+
     marginLeft: 4,
   },
   cacheInfo: {
@@ -430,7 +430,7 @@ const getStyles = (isDarkMode) => StyleSheet.create({
     color: isDarkMode ? '#666' : '#999',
     textAlign: 'center',
     padding: 8,
-    
+
   },
 });
 

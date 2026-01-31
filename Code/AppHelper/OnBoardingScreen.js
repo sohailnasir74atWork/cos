@@ -167,30 +167,7 @@ const OnboardingScreen = ({ onFinish, selectedTheme }) => {
 
 
         {screenIndex !== 2 && <View style={styles.bottomContainer}>
-          {/* {screenIndex === 0 && (
-  
-  <TouchableOpacity
-      style={!localState.isGG ? styles.buttonOutline : styles.buttonOutline}
-      onPress={() => updateLocalState('isGG', false)}
-    >
-      <Text style={!localState.isGG ? styles.buttonTextOutline : styles.buttonTextOutline}>
-      ELVEBREDD VALUES
-      </Text>
-    </TouchableOpacity>
 
-
-)} */}
-          {/* {screenIndex === 0 && (
-  
-  <TouchableOpacity
-      style={localState.isGG ? styles.button : styles.buttonOutline}
-      onPress={() => updateLocalState('isGG', true)}
-    >
-      <Text style={localState.isGG ? styles.buttonText : styles.buttonTextOutline}>
-        GG VALUES
-      </Text>
-    </TouchableOpacity>
-)} */}
 
 
           <TouchableOpacity style={styles.button} onPress={handleNext}>

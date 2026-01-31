@@ -350,7 +350,7 @@ const InboxScreen = ({ chats, setChats, loading, bannedUsers }) => {
             <Icon
               name="ellipsis-vertical-outline"
               size={20}
-              color={config.getIconColor(isDarkMode)}
+              color={config.colors.primary}
               style={{ paddingLeft: 10 }}
             />
           </MenuTrigger>

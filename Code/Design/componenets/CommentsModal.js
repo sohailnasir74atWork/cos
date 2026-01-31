@@ -10,9 +10,10 @@ import {
   Image,
   Alert,
   Pressable,
+  Platform,
 } from 'react-native';
 import {
-   collection,
+  collection,
   doc,
   query,
   orderBy,
@@ -21,7 +22,7 @@ import {
   updateDoc,
   serverTimestamp,
   increment,
-  } from '@react-native-firebase/firestore';
+} from '@react-native-firebase/firestore';
 import { useGlobalState } from '../../GlobelStats';
 import { useLocalState } from '../../LocalGlobelStats';
 import { useNavigation } from '@react-navigation/native';
@@ -123,7 +124,7 @@ const CommentModal = ({ visible, onClose, postId }) => {
   const renderItem = ({ item }) => (
     <TouchableOpacity onPress={() => handleChatNavigation(item)} style={styles.comment}>
       <Image source={{ uri: item.avatar }} style={styles.avatar} />
-      <View style={{flex:1}}>
+      <View style={{ flex: 1 }}>
         <Text style={[styles.name, isDarkMode && styles.textDark]}>{item.displayName}</Text>
         {item.createdAt?.seconds && (
           <Text style={[styles.timestamp, isDarkMode && styles.textDark]}>
@@ -194,6 +195,7 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: 'white',
     padding: 12,
+    paddingBottom: Platform.OS === 'ios' ? 40 : 12,
     paddingTop: 8,
     maxHeight: '85%',
     borderTopLeftRadius: 16,
@@ -213,7 +215,7 @@ const styles = StyleSheet.create({
   comment: {
     flexDirection: 'row',
     marginBottom: 10,
-    
+
   },
   avatar: {
     width: 30,
@@ -227,16 +229,16 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   text: {
-    
+
     fontSize: 13,
     color: '#333',
-    flex:1,
-    flexWrap:'wrap'
+    flex: 1,
+    flexWrap: 'wrap'
   },
   timestamp: {
     fontSize: 10,
     color: 'gray',
-    
+
   },
   inputRow: {
     flexDirection: 'row',
@@ -250,7 +252,7 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 5,
     color: '#000',
-    
+
   },
   inputDark: {
     borderColor: '#555',

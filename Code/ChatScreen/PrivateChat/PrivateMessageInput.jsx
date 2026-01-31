@@ -8,10 +8,12 @@ import {
   Modal,
   ScrollView,
 } from 'react-native';
+import { Image as CompressorImage } from 'react-native-compressor';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { getStyles } from '../Style';
 import config from '../../Helper/Environment';
 import { useGlobalState } from '../../GlobelStats';
+import { checkBanStatus } from '../utils';
 
 import InterstitialAdManager from '../../Ads/IntAd';
 import { useLocalState } from '../../LocalGlobelStats';
@@ -234,6 +236,13 @@ const PrivateMessageInput = ({
     // nothing to send
     if (!trimmedInput && !hasImages && !hasFruits) return;
     if (isSending) return;
+
+    // 🔒 Double-check ban status before sending
+    const banStatus = await checkBanStatus(user?.email);
+    if (banStatus.isBanned) {
+      Alert.alert('Banned', banStatus.message);
+      return;
+    }
 
     // ✅ Comprehensive content moderation check
     if (trimmedInput) {

@@ -459,9 +459,6 @@ const NewsScreen = () => {
                                                         color: isSelected
                                                             ? "#02120b"
                                                             : palette.textSecondary,
-                                                        fontFamily: isSelected
-                                                            ? "Lato-Bold"
-                                                            : "Lato-Regular",
                                                     },
                                                 ]}
                                             >

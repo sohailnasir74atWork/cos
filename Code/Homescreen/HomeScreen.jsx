@@ -12,6 +12,7 @@ import { useLocalState } from '../LocalGlobelStats';
 import SignInDrawer from '../Firebase/SigninDrawer';
 
 import { showSuccessMessage, showErrorMessage } from '../Helper/MessageHelper';
+import { checkBanStatus } from '../ChatScreen/utils';
 
 import InterstitialAdManager from '../Ads/IntAd';
 import BannerAdComponent from '../Ads/bannerAds';
@@ -768,14 +769,14 @@ const HomeScreen = ({ selectedTheme }) => {
     };
   }, []);
 
-  // console.log(localState.isGG)
+
 
   useEffect(() => {
     let isMounted = true;
 
     const parseAndSetData = async () => {
       try {
-        const source = localState.isGG ? localState.ggData : localState.data;
+        const source = localState.data;
 
         if (!source) {
           if (isMounted) setFruitRecords([]);
@@ -802,7 +803,7 @@ const HomeScreen = ({ selectedTheme }) => {
     return () => {
       isMounted = false;
     };
-  }, [localState.isGG, localState.data, localState.ggData]); // ✅ Added dependencies so it updates when values are refreshed
+  }, [localState.data]); // ✅ Added dependencies so it updates when values are refreshed
 
   // console.log(filteredData.length)
 
@@ -842,6 +843,15 @@ const HomeScreen = ({ selectedTheme }) => {
 
     setIsSubmitting(true);
     try {
+      // 🔒 Check Ban Status
+      const banStatus = await checkBanStatus(user?.email);
+      if (banStatus.isBanned) {
+        setIsSubmitting(false);
+        // Alert.alert('Banned', banStatus.message);
+        showErrorMessage("Banned", banStatus.message);
+        return;
+      }
+
       // ✅ FIRESTORE ONLY: Read rating summary from user_ratings_summary (single source of truth)
       let userRating = null;
       let ratingCount = 0;
@@ -1057,9 +1067,7 @@ const HomeScreen = ({ selectedTheme }) => {
   const isProfit = profitLoss >= 0;
   const neutral = profitLoss === 0;
 
-  const isGG = localState.isGG
-
-  const styles = useMemo(() => getStyles(isDarkMode, isGG), [isDarkMode, isGG]);
+  const styles = useMemo(() => getStyles(isDarkMode), [isDarkMode]);
 
   const lastFilledIndexHas = useMemo(() =>
     hasItems.reduce((lastIndex, item, index) => (item ? index : lastIndex), -1)
@@ -1101,7 +1109,7 @@ const HomeScreen = ({ selectedTheme }) => {
                           styles.statusText,
                           tradeStatus === 'lose' ? {
                             ...styles.statusActive,
-                            backgroundColor: config.getPrimaryColor(isDarkMode) // Primary color for lose
+                            backgroundColor: config.colors.primary // Primary color for lose
                           } : styles.statusInactive
                         ]}>LOSE</Text>
                       </View>
@@ -1168,7 +1176,7 @@ const HomeScreen = ({ selectedTheme }) => {
                         {item ? (
                           <>
                             <Image
-                              source={{ uri: getImageUrl(item, localState.isGG, localState.imgurl, localState.imgurlGG) }}
+                              source={{ uri: getImageUrl(item) }}
                               style={[styles.itemImageOverlay]}
                             />
 
@@ -1203,7 +1211,7 @@ const HomeScreen = ({ selectedTheme }) => {
                         {item ? (
                           <>
                             <Image
-                              source={{ uri: getImageUrl(item, localState.isGG, localState.imgurl, localState.imgurlGG) }}
+                              source={{ uri: getImageUrl(item) }}
 
                               style={[styles.itemImageOverlay]}
                             />
@@ -1231,7 +1239,7 @@ const HomeScreen = ({ selectedTheme }) => {
               >
                 <View style={styles.lastUpdatedContent}>
                   {refreshing ? (
-                    <ActivityIndicator size="small" color={config.getPrimaryColor(isDarkMode)} style={{ marginRight: 6 }} />
+                    <ActivityIndicator size="small" color={config.colors.primary} style={{ marginRight: 6 }} />
                   ) : (
                     <Icon name="time-outline" size={14} color={isDarkMode ? '#aaa' : '#888'} style={{ marginRight: 6 }} />
                   )}
@@ -1239,7 +1247,7 @@ const HomeScreen = ({ selectedTheme }) => {
                     {refreshing ? 'Updating...' : `Updated ${getLastUpdatedText()}`}
                   </Text>
                   {!refreshing && (
-                    <Icon name="refresh-outline" size={14} color={config.getPrimaryColor(isDarkMode)} style={{ marginLeft: 6 }} />
+                    <Icon name="refresh-outline" size={14} color={config.colors.primary} style={{ marginLeft: 6 }} />
                   )}
                 </View>
               </TouchableOpacity>
@@ -1452,7 +1460,7 @@ const HomeScreen = ({ selectedTheme }) => {
   );
 };
 
-const getStyles = (isDarkMode, isGG) =>
+const getStyles = (isDarkMode) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -1611,22 +1619,34 @@ const getStyles = (isDarkMode, isGG) =>
       width: '49%',
       alignItems: 'center',
       marginBottom: 5,
-      borderWidth: 1,
-      borderColor: isGG ? '#333333' : config.getPrimaryColor(isDarkMode),
+      borderColor: config.colors.primary,
+      borderWidth: 2,
       marginHorizontal: 'auto',
       borderRadius: 4,
       overflow: 'hidden',
     },
+    // Added specific style for favorite button in grid
+    favoriteButton: {
+      position: 'absolute',
+      top: 5,
+      right: 5,
+      backgroundColor: isDarkMode ? '#1e1e1e' : config.colors.wantBlockRed,
+      borderRadius: 12,
+      padding: 4,
+      zIndex: 10,
+      borderWidth: 1,
+      borderColor: config.colors.primary,
+    },
     addItemBlockNew: {
       width: '33.33%',
       height: 60,
-      backgroundColor: isDarkMode ? (isGG ? '#1e1e1e' : '#1e1e1e') : isGG ? '#939992' : config.colors.wantBlockRed,
+      backgroundColor: isDarkMode ? '#1e1e1e' : config.colors.wantBlockRed,
       justifyContent: 'center',
       alignItems: 'center',
       position: 'relative',
       borderRightWidth: 1,
       borderBottomWidth: 1,
-      borderColor: isGG ? '#333333' : config.getPrimaryColor(isDarkMode),
+      borderColor: config.colors.primary,
     },
     itemText: {
       color: isDarkMode ? 'white' : 'black',
@@ -1645,7 +1665,7 @@ const getStyles = (isDarkMode, isGG) =>
     divider: {
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: config.getPrimaryColor(isDarkMode),
+      backgroundColor: config.colors.primary,
       margin: 'auto',
       borderRadius: 12,
       padding: 5,
@@ -1993,7 +2013,7 @@ const getStyles = (isDarkMode, isGG) =>
     },
     favoriteItemRarity: {
       fontSize: 8,
-      color: config.getPrimaryColor(isDarkMode),
+      color: config.colors.primary,
       fontWeight: '600',
       textTransform: 'uppercase',
       letterSpacing: 0.3,
@@ -2022,7 +2042,7 @@ const getStyles = (isDarkMode, isGG) =>
       justifyContent: 'center',
     },
     favoriteBadgeButtonActive: {
-      backgroundColor: config.getPrimaryColor(isDarkMode),
+      backgroundColor: config.colors.primary,
     },
     favoriteBadgeButtonText: {
       fontSize: 8,

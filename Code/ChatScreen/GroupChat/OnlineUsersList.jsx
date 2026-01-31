@@ -732,7 +732,7 @@ const getStyles = (isDark) =>
     },
     statusText: {
       fontSize: 12,
-      
+
       marginTop: 2,
     },
     inviteButton: {
@@ -773,7 +773,7 @@ const getStyles = (isDark) =>
       marginTop: 12,
       fontSize: 14,
       color: isDark ? '#9CA3AF' : '#6B7280',
-      
+
     },
     footer: {
       padding: 10,
@@ -785,7 +785,7 @@ const getStyles = (isDark) =>
     footerText: {
       fontSize: 12,
       color: isDark ? '#9CA3AF' : '#6B7280',
-      
+
     },
     loadMoreContainer: {
       paddingVertical: 12,
@@ -795,7 +795,7 @@ const getStyles = (isDark) =>
     loadMoreText: {
       fontSize: 12,
       color: isDark ? '#9CA3AF' : '#6B7280',
-      
+
     },
   });
 

@@ -107,7 +107,7 @@ const MainTabs = React.memo(({ selectedTheme, chatFocused, setChatFocused, modal
           <AnimatedTabIcon
             focused={focused}
             iconName={getTabIcon(route.name, focused)}
-            color={focused ? (isDarkMode ? '#E0B0FF' : config.colors.primary) : (isDarkMode ? '#B0B0B0' : config.colors.primary)}
+            color={config.colors.primary}
             size={18}
           />
         ),
@@ -132,7 +132,7 @@ const MainTabs = React.memo(({ selectedTheme, chatFocused, setChatFocused, modal
         },
 
         tabBarStyle: {
-          // height: 50,
+          height: 50,
           backgroundColor: selectedTheme.colors.background,
           paddingBottom: 0,
         },
@@ -140,8 +140,8 @@ const MainTabs = React.memo(({ selectedTheme, chatFocused, setChatFocused, modal
           fontSize: 9, // 👈 Your custom label font size
           fontWeight: 'bold', // Optional: Custom font family
         },
-        tabBarActiveTintColor: isDarkMode ? '#E0B0FF' : config.colors.primary,
-        tabBarInactiveTintColor: isDarkMode ? '#B0B0B0' : '#666666',
+        tabBarActiveTintColor: config.colors.primary,
+        tabBarInactiveTintColor: '#666666',
         headerStyle: {
           backgroundColor: selectedTheme.colors.background,
         },

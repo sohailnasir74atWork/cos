@@ -51,8 +51,8 @@ export default function ScamSafetyBox({
         <View style={styles.warningBox}>
           <Text style={styles.title}>⚠️ Trade Safety</Text>
           <Text style={styles.item}>• Too good = scam.</Text>
-<Text style={styles.item}>• Don’t share login.</Text>
-<Text style={styles.item}>• Use trusted servers.</Text>
+          <Text style={styles.item}>• Don’t share login.</Text>
+          <Text style={styles.item}>• Use trusted servers.</Text>
 
         </View>
       </View>
@@ -136,7 +136,7 @@ const getStyles = (isDark) =>
       fontSize: 9,
       color: isDark ? '#E5E7EB' : '#4B5563',
       marginBottom: 5,
-      
+
     },
 
     // shared button base (same size)
@@ -178,10 +178,10 @@ const getStyles = (isDark) =>
     },
     rateButtonTitle: {
       color: '#ffffff',
-      
+
     },
     rateButtonSub: {
       color: 'rgba(255,255,255,0.9)',
-      
+
     },
   });

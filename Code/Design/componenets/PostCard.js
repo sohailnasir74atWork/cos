@@ -14,7 +14,7 @@ import ReportModal from './ReportModal';
 import dayjs from 'dayjs';
 import { get, getDatabase, ref, set } from '@react-native-firebase/database';
 import ProfileBottomDrawer from '../../ChatScreen/GroupChat/BottomDrawer';
-import { isUserOnline } from '../../ChatScreen/utils';
+import { isUserOnline, checkBanStatus, banUserwithEmail } from '../../ChatScreen/utils';
 
 const PostCard = ({ item, userId, onLike, localState, appdatabase, onDelete, onDeleteAll }) => {
   const navigation = useNavigation();
@@ -36,7 +36,7 @@ const PostCard = ({ item, userId, onLike, localState, appdatabase, onDelete, onD
 
   // console.log(item)
 
-  const { theme, isAdmin } = useGlobalState();
+  const { theme, isAdmin, user } = useGlobalState();
   const isDark = theme === 'dark';
   const getTagColor = (tag) => {
     switch (tag.toLowerCase()) {
@@ -56,41 +56,11 @@ const PostCard = ({ item, userId, onLike, localState, appdatabase, onDelete, onD
         return config.getPrimaryColor(isDark); // Fallback
     }
   };
-  const banUserwithEmail = async (email, userId) => {
-    const encodeEmail = (email) => email.replace(/\./g, '(dot)');
-
-    try {
-      const db = getDatabase();
-      const banRef = ref(db, `banned_users_by_email_post/${encodeEmail(email)}`);
-      const snap = await get(banRef);
-
-      let strikeCount = 1;
-      let bannedUntil = Date.now() + 24 * 60 * 60 * 1000; // 1 day
-      // let bannedUntil = Date.now() +  1 * 60 * 1000; // 1 day
 
 
-
-      if (snap.exists()) {
-        const data = snap.val();
-        if (!isAdmin) { strikeCount = data.strikeCount; }
-        if (isAdmin) { strikeCount = data.strikeCount + 1; }
-
-        if (strikeCount === 2) bannedUntil = Date.now() + 3 * 24 * 60 * 60 * 1000; // 3 days
-        //  if (strikeCount === 2) bannedUntil = Date.now() + 2  * 60 * 1000; // 3 days
-        else if (strikeCount >= 3) bannedUntil = "permanent";
-      }
-
-      await set(banRef, {
-        strikeCount,
-        bannedUntil,
-        reason: `Strike ${strikeCount}`
-      });
-      await onDeleteAll(userId)
-      if (isAdmin) { Alert.alert('User Banned', `Strike ${strikeCount} applied.`); }
-    } catch (err) {
-      console.error('Ban error:', err);
-      if (isAdmin) { Alert.alert('Error', 'Could not ban user.'); }
-    }
+  const handleReportBan = async (email, userId) => {
+    // System Ban (Report): isAdmin = false, senderId = userId
+    await banUserwithEmail(email, false, userId);
   };
   const closeProfileDrawer = () => {
     setIsDrawerVisible(false);
@@ -125,31 +95,30 @@ const PostCard = ({ item, userId, onLike, localState, appdatabase, onDelete, onD
   }
 
   const handleChatNavigation = useCallback(() => {
-    const callback = () => {
-      if (!userId) {
-        showMessage({
-          message: 'Please sign in to message',
-          type: 'warning',
-        });
+    // 🔒 Ban Check
+    checkBanStatus(user?.email).then(banStatus => {
+      if (banStatus.isBanned) {
+        Alert.alert('Banned', banStatus.message);
         return;
       }
 
-
-
-
+      // Navigate if not banned
       navigation.navigate('PrivateChatDesign', {
         selectedUser: selectedUser,
         item,
       });
-    };
+    });
+  }, [userId, item, navigation, user]);
 
-
-
-
-
-    // ✅ Removed navigation ad - exit ads are shown when leaving chat instead
-    callback();
-  }, [userId, item, navigation]);
+  const handleLike = async () => {
+    // 🔒 Ban Check
+    const banStatus = await checkBanStatus(user?.email);
+    if (banStatus.isBanned) {
+      Alert.alert('Banned', banStatus.message);
+      return;
+    }
+    onLike(item);
+  };
 
   const themedStyles = getStyles(isDark);
   // console.log(item.createdAt)
@@ -223,12 +192,7 @@ const PostCard = ({ item, userId, onLike, localState, appdatabase, onDelete, onD
 
 
             )}
-            {isAdmin &&
 
-              <MenuOption onSelect={() => banUserwithEmail(item.email, item.userId)}>
-                <Text>Ban User</Text>
-
-              </MenuOption>}
             {isAdmin && <MenuOption
               onSelect={() => {
                 Alert.alert(
@@ -252,7 +216,7 @@ const PostCard = ({ item, userId, onLike, localState, appdatabase, onDelete, onD
 
 
       <Text style={themedStyles.desc}>{item?.desc}</Text>
-      {Array.isArray(item.imageUrl) && item.imageUrl.length < 1 && <ReportModal visible={showReportModal} onClose={() => setShowReportModal(false)} item={item} banUserwithEmail={banUserwithEmail} />}
+      {Array.isArray(item.imageUrl) && item.imageUrl.length < 1 && <ReportModal visible={showReportModal} onClose={() => setShowReportModal(false)} item={item} banUserwithEmail={handleReportBan} />}
 
       {/* ✅ Show tags if NO image is present - Top Right Fixed */}
       {(!Array.isArray(item.imageUrl) || item.imageUrl.length === 0) && item.selectedTags?.length > 0 && (
@@ -311,14 +275,14 @@ const PostCard = ({ item, userId, onLike, localState, appdatabase, onDelete, onD
               )}
             </View>
           </View>
-          <ReportModal visible={showReportModal} onClose={() => setShowReportModal(false)} item={item} banUserwithEmail={banUserwithEmail} />
+          <ReportModal visible={showReportModal} onClose={() => setShowReportModal(false)} item={item} banUserwithEmail={handleReportBan} />
 
         </View>
       )}
 
       <View style={themedStyles.actionsRow}>
         <View style={{ flexDirection: 'row' }}>
-          <TouchableOpacity onPress={() => onLike(item)} style={themedStyles.actionBtn}>
+          <TouchableOpacity onPress={handleLike} style={themedStyles.actionBtn}>
             <Icon name={liked ? 'heart' : 'heart-o'} size={20} color={liked ? 'red' : 'gray'} />
             <Text style={themedStyles.likeCount}>{likeCount} likes</Text>
           </TouchableOpacity>
