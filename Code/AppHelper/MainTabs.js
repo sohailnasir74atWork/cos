@@ -87,7 +87,7 @@ const MainTabs = React.memo(({ selectedTheme, chatFocused, setChatFocused, modal
   const tabBarButtonStyles = useMemo(() => ({
     selected: {
       dark: '#5c4c49',
-      light: '#f7f7f7ff',
+      light: '#fdc8c8ff',
     },
     base: {
       flex: 1,
